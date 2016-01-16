@@ -4,7 +4,13 @@
 
 <div id="content">
   <div class="page-header">
+
+    <div class="alert alert-primary">
+      <b><?php echo $alerts ?></b>
+    </div>
+
     <div class="container-fluid">
+      
       <div class="pull-right">
         <button type="submit" form="form-latest" data-toggle="tooltip" title="<?php echo $button_save; ?>" class="btn btn-primary">
           <i class="fa fa-save"></i>
@@ -28,81 +34,139 @@
     <img src="http://plugg.to/wp-content/uploads/2015/10/PluggTo-Header-Logo-Verde.png" alt="" /> 
   </div>
 
-  <div class="row" style="width: 99%;">
-    <div class="col-md-12" style="margin-left: 20px;">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">
-            <i class="fa fa-pencil"></i> Configurações
-          </h3>
-        </div>
-        <div class="panel-body">
-          <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-banner" class="form-horizontal">
-            <div class="form-group">
-              <label class="col-sm-2 control-label" for="input-name">API User:</label>
-              <div class="col-sm-10">
-                <input type="text" name="api_user" id="api_user" value="<?php echo $credentials['api_user']; ?>" class="form-control" />
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" for="input-name">API Secret:</label>
-              <div class="col-sm-10">
-                <input type="text" name="api_secret" id="api_secret" value="<?php echo $credentials['api_secret']; ?>" class="form-control"/>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" for="input-name">Client ID:</label>
-              <div class="col-sm-10">
-                <input type="text" name="client_id" id="client_id" value="<?php echo $credentials['client_id']; ?>" class="form-control"/>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="col-sm-2 control-label" for="input-name">Client Secret:</label>
-              <div class="col-sm-10">
-                <input type="text" name="client_secret" id="client_secret" value="<?php echo $credentials['client_secret']; ?>" class="form-control"/>
-              </div>
-            </div>
-            <div class="form-group" style="float: right; padding-right: 15px;">
-              <button type="submit" class="btn btn-success">Salvar</button>
-              <a href="javascript:validateDataInPluggTo();" class="btn btn-info">Verificar Dados</a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <?php if (!empty($access_status)) { ?>
     <h3><?php echo $access_status ?></h3>
   <?php } ?>
 
-  <?php if (!empty($result)) { ?>
-    <table id="module" class="list">
-      <thead>
-      <tr>
-          <td class="left">Produtos</td>
-          <td class="left">OP para o Pluggto</td>
-          <td class="left">Pluggto para o OP</td>
-          <td class="left">Novos Produtos do Pluggto para o OP</td>
-          <td class="left">Novos Produtos do OP para o PLuggto</td>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-          <td class="left"><?php echo $result['all'] ?></td>
-          <td class="left"><?php echo $result['update_to'] ?></td>
-          <td class="left"><?php echo $result['update_from'] ?></td>
-          <td class="left"><?php echo $result['create_from'] ?></td>
-          <td class="left"><?php echo $result['create_to'] ?></td>
-      </tr>
-      </tbody>
-    </table>
-  <?php } ?>
+    <div class="row" style="width: 97%;  margin-left: 15px;">
+      <ul class="nav nav-tabs">
+          <li class="nav active">
+              <a href="#A" data-toggle="tab">Keys Integration</a>
+          </li>
+          <li class="nav">
+              <a href="#B" data-toggle="tab">Settings</a>
+          </li>
+          <li>
+              <a href="#D" data-toggle="tab">Setting Product</a>
+          </li>
+      </ul>
+      <!-- Tab panes -->
+      <div class="tab-content">
+          
+          <div class="tab-pane fade in active" id="A">
+            <div class="row" style="width: 99%;">
+              <div class="col-md-12" style="margin-left: 20px;">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">
+                      <i class="fa fa-pencil"></i> Keys Integration
+                    </h3>
+                  </div>
+                  <div class="panel-body">
+                    <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-banner" class="form-horizontal">
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">API User:</label>
+                        <div class="col-sm-10">
+                          <input type="text" name="api_user" id="api_user" value="<?php echo $credentials['api_user']; ?>" class="form-control" />
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">API Secret:</label>
+                        <div class="col-sm-10">
+                          <input type="text" name="api_secret" id="api_secret" value="<?php echo $credentials['api_secret']; ?>" class="form-control"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Client ID:</label>
+                        <div class="col-sm-10">
+                          <input type="text" name="client_id" id="client_id" value="<?php echo $credentials['client_id']; ?>" class="form-control"/>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Client Secret:</label>
+                        <div class="col-sm-10">
+                          <input type="text" name="client_secret" id="client_secret" value="<?php echo $credentials['client_secret']; ?>" class="form-control"/>
+                        </div>
+                      </div>
+                      <div class="form-group" style="float: right; padding-right: 15px;">
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                        <a href="javascript:validateDataInPluggTo();" class="btn btn-info">Verificar Dados</a>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-  <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="checkProducts">
-    <input type="hidden" name="checkCredentials" value="1" />
-  </form>
+          <div class="tab-pane fade" id="B">            
+            <div class="row" style="width: 99%;">
+              <div class="col-md-12" style="margin-left: 20px;">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">
+                      <i class="fa fa-pencil"></i> Products synchronization
+                    </h3>
+                  </div>
+                  <div class="panel-body">
+                    <form action="<?php echo $action_products; ?>" method="post" enctype="multipart/form-data" id="form-banner" class="form-horizontal">
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Ativo:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Atualizar no OpenCart apenas estoque:</label>
+                        <div class="col-sm-10">
+                          <select name="refresh_only_stock" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['refresh_only_stock'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['refresh_only_stock'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                          <br>
+                          <small>Caso opção seja Sim, apenas estoque será gravado no OpenCart, demais atributos (Foto,Preço,Sku...) só será enviado do OpenCart para o Plugg.To</small>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Verificar divergencia de Estoque e Preço</label>
+                        <div class="col-sm-10">
+                          <a href="javascript:;" id="estoque-preco" class="btn btn-info">Verificar divergencia de Estoque e Preço</a>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Importação de todos os produtos para OpenCart</label>
+                        <div class="col-sm-10">
+                          <a href="javascript:;" id="import-products" class="btn btn-warning">Importação de todos os produtos para OpenCart</a>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Exportação de todos os produtos para o PluggTo</label>
+                        <div class="col-sm-10">
+                          <a href="javascript:;" id="export-products" class="btn btn-danger">Exportação de todos os produtos para o PluggTo</a>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Desvincular todos produtos com o Plugg.To</label>
+                        <div class="col-sm-10">
+                          <a href="javascript:;" id="off-all-products" class="btn btn-primary">Desvincular todos produtos com o Plugg.To</a>
+                        </div>
+                      </div>
+                      </div>
+                      <div class="form-group" style="float: right; padding-right: 15px;">
+                        <button type="submit" class="btn btn-success">Salvar</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
+      </div>
+    </div>
   </div>
  </div>
 </div>

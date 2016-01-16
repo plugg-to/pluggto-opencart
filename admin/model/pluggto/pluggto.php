@@ -1,6 +1,7 @@
 <?php
 class ModelPluggtoPluggto extends Model{
-  public function install(){
+ 
+  public function install() {
     $this->db->query("
           CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto` (
             `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -8,11 +9,17 @@ class ModelPluggtoPluggto extends Model{
             `api_secret` varchar(255) NOT NULL,
             `client_id` varchar(255) NOT NULL,
             `client_secret` varchar(255) NOT NULL
-          ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;");
+          ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
+          CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
+          `id` int(11) NOT NULL,
+            `active` tinyint(4) NOT NULL,
+            `refresh_only_stock` tinyint(4) NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+    ");
   }
 
-  public function uninstall(){
+  public function uninstall() {
     $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "pluggto`;");
   }
 
@@ -24,6 +31,7 @@ class ModelPluggtoPluggto extends Model{
     $data = $this->sendRequest($method, $url, $params);
     return $data;
   }
+ 
   public function searchProduct($products, $id) {
 
     foreach ( $products as $key => $product ) {
@@ -93,21 +101,17 @@ class ModelPluggtoPluggto extends Model{
                 description='".$product->Product->description. "'
             WHERE product_id = ".$id;
     $this->db->query($sql);
-
-
   }
 
-public function setTimestamp($product_id, $timestamp) {
-  date_default_timezone_set('UTC');
-  $sql = "UPDATE `" . DB_PREFIX . "product`
-          SET date_modified='".date('Y-m-d H.i.s', $timestamp). "'
-          WHERE product_id = ".$product_id;
-  $this->db->query($sql);
-}
+  public function setTimestamp($product_id, $timestamp) {
+    date_default_timezone_set('UTC');
+    $sql = "UPDATE `" . DB_PREFIX . "product`
+            SET date_modified='".date('Y-m-d H.i.s', $timestamp). "'
+            WHERE product_id = ".$product_id;
+    $this->db->query($sql);
+  }
 
-
-  public function checkProducts($pluggto_products){
-
+  public function checkProducts($pluggto_products) {
     $result = array();
     $result['all'] = 0;
     $result['create_from'] = 0;
@@ -163,13 +167,10 @@ public function setTimestamp($product_id, $timestamp) {
     return $result;
   }
 
-  public function setCredentials( $api_user, $api_secret, $client_id, $client_secret ) {
-    // $sql = "UPDATE `" . DB_PREFIX . "pluggto`
-    //       SET client_id= '" . $client_id . "', client_secret='" . $client_secret . "', api_user='" . $api_user . "', api_secret='" . $api_secret . "'
-    //       WHERE id = 1";
-
+  public function setCredentials($api_user, $api_secret, $client_id, $client_secret) {
     $sql = "INSERT INTO `" . DB_PREFIX . "pluggto` ( api_user, api_secret, client_id, client_secret)
             VALUES ('".$api_user."', '".$api_secret."','".$client_id ."','".$client_secret."')";
+
     $this->db->query($sql);
   }
 
@@ -268,10 +269,8 @@ public function setTimestamp($product_id, $timestamp) {
 
     }
 
-
-  $result = curl_exec($ch);
-  return json_decode($result);
-
+    $result = curl_exec($ch);
+    return json_decode($result);
   }
 
   public function updateTo($product, $id) {
@@ -292,7 +291,6 @@ public function setTimestamp($product_id, $timestamp) {
     $params = $product;
     $data = $this->sendRequest($method, $url, $params);
     return $data;
-
   }
 
   public function productToPluggto($product_id) {
@@ -310,7 +308,6 @@ public function setTimestamp($product_id, $timestamp) {
     $pluggto['width'] = $pluggto['raw']['width'];
     $pluggto['price'] = $pluggto['raw']['price'];
     $pluggto['quantity'] = $pluggto['raw']['quantity'];
-
 
     $sql = "SELECT * FROM `" . DB_PREFIX . "product_attribute`
            WHERE product_id = ".$product_id;
@@ -408,6 +405,16 @@ public function setTimestamp($product_id, $timestamp) {
     $pluggto['raw']['to_store'] = $this->db->query($sql)->rows;
 
     return $pluggto;
+  }
+
+  public function saveSettingsProductsSynchronization($data) {
+    $sql = "INSERT INTO " . DB_PREFIX . "settings_products_synchronization (`active`, `refresh_only_stock`) VALUES (" . $data['active'] . ", " . $data['refresh_only_stock'] . ")";
+    return $this->db->query($sql);
+  }
+
+  public function getSettingsProductsSynchronization(){
+    $sql = "SELECT * FROM " . DB_PREFIX . "settings_products_synchronization ORDER BY id DESC LIMIT 1";
+    return $this->db->query($sql);    
   }
 
 }

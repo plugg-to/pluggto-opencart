@@ -6,6 +6,7 @@ class ControllerModulePluggTo extends Controller {
     $this->load->model('pluggto/pluggto');
     $this->model_pluggto_pluggto->install();
   }
+
   public function uninstall() {
     $this->load->model('pluggto/pluggto');
     $this->model_pluggto_pluggto->uninstall();
@@ -16,7 +17,23 @@ class ControllerModulePluggTo extends Controller {
 
     $this->model_pluggto_pluggto->checkProducts($this->model_pluggto_pluggto->getProductsTable());
     $result = $this->model_pluggto_pluggto->checkProducts($this->model_pluggto_pluggto->getProductsTable());
+  }
 
+  public function saveSettingsProductsSynchronization() {
+    $this->load->model('pluggto/pluggto');
+
+    $data = [
+      'refresh_only_stock' => $this->request->post['refresh_only_stock'],
+      'active' => $this->request->post['active']
+    ];
+        
+    $this->session->data['alerts'] = 'Configurações salvas com sucesso!';
+    
+    $response = $this->model_pluggto_pluggto->saveSettingsProductsSynchronization($data);
+    if (!$response)    
+      $this->session->data['alerts'] = 'Ocorreu algum erro ao salvar as configurações de sicronização';
+
+    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   public function index() {
@@ -48,14 +65,14 @@ class ControllerModulePluggTo extends Controller {
       $credentials['client_secret'] = "";
     }
 
+    $settingsProductsSynchronization = $this->model_pluggto_pluggto->getSettingsProductsSynchronization();
+    $data['settingsProductsSynchronization'] = $settingsProductsSynchronization;
+
     $data['heading_title'] = $this->language->get('heading_title');
-    $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 
     $data['credentials'] = $credentials;
 
     $data['breadcrumbs'] = array();
-
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
       'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
@@ -70,9 +87,9 @@ class ControllerModulePluggTo extends Controller {
       'text'      => $this->language->get('heading_title'),
       'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
     );
-
+    
+    $data['action_products'] = $this->url->link('module/pluggto/saveSettingsProductsSynchronization', 'token=' . $this->session->data['token'], 'SSL');
     $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
-
     $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 
     if (isset($this->request->post['store_admin'])) {
@@ -86,6 +103,15 @@ class ControllerModulePluggTo extends Controller {
     } else {
       $data['store_status'] = $this->config->get('store_status');
     }
+
+    $data['alerts'] = $this->session->data['alerts'];
+    $this->session->data['alerts'] = '';
+
+    $data['button_save'] = $this->language->get('button_save');
+    $data['button_cancel'] = $this->language->get('button_cancel');
+
+    $data['button_add_module'] = $this->language->get('button_add_module');
+    $data['button_remove'] = $this->language->get('button_remove');
 
     $data['header'] = $this->load->controller('common/header');
     $data['column_left'] = $this->load->controller('common/column_left');
