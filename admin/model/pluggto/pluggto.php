@@ -31,21 +31,6 @@ class ModelPluggtoPluggto extends Model{
     $data = $this->sendRequest($method, $url, $params);
     return $data;
   }
- 
-  public function searchProduct($products, $id) {
-
-    foreach ( $products as $key => $product ) {
-
-      if (isset($product->external)) {
-
-        if ( $id == $product->external ) {
-            $product->key = $key;
-            return $product;
-        }
-      }
-    }
-    return false;
-  }
 
   public function updateFromProduct($product, $timestamp) {
     date_default_timezone_set('UTC');
@@ -111,62 +96,6 @@ class ModelPluggtoPluggto extends Model{
     $this->db->query($sql);
   }
 
-  public function checkProducts($pluggto_products) {
-    $result = array();
-    $result['all'] = 0;
-    $result['create_from'] = 0;
-    $result['update_from'] = 0;
-    $result['create_to'] = 0;
-    $result['update_to'] = 0;
-
-
-    $sql = "SELECT product_id, date_modified FROM `" . DB_PREFIX . "product`";
-
-    $products = $this->db->query($sql)->rows;
-
-    foreach ($pluggto_products->products as $key => $product) {
-
-      if ( empty($product->external)) {
-
-        $result['create_from'] += 1;
-      }
-    }
-
-    foreach ($products as $key => $product) {
-      date_default_timezone_set('UTC');
-      $pluggto_product = $this->searchProduct($pluggto_products->products, $product["product_id"]);
-
-      if (!empty($pluggto_product)) {
-        $product_timestamp = strtotime($product["date_modified"]);
-
-        $pluggto_product_timestamp = $pluggto_product->timestamp;
-
-
-        if ($product_timestamp > $pluggto_product_timestamp) {
-          $product_json = $this->productToPluggto($product["product_id"]);
-          $data = $this->updateTo($product_json, $pluggto_product->key);
-          $product_timestamp = $this->getProduct($pluggto_product->key);
-          $this->setTimestamp($product["product_id"], $product_timestamp->Product->timestamp);
-          $result['update_to'] += 1;
-
-        }elseif ($product_timestamp < $pluggto_product_timestamp) {
-          $product_to_import = $this->getProduct($pluggto_product->key);
-          $this->updateFromProduct($product_to_import, $pluggto_product->timestamp);
-          $update_from[] = $pluggto_product;
-          $result['update_from'] += 1;
-        }
-
-      }else {
-        $product_json = $this->productToPluggto($product["product_id"]);
-        $this->createTo($product_json);
-
-        $result['create_to'] += 1;
-      }
-      $result['all'] += 1;
-    }
-    return $result;
-  }
-
   public function setCredentials($api_user, $api_secret, $client_id, $client_secret) {
     $sql = "INSERT INTO `" . DB_PREFIX . "pluggto` ( api_user, api_secret, client_id, client_secret)
             VALUES ('".$api_user."', '".$api_secret."','".$client_id ."','".$client_secret."')";
@@ -188,9 +117,9 @@ class ModelPluggtoPluggto extends Model{
      return false;
     }else {
       $url = "http://api.plugg.to/oauth/token";
-      $params = array("grant_type"=>"password", "client_id" => $credential["client_id"], "client_secret" => $credential["client_secret"], "api_user" => $credential["api_user"], "api_secret" => $credential["api_secret"]);
+      $params = array("grant_type"=>"password", "client_id" => $credential["client_id"], "client_secret" => $credential["client_secret"], "username" => $credential["api_user"], "password" => $credential["api_secret"]);
 
-      $data = $this->sendRequest("get", $url, $params);
+      $data = $this->sendRequest("post", $url, $params);
 
       if (!empty($data->access_token)) {
         return $data->access_token;
@@ -241,17 +170,12 @@ class ModelPluggtoPluggto extends Model{
 
     }elseif (strtolower ( $method ) == "post") {
 
-      $data_string = json_encode($params);
-
       curl_setopt($ch, CURLOPT_URL, $url);
-
-      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-          'Content-Type: application/json',
-          'Content-Length: ' . strlen($data_string))
-      );
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+      curl_setopt($ch, CURLOPT_POST, 1);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
 
     }elseif (strtolower ( $method ) == "put") {
 
@@ -293,6 +217,24 @@ class ModelPluggtoPluggto extends Model{
     return $data;
   }
 
+  public function prepareToSaveInOpenCart($product) {
+    $data = [
+      'sku' => $product->Product->sku,
+      'model' => $product->Product->name,
+      'quantity' => $product->Product->quantity,
+      'price' => $product->Product->price,
+      'weight' => $product->Product->weight,
+      'length' => $product->Product->length,
+      'width' => $product->Product->width,
+      'height' => $product->Product->height,
+      'status' => $product->Product->status,
+    ];
+
+    $this->load->model('catalog/product');
+    $this->model_catalog_product->addProduct($data);
+    exit;
+  }
+
   public function productToPluggto($product_id) {
     $sql = "SELECT * FROM `" . DB_PREFIX . "product`
            WHERE product_id = ".$product_id;
@@ -308,99 +250,6 @@ class ModelPluggtoPluggto extends Model{
     $pluggto['width'] = $pluggto['raw']['width'];
     $pluggto['price'] = $pluggto['raw']['price'];
     $pluggto['quantity'] = $pluggto['raw']['quantity'];
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_attribute`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['attributes'] = $this->db->query($sql)->rows;
-
-    foreach ($pluggto['raw']['attributes'] as $key=>$value) {
-      $pluggto['variations'][$key]['name'] = $value['text'];
-    }
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_description`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['description'] = $this->db->query($sql)->row;
-
-    $pluggto['name'] = $pluggto['raw']['description']['name'];
-
-    $pluggto['short_description'] = $pluggto['raw']['description']['description'];
-
-    $pluggto['description'] = $pluggto['raw']['description'];
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_discount`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['discount'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_filter`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['filter'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_image`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['image'] = $this->db->query($sql)->rows;
-
-    foreach ($pluggto['raw']['image'] as $key=>$value) {
-      $pluggto['photos'][$key]['url'] = $value['image'];
-      $pluggto['photos'][$key]['order'] = $value['sort_order'];
-    }
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_option`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['option'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_option_value`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['option_value'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_profile`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['profile'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_recurring`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['recurring'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_related`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['related'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_reward`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['reward'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_special`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['special'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_to_category`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['to_category'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_to_download`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['to_download'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_to_layout`
-           WHERE product_id = ".$product_id;
-
-    $pluggto['raw']['to_layout'] = $this->db->query($sql)->rows;
-
-    $sql = "SELECT * FROM `" . DB_PREFIX . "product_to_store`
-           WHERE product_id = ".$product_id;
 
     $pluggto['raw']['to_store'] = $this->db->query($sql)->rows;
 

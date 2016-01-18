@@ -139,7 +139,7 @@
                       <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-name">Importação de todos os produtos para OpenCart</label>
                         <div class="col-sm-10">
-                          <a href="javascript:;" id="import-products" class="btn btn-warning">Importação de todos os produtos para OpenCart</a>
+                          <a href="<?php echo $link_import_all_products_to_opencart; ?>" id="import-products" class="btn btn-warning">Importação de todos os produtos para OpenCart</a>
                         </div>
                       </div>
                       <div class="form-group">

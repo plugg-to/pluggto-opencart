@@ -36,6 +36,15 @@ class ControllerModulePluggTo extends Controller {
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
+  public function importAllProductsToOpenCart() {
+    $this->load->model('pluggto/pluggto');
+    $result = $this->model_pluggto_pluggto->getProducts();
+
+    foreach ($result->result as $i => $product) {
+      $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+    }
+  }
+
   public function index() {
     $this->template = 'module/pluggto.tpl';
     $this->language->load('module/pluggto');
@@ -89,6 +98,7 @@ class ControllerModulePluggTo extends Controller {
     );
     
     $data['action_products'] = $this->url->link('module/pluggto/saveSettingsProductsSynchronization', 'token=' . $this->session->data['token'], 'SSL');
+    $data['link_import_all_products_to_opencart'] = $this->url->link('module/pluggto/importAllProductsToOpenCart', 'token=' . $this->session->data['token'], 'SSL');
     $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 
