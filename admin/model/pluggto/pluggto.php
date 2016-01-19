@@ -241,15 +241,11 @@ class ModelPluggtoPluggto extends Model{
       'product_store' => [
         0
       ],
-      'product_category' => [
-        $this->formatObjectCategoryToList($product->Product->categories)
-      ]
+      'product_category' => $this->formatObjectCategoryToList($product->Product->categories)
     ];
 
     $this->load->model('catalog/product');
     $this->model_catalog_product->addProduct($data);
-
-    exit;
   }
 
   public function formatObjectCategoryToList($categoriesObject) {
@@ -265,15 +261,17 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function findCategoriesInOpenCart($namesOfCategories) {
+    $response = [];
+
     $this->load->model('catalog/category');
     $categories = $this->prepareDataCategoryToArraySearch($this->model_catalog_category->getCategories());
-    echo '<pre>';print_r($categories);
 
     foreach ($namesOfCategories as $i => $names) {
-      echo '<pre>';print_r($names);
-      $key = array_search($names, $categories);
-      print_r($key);exit;
+      $id_category = array_search(explode(' >', $names)[0], $categories);
+      $response[] = $id_category;
     }
+
+    return $response;
   }
 
   public function prepareDataCategoryToArraySearch($categoriesOpenCart) {

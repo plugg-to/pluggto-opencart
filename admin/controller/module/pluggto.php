@@ -43,6 +43,9 @@ class ControllerModulePluggTo extends Controller {
     foreach ($result->result as $i => $product) {
       $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
     }
+
+    $this->session->data['alerts'] = 'Importação feita com sucesso!';
+    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   public function index() {
