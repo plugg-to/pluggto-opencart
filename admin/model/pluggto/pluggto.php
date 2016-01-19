@@ -3,19 +3,19 @@ class ModelPluggtoPluggto extends Model{
  
   public function install() {
     $this->db->query("
-          CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto` (
-            `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            `api_user` varchar(255) NOT NULL,
-            `api_secret` varchar(255) NOT NULL,
-            `client_id` varchar(255) NOT NULL,
-            `client_secret` varchar(255) NOT NULL
-          ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto` (
+          `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+          `api_user` varchar(255) NOT NULL,
+          `api_secret` varchar(255) NOT NULL,
+          `client_id` varchar(255) NOT NULL,
+          `client_secret` varchar(255) NOT NULL
+        ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
-          CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
+        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
           `id` int(11) NOT NULL,
-            `active` tinyint(4) NOT NULL,
-            `refresh_only_stock` tinyint(4) NOT NULL
-          ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+          `active` tinyint(4) NOT NULL,
+          `refresh_only_stock` tinyint(4) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;    
     ");
   }
 
@@ -223,16 +223,67 @@ class ModelPluggtoPluggto extends Model{
       'model' => $product->Product->name,
       'quantity' => $product->Product->quantity,
       'price' => $product->Product->price,
-      'weight' => $product->Product->weight,
-      'length' => $product->Product->length,
-      'width' => $product->Product->width,
-      'height' => $product->Product->height,
-      'status' => $product->Product->status,
+      'weight' => $product->Product->dimension->weight,
+      'length' => $product->Product->dimension->length,
+      'width' => $product->Product->dimension->width,
+      'height' => $product->Product->dimension->height,
+      'status' => 1,
+      'product_description' => [
+        1 => [
+          'name' => $product->Product->name,
+          'description' => $product->Product->short_description,
+          'tag' => '',
+          'meta_title' => '',
+          'meta_description' => '',
+          'meta_keyword' => '',
+        ]
+      ],
+      'product_store' => [
+        0
+      ],
+      'product_category' => [
+        $this->formatObjectCategoryToList($product->Product->categories)
+      ]
     ];
 
     $this->load->model('catalog/product');
     $this->model_catalog_product->addProduct($data);
+
     exit;
+  }
+
+  public function formatObjectCategoryToList($categoriesObject) {
+    $response = [];
+    
+    foreach ($categoriesObject as $i => $category) {
+      $auxiliar[] = $category->name;
+    }
+
+    $response = $this->findCategoriesInOpenCart($auxiliar);
+
+    return $response;
+  }
+
+  public function findCategoriesInOpenCart($namesOfCategories) {
+    $this->load->model('catalog/category');
+    $categories = $this->prepareDataCategoryToArraySearch($this->model_catalog_category->getCategories());
+    echo '<pre>';print_r($categories);
+
+    foreach ($namesOfCategories as $i => $names) {
+      echo '<pre>';print_r($names);
+      $key = array_search($names, $categories);
+      print_r($key);exit;
+    }
+  }
+
+  public function prepareDataCategoryToArraySearch($categoriesOpenCart) {
+    $response = [];
+
+    foreach ($categoriesOpenCart as $i => $category) {
+      $response[$category['category_id']] = $category['name'];
+    }
+    
+    return $response;
   }
 
   public function productToPluggto($product_id) {
