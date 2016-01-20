@@ -36,6 +36,15 @@ class ControllerModulePluggTo extends Controller {
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
+  public function offAllProductsWithPluggTo() {
+    $this->load->model('pluggto/pluggto');
+
+    $this->model_pluggto_pluggto->offAllProductsWithPluggTo();
+
+    $this->session->data['alerts'] = 'Todos os produtos foram desvinculados!';
+    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+  }
+
   public function importAllProductsToOpenCart() {
     $this->load->model('pluggto/pluggto');
     $result = $this->model_pluggto_pluggto->getProducts();
@@ -46,6 +55,22 @@ class ControllerModulePluggTo extends Controller {
 
     $this->session->data['alerts'] = 'Importação feita com sucesso!';
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+  }
+
+  public function verifyStockAndPriceProducts() {
+    $this->load->model('pluggto/pluggto');
+    $this->load->model('catalog/product');
+
+    $products_pluggto_relations = $this->model_pluggto_pluggto->getAllPluggToProductRelactionsOpenCart();
+
+    foreach ($products_pluggto_relations->rows as $i => $product){
+      $pluggto_product_response = $this->model_pluggto_pluggto->getProduct($product->pluggto_product_id);
+      $opencart_product_response = $this->model_catalog_product->getProduct($product->opencart_product_id);
+      echo '<pre>';print_r($product);exit;
+      if ($pluggto_product_response->result[0]->Product->quantity != 12){
+        echo 'oi';
+      }
+    }
   }
 
   public function index() {
@@ -102,6 +127,9 @@ class ControllerModulePluggTo extends Controller {
     
     $data['action_products'] = $this->url->link('module/pluggto/saveSettingsProductsSynchronization', 'token=' . $this->session->data['token'], 'SSL');
     $data['link_import_all_products_to_opencart'] = $this->url->link('module/pluggto/importAllProductsToOpenCart', 'token=' . $this->session->data['token'], 'SSL');
+    $data['link_off_all_products_pluggto'] = $this->url->link('module/pluggto/offAllProductsWithPluggTo', 'token=' . $this->session->data['token'], 'SSL');
+    $data['link_verify_stock_and_price_products'] = $this->url->link('module/pluggto/verifyStockAndPriceProducts', 'token=' . $this->session->data['token'], 'SSL');
+
     $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 

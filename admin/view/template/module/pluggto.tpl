@@ -127,13 +127,14 @@
                             <option value="0" <?php echo ($settingsProductsSynchronization->row['refresh_only_stock'] == 0) ? 'selected' : ''; ?> >Não</option>
                           </select>
                           <br>
-                          <small>Caso opção seja Sim, apenas estoque será gravado no OpenCart, demais atributos (Foto,Preço,Sku...) só será enviado do OpenCart para o Plugg.To</small>
+                          <small>Caso opção seja Sim, apenas estoque será gravado no OpenCart, demais atributos (Foto,Preço,Sku...) só será enviado do OpenCart para o Plugg.To</small><br>
+                          <small><strong>OBS: Nao e possivel importar os produtos casos a opcao sim esteja ativa.</strong></small>
                         </div>
                       </div>
                       <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-name">Verificar divergencia de Estoque e Preço</label>
                         <div class="col-sm-10">
-                          <a href="javascript:;" id="estoque-preco" class="btn btn-info">Verificar divergencia de Estoque e Preço</a>
+                          <a href="<?php echo $link_verify_stock_and_price_products; ?>" id="estoque-preco" class="btn btn-info">Verificar divergencia de Estoque e Preço</a>
                         </div>
                       </div>
                       <div class="form-group">
@@ -145,13 +146,13 @@
                       <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-name">Exportação de todos os produtos para o PluggTo</label>
                         <div class="col-sm-10">
-                          <a href="javascript:;" id="export-products" class="btn btn-danger">Exportação de todos os produtos para o PluggTo</a>
+                          <a href="" id="export-products" class="btn btn-danger">Exportação de todos os produtos para o PluggTo</a>
                         </div>
                       </div>
                       <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-name">Desvincular todos produtos com o Plugg.To</label>
                         <div class="col-sm-10">
-                          <a href="javascript:;" id="off-all-products" class="btn btn-primary">Desvincular todos produtos com o Plugg.To</a>
+                          <a href="<?php echo $link_off_all_products_pluggto; ?>" id="off-all-products" class="btn btn-primary">Desvincular todos produtos com o Plugg.To</a>
                         </div>
                       </div>
                       </div>

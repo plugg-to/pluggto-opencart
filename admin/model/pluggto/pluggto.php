@@ -16,6 +16,19 @@ class ModelPluggtoPluggto extends Model{
           `active` tinyint(4) NOT NULL,
           `refresh_only_stock` tinyint(4) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;    
+
+        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "`pluggto_products_relation_opencart_products` (
+        `id` int(11) NOT NULL,
+          `pluggto_product_id` varchar(255) NOT NULL,
+          `opencart_product_id` int(11) NOT NULL,
+          `active` tinyint(4) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+        ALTER TABLE `" . DB_PREFIX . "`pluggto_products_relation_opencart_products`
+         ADD PRIMARY KEY (`id`);
+
+        ALTER TABLE `" . DB_PREFIX . "`pluggto_products_relation_opencart_products`
+        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
     ");
   }
 
@@ -218,34 +231,73 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function prepareToSaveInOpenCart($product) {
-    $data = [
-      'sku' => $product->Product->sku,
-      'model' => $product->Product->name,
-      'quantity' => $product->Product->quantity,
-      'price' => $product->Product->price,
-      'weight' => $product->Product->dimension->weight,
-      'length' => $product->Product->dimension->length,
-      'width' => $product->Product->dimension->width,
-      'height' => $product->Product->dimension->height,
-      'status' => 1,
-      'product_description' => [
-        1 => [
-          'name' => $product->Product->name,
-          'description' => $product->Product->short_description,
-          'tag' => '',
-          'meta_title' => '',
-          'meta_description' => '',
-          'meta_keyword' => '',
-        ]
-      ],
-      'product_store' => [
-        0
-      ],
-      'product_category' => $this->formatObjectCategoryToList($product->Product->categories)
-    ];
+    $synchronizationSettings = $this->getSettingsProductsSynchronization();
+
+    if (!$synchronizationSettings->row['refresh_only_stock']) {
+      $data = [
+        'sku' => $product->Product->sku,
+        'model' => $product->Product->name,
+        'price' => $product->Product->price,
+        'weight' => $product->Product->dimension->weight,
+        'length' => $product->Product->dimension->length,
+        'width' => $product->Product->dimension->width,
+        'height' => $product->Product->dimension->height,
+        'status' => 1,
+        'product_description' => [
+          1 => [
+            'name' => $product->Product->name,
+            'description' => $product->Product->short_description,
+            'tag' => '',
+            'meta_title' => '',
+            'meta_description' => '',
+            'meta_keyword' => '',
+          ]
+        ],
+        'product_store' => [
+          0
+        ],
+        'product_category' => $this->formatObjectCategoryToList($product->Product->categories)
+      ];
+    }
+
+    $data['quantity'] = $product->Product->quantity;
 
     $this->load->model('catalog/product');
-    $this->model_catalog_product->addProduct($data);
+
+    if (!$this->existProductInOpenCart($product->Product->id) && !$synchronizationSettings->row['refresh_only_stock']){
+      $product_id = $this->model_catalog_product->addProduct($data);     
+      return $this->createPluggToProductRelactionOpenCartPluggTo($product->Product->id, $product_id);
+    }
+
+    if ($synchronizationSettings->row['refresh_only_stock']) {
+      $product_id = $this->existProductInOpenCart($product->Product->id);
+      return $this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = '" . $this->db->escape($data['quantity']) . "' WHERE product_id = '" . (int)$product_id . "'");
+    }
+
+    return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
+  }
+
+  public function offAllProductsWithPluggTo() {
+    $this->db->query("UPDATE " . DB_PREFIX . "pluggto_products_relation_opencart_products SET active = 0");
+    return true;
+  }
+
+  public function createPluggToProductRelactionOpenCartPluggTo($pluggto_product_id, $opencart_product_id) {
+    return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
+  }
+
+  public function getAllPluggToProductRelactionsOpenCart() {
+    return $this->db->query("SELECT * FROM  " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1");
+  }
+
+  public function existProductInOpenCart($id) {
+    $sql = "SELECT * FROM `" . DB_PREFIX . "pluggto_products_relation_opencart_products` WHERE `pluggto_product_id` = '" . $id . "' AND `active` = 1";
+    $response = $this->db->query($sql);
+
+    if (empty($response->rows))
+      return false;
+
+    return $response->row['opencart_product_id'];
   }
 
   public function formatObjectCategoryToList($categoriesObject) {
