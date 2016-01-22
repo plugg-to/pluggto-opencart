@@ -41,13 +41,13 @@
     <div class="row" style="width: 97%;  margin-left: 15px;">
       <ul class="nav nav-tabs">
           <li class="nav active">
-              <a href="#A" data-toggle="tab">Keys Integration</a>
+            <a href="#A" data-toggle="tab">Keys Integration</a>
           </li>
           <li class="nav">
-              <a href="#B" data-toggle="tab">Settings</a>
+            <a href="#B" data-toggle="tab">Settings</a>
           </li>
           <li>
-              <a href="#D" data-toggle="tab">Setting Product</a>
+            <a href="#C" data-toggle="tab">Setting Product</a>
           </li>
       </ul>
       <!-- Tab panes -->
@@ -91,6 +91,117 @@
                       <div class="form-group" style="float: right; padding-right: 15px;">
                         <button type="submit" class="btn btn-success">Salvar</button>
                         <a href="javascript:validateDataInPluggTo();" class="btn btn-info">Verificar Dados</a>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-pane fade" id="C">            
+            <div class="row" style="width: 99%;">
+              <div class="col-md-12" style="margin-left: 20px;">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h3 class="panel-title">
+                      <i class="fa fa-pencil"></i> Atrelamento de Campos Basicos (Produto)
+                    </h3>
+                  </div>
+                  <div class="panel-body">
+                    <form action="<?php echo $action_basic_fields; ?>" method="post" enctype="multipart/form-data" id="form-banner" class="form-horizontal">
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Largura:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Altura:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Comprimento:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Peso:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Marca/Fabricante:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">EAN:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">NBM:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">NCM:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">Descriçao:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-sm-2 control-label" for="input-name">ISBN:</label>
+                        <div class="col-sm-10">
+                          <select name="active" class="form-control">
+                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="form-group" style="float: right; padding-right: 15px;">
+                        <button type="submit" class="btn btn-success">Salvar</button>
                       </div>
                     </form>
                   </div>
@@ -146,7 +257,7 @@
                       <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-name">Exportação de todos os produtos para o PluggTo</label>
                         <div class="col-sm-10">
-                          <a href="" id="export-products" class="btn btn-danger">Exportação de todos os produtos para o PluggTo</a>
+                          <a href="<?php echo $link_export_all_products_to_pluggto; ?>" id="export-products" class="btn btn-danger">Exportação de todos os produtos para o PluggTo</a>
                         </div>
                       </div>
                       <div class="form-group">
@@ -165,7 +276,6 @@
               </div>
             </div>
           </div>
-
       </div>
     </div>
   </div>

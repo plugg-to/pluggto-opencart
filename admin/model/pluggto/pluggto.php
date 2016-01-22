@@ -173,7 +173,7 @@ class ModelPluggtoPluggto extends Model{
           $value = "&".$key."=".$value;
         }
         $i++;
-        $url = $url.$value;
+        $url = $url . $value;
       }
 
       curl_setopt_array($ch, array(
@@ -214,7 +214,17 @@ class ModelPluggtoPluggto extends Model{
     $url = "http://api.plugg.to/products/".$id;
     $method = "put";
     $accesstoken = $this->getAccesstoken();
-    $url = $url."?access_token=".$accesstoken;
+    $url = $url . "?access_token=" . $accesstoken;
+    $params = $product;
+    $data = $this->sendRequest($method, $url, $params);
+    return $data;
+  }
+
+  public function updateStockPluggTo($product, $id) {
+    $url = "http://api.plugg.to/products/" . $id . "/stock";
+    $method = "put";
+    $accesstoken = $this->getAccesstoken();
+    $url = $url . "?access_token=" . $accesstoken;
     $params = $product;
     $data = $this->sendRequest($method, $url, $params);
     return $data;

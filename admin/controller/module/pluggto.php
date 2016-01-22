@@ -12,13 +12,9 @@ class ControllerModulePluggTo extends Controller {
     $this->model_pluggto_pluggto->uninstall();
   }
 
-  public function check() {
-    $this->load->model('pluggto/pluggto');
-
-    $this->model_pluggto_pluggto->checkProducts($this->model_pluggto_pluggto->getProductsTable());
-    $result = $this->model_pluggto_pluggto->checkProducts($this->model_pluggto_pluggto->getProductsTable());
-  }
-
+  /**
+  * Salvar configuraçoes de sicronizacao
+  **/
   public function saveSettingsProductsSynchronization() {
     $this->load->model('pluggto/pluggto');
 
@@ -36,6 +32,9 @@ class ControllerModulePluggTo extends Controller {
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
+  /**
+  * Desligar todos o relacionamento da opencart com o pluggto
+  **/
   public function offAllProductsWithPluggTo() {
     $this->load->model('pluggto/pluggto');
 
@@ -45,6 +44,9 @@ class ControllerModulePluggTo extends Controller {
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
+  /**
+  * Importar todos os produtos do pluggto para o opencart
+  **/
   public function importAllProductsToOpenCart() {
     $this->load->model('pluggto/pluggto');
     $result = $this->model_pluggto_pluggto->getProducts();
@@ -57,6 +59,10 @@ class ControllerModulePluggTo extends Controller {
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
+  /**
+  * Verificar divegencia de estoque e preços dos produtos
+  * Caso esteja divergente os valores do opencart sao considerados e enviados para o pluggto
+  **/
   public function verifyStockAndPriceProducts() {
     $this->load->model('pluggto/pluggto');
     $this->load->model('catalog/product');
@@ -64,11 +70,24 @@ class ControllerModulePluggTo extends Controller {
     $products_pluggto_relations = $this->model_pluggto_pluggto->getAllPluggToProductRelactionsOpenCart();
 
     foreach ($products_pluggto_relations->rows as $i => $product){
-      $pluggto_product_response = $this->model_pluggto_pluggto->getProduct($product->pluggto_product_id);
-      $opencart_product_response = $this->model_catalog_product->getProduct($product->opencart_product_id);
-      echo '<pre>';print_r($product);exit;
-      if ($pluggto_product_response->result[0]->Product->quantity != 12){
-        echo 'oi';
+      $pluggto_product_response = $this->model_pluggto_pluggto->getProduct($product['pluggto_product_id']);
+      $opencart_product_response = $this->model_catalog_product->getProduct($product['opencart_product_id']);
+
+      if (isset($pluggto_product_response) && $pluggto_product_response->Product->quantity != $opencart_product_response['quantity']){
+        $data = [
+          'action' => 'update',
+          'quantity' => $opencart_product_response['quantity']
+        ];
+
+        $response = $this->model_pluggto_pluggto->updateStockPluggTo($data, $product['pluggto_product_id']);
+      }
+      
+      if (isset($pluggto_product_response) && $pluggto_product_response->Product->price != $opencart_product_response['price']){
+        $data = [
+          'price' => $opencart_product_response['price']
+        ];
+
+        $response = $this->model_pluggto_pluggto->updateTo($data, $product['pluggto_product_id']);
       }
     }
   }
