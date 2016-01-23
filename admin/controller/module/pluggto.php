@@ -90,6 +90,34 @@ class ControllerModulePluggTo extends Controller {
         $response = $this->model_pluggto_pluggto->updateTo($data, $product['pluggto_product_id']);
       }
     }
+
+    $this->session->data['alerts'] = 'Verificação feita com sucesso!';
+    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+  }
+
+  public function exportAllProductsToPluggTo() {
+    $this->load->model('catalog/product');
+    $this->load->model('pluggto/pluggto');
+    
+    $products_opencart = $this->model_catalog_product->getProducts();
+
+    foreach ($products_opencart as $product) {
+      $data = [
+        'name' => $product['name'],
+        'sku' => $product['sku'],
+        'price' => $product['price'],
+        'quantity' => $product['quantity']
+      ];
+
+      $response = $this->model_pluggto_pluggto->createTo($data);
+
+      if (isset($response->Product->id)) {
+        $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
+      }
+    }
+
+    $this->session->data['alerts'] = 'Exportação feita com sucesso!';
+    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   public function index() {
@@ -148,6 +176,7 @@ class ControllerModulePluggTo extends Controller {
     $data['link_import_all_products_to_opencart'] = $this->url->link('module/pluggto/importAllProductsToOpenCart', 'token=' . $this->session->data['token'], 'SSL');
     $data['link_off_all_products_pluggto'] = $this->url->link('module/pluggto/offAllProductsWithPluggTo', 'token=' . $this->session->data['token'], 'SSL');
     $data['link_verify_stock_and_price_products'] = $this->url->link('module/pluggto/verifyStockAndPriceProducts', 'token=' . $this->session->data['token'], 'SSL');
+    $data['link_export_all_products_to_pluggto'] = $this->url->link('module/pluggto/exportAllProductsToPluggTo', 'token=' . $this->session->data['token'], 'SSL');
 
     $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
