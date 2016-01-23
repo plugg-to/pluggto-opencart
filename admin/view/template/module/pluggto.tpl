@@ -101,112 +101,323 @@
 
           <div class="tab-pane fade" id="C">            
             <div class="row" style="width: 99%;">
-              <div class="col-md-12" style="margin-left: 20px;">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h3 class="panel-title">
-                      <i class="fa fa-pencil"></i> Atrelamento de Campos Basicos (Produto)
-                    </h3>
+              <form action="<?php echo $action_basic_fields; ?>" method="post" enctype="multipart/form-data" id="form-banner" class="form-horizontal">
+                <div class="col-md-12" style="margin-left: 20px;">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h3 class="panel-title">
+                        <i class="fa fa-pencil"></i> Atrelamento de Campos Basicos (Produto)
+                      </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Largura:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[width]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Altura:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[height]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Comprimento:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[length]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Peso:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[weight]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Marca/Fabricante:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[brand]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">EAN:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[ean]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">NBM:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[nbm]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">NCM:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[ncm]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Descriçao:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[description]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">ISBN:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[isbn]" class="form-control">
+                              <option value="width">Largura</option>
+                              <option value="height">Altura</option>
+                              <option value="length">Comprimento</option>
+                              <option value="weight">Peso</option>
+                              <option value="brand">Fabricante</option>
+                              <option value="ean">EAN</option>
+                              <option value="nbm">NBM</option>
+                              <option value="ncm">NCM</option>
+                              <option value="description">Descriçao</option>
+                              <option value="isbn">ISBN</option>
+                            </select>
+                          </div>
+                        </div>
+                    </div>
                   </div>
-                  <div class="panel-body">
-                    <form action="<?php echo $action_basic_fields; ?>" method="post" enctype="multipart/form-data" id="form-banner" class="form-horizontal">
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">Largura:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h3 class="panel-title">
+                        <i class="fa fa-pencil"></i> Atrelamento de Status de Pagamento
+                      </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Pendentes:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[payment_pendent]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Aprovados:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[payment_approved]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Faturados:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[payment_invoiced]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos a serem enviados:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[payment_shipping]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Status para pagamentos enviados:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[payment_delivered]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Cancelados:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[payment_canceled]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Status para pagamento em Revisão:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[payment_review]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h3 class="panel-title">
+                        <i class="fa fa-pencil"></i> Atrelamento de Metodos de Entrega
+                      </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Entrega padrão:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[shipping_default]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Entrega Expressa:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[shipping_express]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Entrega Economica:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[shipping_economic]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Entrega Agendada:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[shipping_scheduled]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Retirar na loja:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[shipping_shop]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Entrega Garantida:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[shipping_guaranteed]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Entrega na hora:</label>
+                          <div class="col-sm-10">
+                            <select name="fields[shipping_hour]" class="form-control">
+                              <option value="width">Largura</option>
+                            </select>
+                          </div>
                         </div>
                       </div>
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">Altura:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">Comprimento:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">Peso:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">Marca/Fabricante:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">EAN:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">NBM:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">NCM:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">Descriçao:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group">
-                        <label class="col-sm-2 control-label" for="input-name">ISBN:</label>
-                        <div class="col-sm-10">
-                          <select name="active" class="form-control">
-                            <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                            <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="form-group" style="float: right; padding-right: 15px;">
-                        <button type="submit" class="btn btn-success">Salvar</button>
-                      </div>
-                    </form>
+                    </div>
+                  </div>
+                  <div class="form-group" style="float: right; padding-right: 15px;">
+                    <button type="submit" class="btn btn-success">Salvar</button>
                   </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
 

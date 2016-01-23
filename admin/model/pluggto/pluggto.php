@@ -17,6 +17,13 @@ class ModelPluggtoPluggto extends Model{
           `refresh_only_stock` tinyint(4) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;    
 
+        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "`pluggto_linkage_fields` (
+        `id` int(11) NOT NULL,
+          `field_opencart` varchar(50) NOT NULL,
+          `field_pluggto` varchar(50) NOT NULL,
+          `active` tinyint(4) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
         CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "`pluggto_products_relation_opencart_products` (
         `id` int(11) NOT NULL,
           `pluggto_product_id` varchar(255) NOT NULL,
@@ -375,6 +382,19 @@ class ModelPluggtoPluggto extends Model{
   public function getSettingsProductsSynchronization(){
     $sql = "SELECT * FROM " . DB_PREFIX . "settings_products_synchronization ORDER BY id DESC LIMIT 1";
     return $this->db->query($sql);    
+  }
+
+  public function saveField($field_opencart, $field_pluggto){
+    $sql = "SELECT * FROM `" . DB_PREFIX . "pluggto_linkage_fields` WHERE field_opencart = '" . $field_opencart . "' AND active = 1";
+    $responseField = $this->db->query($sql);
+    
+    if ($responseField->num_rows <= 0) {
+      $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_linkage_fields` (field_opencart, field_pluggto, active) VALUES ('" . $field_opencart . "', '" . $field_pluggto . "', 1)";
+      return $this->db->query($sql);
+    }
+
+    $sql = "UPDATE `" . DB_PREFIX . "pluggto_linkage_fields` SET field_opencart = '" . $field_opencart . "', field_pluggto = '" . $field_pluggto . "' WHERE id = '" . $responseField->row['id'] . "' ";
+    return $this->db->query($sql);
   }
 
 }

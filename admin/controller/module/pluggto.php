@@ -120,6 +120,20 @@ class ControllerModulePluggTo extends Controller {
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
+  public function saveFieldsLinkage(){
+    $this->load->model('pluggto/pluggto');
+
+    $fields = $this->request->post['fields'];
+
+    foreach ($fields as $key => $value) {
+      $this->model_pluggto_pluggto->saveField($key, $value);
+    }
+
+    $this->session->data['alerts'] = 'Atrelamento salvo com sucesso!';
+
+    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+  }
+
   public function index() {
     $this->template = 'module/pluggto.tpl';
     $this->language->load('module/pluggto');
@@ -177,6 +191,7 @@ class ControllerModulePluggTo extends Controller {
     $data['link_off_all_products_pluggto'] = $this->url->link('module/pluggto/offAllProductsWithPluggTo', 'token=' . $this->session->data['token'], 'SSL');
     $data['link_verify_stock_and_price_products'] = $this->url->link('module/pluggto/verifyStockAndPriceProducts', 'token=' . $this->session->data['token'], 'SSL');
     $data['link_export_all_products_to_pluggto'] = $this->url->link('module/pluggto/exportAllProductsToPluggTo', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
 
     $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
