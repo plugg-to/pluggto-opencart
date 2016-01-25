@@ -51,6 +51,7 @@ class ControllerModulePluggTo extends Controller {
     $this->load->model('pluggto/pluggto');
     $result = $this->model_pluggto_pluggto->getProducts();
 
+
     foreach ($result->result as $i => $product) {
       $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
     }
@@ -101,14 +102,19 @@ class ControllerModulePluggTo extends Controller {
     
     $products_opencart = $this->model_catalog_product->getProducts();
 
+    $productPrepare = [];
+    $data = [];
+
     foreach ($products_opencart as $product) {
       $data = [
-        'name' => $product['name'],
-        'sku' => $product['sku'],
-        'price' => $product['price'],
-        'quantity' => $product['quantity']
+        'name'       => $product['name'],
+        'sku'        => $product['sku'],
+        'price'      => $product['price'],
+        'quantity'   => $product['quantity']
       ];
 
+      //array_push($data, $productPrepare);
+      print_r($data);
       $response = $this->model_pluggto_pluggto->createTo($data);
 
       if (isset($response->Product->id)) {

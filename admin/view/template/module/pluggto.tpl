@@ -293,7 +293,12 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Pendentes:</label>
                           <div class="col-sm-10">
                             <select name="fields[payment_pendent]" class="form-control">
-                              <option value="width">Largura</option>
+                              <option value="pending">Pendente</option>
+                              <option value="processing">Processando</option>
+                              <option value="complete">Completar</option>
+                              <option value="closed">Encerrado</option>
+                              <option value="canceled">Cancelado</option>
+                              <option value="holded">On Hold</option>
                             </select>
                           </div>
                         </div>
@@ -301,7 +306,12 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Aprovados:</label>
                           <div class="col-sm-10">
                             <select name="fields[payment_approved]" class="form-control">
-                              <option value="width">Largura</option>
+                              <option value="pending">Pendente</option>
+                              <option value="processing">Processando</option>
+                              <option value="complete">Completar</option>
+                              <option value="closed">Encerrado</option>
+                              <option value="canceled">Cancelado</option>
+                              <option value="holded">On Hold</option>
                             </select>
                           </div>
                         </div>
@@ -309,7 +319,12 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Faturados:</label>
                           <div class="col-sm-10">
                             <select name="fields[payment_invoiced]" class="form-control">
-                              <option value="width">Largura</option>
+                              <option value="pending">Pendente</option>
+                              <option value="processing">Processando</option>
+                              <option value="complete">Completar</option>
+                              <option value="closed">Encerrado</option>
+                              <option value="canceled">Cancelado</option>
+                              <option value="holded">On Hold</option>
                             </select>
                           </div>
                         </div>
@@ -317,7 +332,12 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos a serem enviados:</label>
                           <div class="col-sm-10">
                             <select name="fields[payment_shipping]" class="form-control">
-                              <option value="width">Largura</option>
+                              <option value="pending">Pendente</option>
+                              <option value="processing">Processando</option>
+                              <option value="complete">Completar</option>
+                              <option value="closed">Encerrado</option>
+                              <option value="canceled">Cancelado</option>
+                              <option value="holded">On Hold</option>
                             </select>
                           </div>
                         </div>
@@ -325,7 +345,12 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para pagamentos enviados:</label>
                           <div class="col-sm-10">
                             <select name="fields[payment_delivered]" class="form-control">
-                              <option value="width">Largura</option>
+                              <option value="pending">Pendente</option>
+                              <option value="processing">Processando</option>
+                              <option value="complete">Completar</option>
+                              <option value="closed">Encerrado</option>
+                              <option value="canceled">Cancelado</option>
+                              <option value="holded">On Hold</option>
                             </select>
                           </div>
                         </div>
@@ -333,7 +358,12 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Cancelados:</label>
                           <div class="col-sm-10">
                             <select name="fields[payment_canceled]" class="form-control">
-                              <option value="width">Largura</option>
+                              <option value="pending">Pendente</option>
+                              <option value="processing">Processando</option>
+                              <option value="complete">Completar</option>
+                              <option value="closed">Encerrado</option>
+                              <option value="canceled">Cancelado</option>
+                              <option value="holded">On Hold</option>
                             </select>
                           </div>
                         </div>
@@ -341,7 +371,12 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para pagamento em Revisão:</label>
                           <div class="col-sm-10">
                             <select name="fields[payment_review]" class="form-control">
-                              <option value="width">Largura</option>
+                              <option value="pending">Pendente</option>
+                              <option value="processing">Processando</option>
+                              <option value="complete">Completar</option>
+                              <option value="closed">Encerrado</option>
+                              <option value="canceled">Cancelado</option>
+                              <option value="holded">On Hold</option>
                             </select>
                           </div>
                         </div>
