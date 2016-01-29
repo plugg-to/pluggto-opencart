@@ -31,6 +31,17 @@ class ModelPluggtoPluggto extends Model{
           `active` tinyint(4) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+        CREATE TABLE `" . DB_PREFIX . "`pluggto_notifications` (
+          `id` int(11) NOT NULL,
+          `resource_id` varchar(100) NOT NULL,
+          `type` varchar(20) DEFAULT NULL,
+          `action` varchar(50) DEFAULT NULL,
+          `date_created` datetime DEFAULT NULL,
+          `date_modified` datetime DEFAULT NULL,
+          `status` tinyint(4) DEFAULT NULL,
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
         ALTER TABLE `" . DB_PREFIX . "`pluggto_products_relation_opencart_products`
          ADD PRIMARY KEY (`id`);
 
