@@ -219,11 +219,17 @@ class ModelPluggtoPluggto extends Model{
 
   public function updateTo($product, $id) {
     $url = "http://api.plugg.to/products/".$id;
+    
     $method = "put";
+    
     $accesstoken = $this->getAccesstoken();
+    
     $url = $url . "?access_token=" . $accesstoken;
+    
     $params = $product;
+    
     $data = $this->sendRequest($method, $url, $params);
+    
     return $data;
   }
 
@@ -305,6 +311,10 @@ class ModelPluggtoPluggto extends Model{
 
   public function getAllPluggToProductRelactionsOpenCart() {
     return $this->db->query("SELECT * FROM  " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1");
+  }
+
+  public function getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id_opencart) {
+    return $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1 AND opencart_product_id = " . $product_id_opencart . "");
   }
 
   public function existProductInOpenCart($id) {

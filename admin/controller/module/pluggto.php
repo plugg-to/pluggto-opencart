@@ -234,11 +234,17 @@ class ControllerModulePluggTo extends Controller {
         'name'       => $product['name'],
         'sku'        => $product['sku'],
         'price'      => $product['price'],
-        'quantity'   => $product['quantity']
+        'quantity'   => $product['quantity'],
+        'variations' => $this->getVariationsToSaveInOpenCart($product['product_id'])
       ];
+      
+      $existProduct = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product['product_id']);
+      
+      if ($existProduct->num_rows > 0) {
+        $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
+        continue;
+      }
 
-      //array_push($data, $productPrepare);
-      print_r($data);
       $response = $this->model_pluggto_pluggto->createTo($data);
 
       if (isset($response->Product->id)) {
@@ -249,6 +255,18 @@ class ControllerModulePluggTo extends Controller {
     $this->session->data['alerts'] = 'Exportação feita com sucesso!';
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
+
+  public function getVariationsToSaveInOpenCart($product_id) {
+    $options = $this->model_catalog_product->getProductOptions($product_id);
+
+    $response = [];
+    foreach ($options as $i => $option) {
+      $response[] = [
+        ''
+      ];
+    }
+  }
+
 
   public function saveFieldsLinkage(){
     $this->load->model('pluggto/pluggto');
@@ -401,7 +419,6 @@ class ControllerModulePluggTo extends Controller {
     $this->response->setOutput($this->load->view('module/pluggto_fields.tpl', $data));
   }
 
-
   protected function validate() {
     if (!$this->user->hasPermission('modify', 'module/store')) {
       $this->error['warning'] = $this->language->get('error_permission');
@@ -409,5 +426,6 @@ class ControllerModulePluggTo extends Controller {
 
     return !$this->error;
   }
+
 }
 ?>
