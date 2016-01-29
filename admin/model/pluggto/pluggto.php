@@ -18,7 +18,7 @@ class ModelPluggtoPluggto extends Model{
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;    
 
         CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "`pluggto_linkage_fields` (
-        `id` int(11) NOT NULL,
+          `id` int(11) NOT NULL,
           `field_opencart` varchar(50) NOT NULL,
           `field_pluggto` varchar(50) NOT NULL,
           `active` tinyint(4) NOT NULL
@@ -323,6 +323,9 @@ class ModelPluggtoPluggto extends Model{
     foreach ($categoriesObject as $i => $category) {
       $auxiliar[] = $category->name;
     }
+
+    if (empty($auxiliar))
+      return false;
 
     $response = $this->findCategoriesInOpenCart($auxiliar);
 

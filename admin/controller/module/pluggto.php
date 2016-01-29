@@ -171,9 +171,10 @@ class ControllerModulePluggTo extends Controller {
   * Importar todos os produtos do pluggto para o opencart
   **/
   public function importAllProductsToOpenCart() {
+    error_reporting(0);
+
     $this->load->model('pluggto/pluggto');
     $result = $this->model_pluggto_pluggto->getProducts();
-
 
     foreach ($result->result as $i => $product) {
       $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
