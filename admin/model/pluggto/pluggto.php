@@ -397,4 +397,22 @@ class ModelPluggtoPluggto extends Model{
     return $this->db->query($sql);
   }
 
+  public function getAllDefaultsFields() {
+    $sql = "SELECT * FROM " . DB_PREFIX . "pluggto_linkage_fields WHERE ACTIVE = 1";
+    return $this->processDataToListTypeKeyAndValue($this->db->query($sql));    
+  }
+
+  public function processDataToListTypeKeyAndValue($data) {
+    if ($data->num_rows <= 0) 
+      return false;
+
+    $response = [];
+
+    foreach ($data->rows as $i => $value) {
+      $response[$value['field_opencart']] = $value['field_pluggto'];
+    }
+
+    return $response;
+  }
+
 }
