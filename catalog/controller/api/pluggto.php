@@ -19,10 +19,54 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronGetProductsAndOrders() {
-		$num_orders_pluggto = $this->saveOrdersInPluggTo($this->existNewOrders());
+		$num_orders_pluggto  = $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
+		$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
 
 		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode('orders_created_pluggto' => $num_orders_pluggto));
+		$this->response->setOutput(json_encode(['orders_created_pluggto' => $num_orders_pluggto]));
+	}
+
+	public function existNewOrdersOpenCart() {
+    	$this->load->model('pluggto/pluggto');
+
+    	$response  = [];
+		$allOrders = $this->model_pluggto_pluggto->getOrders();
+
+		foreach ($allOrders->rows as $order) {
+			if ($this->model_pluggto_pluggto->orderExistInPluggTo($order['order_id'])) {
+				continue;
+			}
+
+			$response[] = $order;
+		}
+
+		return $response;
+	}
+
+	public function existNewOrdersPluggTo() {
+		$this->load->model('pluggto/pluggto');
+
+		$response = [];
+
+		$allOrders = $this->model_pluggto_pluggto->getOrdersPluggTo();
+
+		if (!$allOrders->result) {
+			return false;
+		}
+
+		foreach ($allOrders->result as $order) {
+			if ($this->model_pluggto_pluggto->orderExistInPluggTo($order->Order->external)) {
+				continue;
+			}
+
+			$response[] = $order;
+		}
+
+		return $response;
+	}
+
+	public function saveOrdersInOpenCart() {
+		return true;
 	}
 
 	public function saveOrdersInPluggTo($orders) {
@@ -74,23 +118,6 @@ class ControllerApiPluggto extends Controller {
 	     		$cont++;
      		}
     	}
-	}
-
-	public function existNewOrders() {
-    	$this->load->model('pluggto/pluggto');
-
-    	$response  = [];
-		$allOrders = $this->model_pluggto_pluggto->getOrders();
-
-		foreach ($allOrders->rows as $order) {
-			if ($this->model_pluggto_pluggto->orderExistInPluggTo($order['order_id'])) {
-				continue;
-			}
-
-			$response[] = $order;
-		}
-
-		return $response;
 	}
 
 }
