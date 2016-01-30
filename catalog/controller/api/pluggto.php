@@ -1,8 +1,6 @@
 <?php
 class ControllerApiPluggto extends Controller {
 	public function index() {
-		$json = ['is_gay' => $this->isGay('victor gazotti')];
-
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
 			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
@@ -11,7 +9,7 @@ class ControllerApiPluggto extends Controller {
 		}
 
 		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($json));
+		$this->response->setOutput(json_encode('$json'));
 	}
 	public function teste($name) {
 		$this->response->addHeader('Content-Type: application/json');
