@@ -32,8 +32,9 @@ class ModelPluggtoPluggto extends Model{
           `active` tinyint(4) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-        CREATE TABLE `" . DB_PREFIX . "pluggto_notifications` (
-          `id` int(11) NOT NULL,
+
+        CREATE TABLE `" . DB_PREFIX . "`pluggto_notifications` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
           `resource_id` varchar(100) NOT NULL,
           `type` varchar(20) DEFAULT NULL,
           `action` varchar(50) DEFAULT NULL,
@@ -41,7 +42,7 @@ class ModelPluggtoPluggto extends Model{
           `date_modified` datetime DEFAULT NULL,
           `status` tinyint(4) DEFAULT NULL,
           PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+        ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
         CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "order_relation_pluggto_and_opencart` (
           `id` int(11) NOT NULL,
