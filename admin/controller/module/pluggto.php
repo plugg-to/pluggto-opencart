@@ -427,5 +427,6 @@ class ControllerModulePluggTo extends Controller {
     return !$this->error;
   }
 
+
 }
 ?>
