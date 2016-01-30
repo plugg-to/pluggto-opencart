@@ -67,8 +67,8 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
-	public function saveOrdersInOpenCart() {
-		return true;
+	public function saveOrdersInOpenCart($orders) {
+		echo '<pre>';print_r($orders);exit;
 	}
 
 	public function saveOrdersInPluggTo($orders) {
