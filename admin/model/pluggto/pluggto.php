@@ -1,4 +1,5 @@
 <?php
+
 class ModelPluggtoPluggto extends Model{
  
   public function install() {
@@ -17,19 +18,20 @@ class ModelPluggtoPluggto extends Model{
           `refresh_only_stock` tinyint(4) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;    
 
-        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "`pluggto_linkage_fields` (
+        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_linkage_fields` (
           `id` int(11) NOT NULL,
           `field_opencart` varchar(50) NOT NULL,
           `field_pluggto` varchar(50) NOT NULL,
           `active` tinyint(4) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "`pluggto_products_relation_opencart_products` (
-        `id` int(11) NOT NULL,
+        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_relation_opencart_products` (
+          `id` int(11) NOT NULL,
           `pluggto_product_id` varchar(255) NOT NULL,
           `opencart_product_id` int(11) NOT NULL,
           `active` tinyint(4) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
         CREATE TABLE `" . DB_PREFIX . "`pluggto_notifications` (
           `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -42,10 +44,17 @@ class ModelPluggtoPluggto extends Model{
           PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
-        ALTER TABLE `" . DB_PREFIX . "`pluggto_products_relation_opencart_products`
+        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "order_relation_pluggto_and_opencart` (
+          `id` int(11) NOT NULL,
+          `order_id_opencart` varchar(50) NOT NULL,
+          `order_id_pluggto` varchar(50) NOT NULL,
+          `active` tinyint(4) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+        ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
          ADD PRIMARY KEY (`id`);
 
-        ALTER TABLE `" . DB_PREFIX . "`pluggto_products_relation_opencart_products`
+        ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
         MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
     ");
   }
