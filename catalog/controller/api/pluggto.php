@@ -1,4 +1,5 @@
 <?php
+
 class ControllerApiPluggto extends Controller {
 
 	public function index() {

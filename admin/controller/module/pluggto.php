@@ -261,6 +261,7 @@ class ControllerModulePluggTo extends Controller {
 
     $response = [];
     foreach ($options as $i => $option) {
+      echo '<pre>';print_r($option);exit;
       $response[] = [
         ''
       ];
