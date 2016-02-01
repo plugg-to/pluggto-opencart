@@ -173,7 +173,8 @@ class ModelPluggtoPluggto extends Model{
     return json_decode($result);
   }
 
-  public function validateFields($fields) {
+  public function validateFields($fields) 
+  {
     foreach ($fields as $key => $field) {
       if (empty($field)) {
         return $key;
@@ -182,7 +183,8 @@ class ModelPluggtoPluggto extends Model{
     return true;
   }
 
-  public function createNotification($fields) {
+  public function createNotification($fields) 
+  {
     $validate = $this->validateFields($fields);
 
     if ($validate === true) {
@@ -191,7 +193,8 @@ class ModelPluggtoPluggto extends Model{
     return $validate;
   }
 
-  public function saveNotification($fileds) {
+  public function saveNotification($fileds) 
+  {
       $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action, date_created, date_modified, status) 
                       VALUES 
                             ('".$fileds['resource_id']."', '".$fileds['type']."', '".$fileds['action']."', '".$fileds['date_created']."', 
@@ -199,5 +202,151 @@ class ModelPluggtoPluggto extends Model{
       
       return $this->db->query($sql);
   }
+
+ 
+  public function getProduct($product_id) 
+  {
+      $url = "http://api.plugg.to/products/".$product_id;
+      $method = "get";
+      $accesstoken = $this->getAccesstoken();
+      $params = array("access_token" => $accesstoken);
+      $data = $this->sendRequest($method, $url, $params);
+    
+      return $data;
+  }
+
+  public function getProductsNotification($field = false)
+  {
+        if (!$field) {
+            $field = '*';
+        }
+
+        $query = "SELECT ".$field." FROM ".DB_PREFIX."pluggto_notifications WHERE status = 1";
+
+        $result = $this->db->query($query);
+
+        return $result->rows;
+  }
   
+public function prepareToSaveInOpenCart($product) {
+    $synchronizationSettings = $this->getSettingsProductsSynchronization();
+
+    if (!$synchronizationSettings->row['refresh_only_stock']) {
+      $data = [
+        'sku' => $product->Product->sku,
+        'model' => $product->Product->name,
+        'price' => $product->Product->price,
+        'weight' => $product->Product->dimension->weight,
+        'length' => $product->Product->dimension->length,
+        'width' => $product->Product->dimension->width,
+        'height' => $product->Product->dimension->height,
+        'status' => 1,
+        'product_description' => [
+          1 => [
+            'name' => $product->Product->name,
+            'description' => $product->Product->short_description,
+            'tag' => '',
+            'meta_title' => '',
+            'meta_description' => '',
+            'meta_keyword' => '',
+          ]
+        ],
+        'product_store' => [
+          0
+        ],
+        'product_category' => $this->formatObjectCategoryToList($product->Product->categories)
+      ];
+    }
+
+    $data['quantity'] = $product->Product->quantity;
+
+    $this->load->model('catalog/product');
+
+    if (!$this->existProductInOpenCart($product->Product->id) && !$synchronizationSettings->row['refresh_only_stock']){
+      $product_id = $this->model_catalog_product->addProduct($data);     
+      return $this->createPluggToProductRelactionOpenCartPluggTo($product->Product->id, $product_id);
+    }
+
+    if ($synchronizationSettings->row['refresh_only_stock']) {
+      $product_id = $this->existProductInOpenCart($product->Product->id);
+      return $this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = '" . $this->db->escape($data['quantity']) . "' WHERE product_id = '" . (int)$product_id . "'");
+    }
+
+    return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
+  }
+
+  public function getSettingsProductsSynchronization()
+  {
+        $sql = "SELECT * FROM " . DB_PREFIX . "settings_products_synchronization ORDER BY id DESC LIMIT 1";
+        return $this->db->query($sql);    
+  }
+
+   public function formatObjectCategoryToList($categoriesObject) 
+    {
+        $response = [];
+        
+        foreach ($categoriesObject as $i => $category) {
+          $auxiliar[] = $category->name;
+        }
+
+        if (empty($auxiliar))
+          return false;
+
+        $response = $this->findCategoriesInOpenCart($auxiliar);
+
+        return $response;
+    }
+
+    public function findCategoriesInOpenCart($namesOfCategories)
+    {
+        $response = [];
+
+        $this->load->model('catalog/category');
+        $categories = $this->prepareDataCategoryToArraySearch($this->model_catalog_category->getCategories());
+
+        foreach ($namesOfCategories as $i => $names) {
+          $id_category = array_search(explode(' >', $names)[0], $categories);
+          $response[] = $id_category;
+        }
+
+        return $response;
+    }
+
+    public function prepareDataCategoryToArraySearch($categoriesOpenCart) 
+    {
+        $response = [];
+
+        foreach ($categoriesOpenCart as $i => $category) {
+          $response[$category['category_id']] = $category['name'];
+        }
+        
+        return $response;
+    }
+
+    public function existProductInOpenCart($id) 
+    {
+        $sql = "SELECT * FROM `" . DB_PREFIX . "pluggto_products_relation_opencart_products` WHERE `pluggto_product_id` = '" . $id . "' AND `active` = 1";
+        $response = $this->db->query($sql);
+
+        if (empty($response->rows))
+          return false;
+
+        return $response->row['opencart_product_id'];
+    }
+
+    public function createPluggToProductRelactionOpenCartPluggTo($pluggto_product_id, $opencart_product_id) 
+    {
+         return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
+    }
+
+    public function updateStatusNotification($productId)
+    {
+         $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 0 WHERE resource_id = '$productId'";
+
+         return $this->db->query($query);
+    }
+
+
+
+
 }
