@@ -244,9 +244,9 @@ class ControllerModulePluggTo extends Controller {
         $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
         continue;
       }
-
+      
       $response = $this->model_pluggto_pluggto->createTo($data);
-
+      
       if (isset($response->Product->id)) {
         $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
       }
@@ -257,16 +257,34 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function getVariationsToSaveInOpenCart($product_id) {
+    $product = $this->model_catalog_product->getProduct($product_id);
     $options = $this->model_catalog_product->getProductOptions($product_id);
 
     $response = [];
     foreach ($options as $i => $option) {
-      $response[] = [
-        ''
-      ];
+      foreach ($option['product_option_value'] as $item) {
+        $response[] = [
+          'name'     => $product['name'],
+          'external' => $option['product_option_id'],
+          'quantity' => $item['quantity'],
+          'special_price' => '',
+          'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+          'sku' => $product['sku'],
+          'ean' => '',
+          'photos' => [],
+          'attributes' => [],
+          'dimesion' => [
+            'length' => $product['length'],
+            'width'  => $product['width'],
+            'height' => $product['height'],
+            'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
+          ]
+        ];
+      }
     }
-  }
 
+    return $response;
+  }
 
   public function saveFieldsLinkage(){
     $this->load->model('pluggto/pluggto');
