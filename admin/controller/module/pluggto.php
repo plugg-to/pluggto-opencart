@@ -235,7 +235,8 @@ class ControllerModulePluggTo extends Controller {
         'sku'        => $product['sku'],
         'price'      => $product['price'],
         'quantity'   => $product['quantity'],
-        'variations' => $this->getVariationsToSaveInOpenCart($product['product_id'])
+        'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
+        'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
       ];
       
       $existProduct = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product['product_id']);
@@ -281,6 +282,23 @@ class ControllerModulePluggTo extends Controller {
           ]
         ];
       }
+    }
+
+    return $response;
+  }
+
+  public function getAtrributesToSaveInOpenCart($product_id) {
+    $product    = $this->model_catalog_product->getProduct($product_id);
+    $attributes = $this->model_catalog_product->getProductAttributes($product_id);
+
+    $response = [];
+
+    foreach ($attributes as $i => $attribute) {
+      $response[] = [
+        'code'  => $attribute['attribute_id'],
+        'label' => $attribute['product_attribute_description'][1]['text'],
+        'value' => $attribute['product_attribute_description'][1]['text'],
+      ];
     }
 
     return $response;
