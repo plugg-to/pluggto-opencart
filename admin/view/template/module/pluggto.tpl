@@ -49,7 +49,11 @@
           </li>
           
           <li>
-            <a href="<?php echo $link_basic_fields ?>">Setting Product</a>
+            <a href="<?php echo $link_basic_fields ?>">Setting Product</a> <!-- Aqui -->
+          </li>
+
+          <li>
+            <a href="<?php echo $load_queue ?>">Queue</a> <!-- Aqui -->
           </li>
       </ul>
       <!-- Tab panes -->

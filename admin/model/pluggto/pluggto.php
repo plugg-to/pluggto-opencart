@@ -458,4 +458,10 @@ class ModelPluggtoPluggto extends Model{
     return $response;
   }
 
+  public function getNotifications($limit = 100)
+  {
+    $query = "SELECT * FROM ".DB_PREFIX."pluggto_notifications LIMIT ".$limit;
+
+    return $this->db->query($query)->rows;
+  }
 }
