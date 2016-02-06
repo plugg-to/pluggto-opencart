@@ -29,15 +29,26 @@
       </div>
 
       <div class="col-md-12 text-center" style="margin-bottom: 30px;">
-        <?php foreach ($queue as $info) {
-                echo $info['id'].'<br>';
-                echo $info['type'].'<br>';
-                echo $info['status'].'<br>';
-                echo $info['resource_id'].'<br>';
-                echo $info['action'].'<br>';
-                echo $info['date_created'].'<br>';
-          } 
-        ?>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <th>ID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Resource</th>
+                <th>Action</th>
+                <th>Created</th>
+            <?php foreach ($queue as $info) { ?>
+                <tr>
+                    <td><?php echo $info['id']; ?></td>
+                    <td><?php echo $info['type']; ?></td>
+                    <td><?php echo $info['status']; ?></td>
+                    <td><?php echo $info['resource_id']; ?></td>
+                    <td><?php echo $info['action']; ?></td>
+                    <td><?php echo $info['date_created']; ?></td>
+                </tr>
+            <?php } ?>
+            </table>
+        </div>
       </div>      
 
     </div>
