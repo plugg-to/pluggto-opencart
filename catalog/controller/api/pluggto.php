@@ -172,4 +172,39 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
+	public function cronUpdateProducts()
+	{
+		$this->load->model('pluggto/pluggto');
+
+		$productsQuery = $this->model_pluggto_pluggto->getProductsNotification();
+
+		$message = [];
+		foreach ($productsQuery as $key => $value) {			
+			$product = $this->model_pluggto_pluggto->getProduct($value['resource_id']);
+			
+			if (isset($product->Product)) {				
+				$message[$key]['product_id'] = $product->Product->id;
+
+				$this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+				$message[$key]['saved'] = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
+				
+			}
+		}
+
+		if (isset($this->request->server['HTTP_ORIGIN'])) {
+			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
+			$this->response->addHeader('Access-Control-Allow-Methods: GET');
+			$this->response->addHeader('Access-Control-Max-Age: 1000');
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		}
+		
+		$response = [
+			'code'    => 200,
+			'message' => $message
+		];
+
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($response));
+	}
+
 }

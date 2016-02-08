@@ -153,7 +153,6 @@ admin/view/template/total/
 admin/view/template/user/
 admin/language/portuguese-br/
 build.xml
-catalog/
 changelog.md
 config.php
 crossdomain.xml
