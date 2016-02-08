@@ -151,6 +151,7 @@ admin/view/template/shipping/
 admin/view/template/tool/
 admin/view/template/total/
 admin/view/template/user/
+admin/language/portuguese-br/
 build.xml
 catalog/
 changelog.md
