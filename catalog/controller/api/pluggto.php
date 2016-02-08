@@ -69,7 +69,86 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function saveOrdersInOpenCart($orders) {
-		echo '<pre>';print_r($orders);exit;
+		$this->load->model('checkout/order');
+
+		foreach ($orders as $i => $order) {
+			$data = [
+				'invoice_prefix' => '',
+				'store_id' => $order->Order['id'],
+				'store_name' => '',
+				'store_url' => '',
+				'customer_id' => '',
+				'customer_group_id' => '',
+				'firstname' => $order->Order['payer_name'],
+				'lastname' => $order->Order['payer_lastname'],
+				'email' => $order->Order['receiver_email'],
+				'telephone' => $order->Order['receiver_phone'],
+				'fax' => $order->Order['receiver_phone'],
+				'custom_field' => '',
+				'payment_firstname' => $order->Order['payer_name'],
+				'payment_lastname' => $order->Order['payer_lastname'],
+				'payment_company' => $order->Order['payer_razao_social'],
+				'payment_address_1' => $order->Order['payer_address_reference'],
+				'payment_city' => '',
+				'payment_postcode' => '',
+				'payment_country' => 'Brasil',
+				'payment_country_id' => '',
+				'payment_zone' => '',
+				'payment_zone_id' => '',
+				'payment_address_format' => '',
+				'payment_custom_field' => '',
+				'payment_method' => '',
+				'payment_code' => '',
+				'shipping_firstname' => '',
+				'shipping_lastname' => '',
+				'shipping_company' => '',
+				'shipping_address_1' => '',
+				'shipping_address_2' => '',
+				'shipping_city' => '',
+				'shipping_postcode' => '',
+				'shipping_country' => '',
+				'shipping_zone' => '',
+				'shipping_zone_id' => '',
+				'shipping_address_format' => '',
+				'shipping_custom_field' => '',
+				'shipping_method' => '',
+				'shipping_code' => '',
+				'comment' => '',
+				'total' => '',
+				'affiliate_id' => '',
+				'commission' => '',
+				'marketing_id' => '',
+				'tracking' => '',
+				'language_id' => '',
+				'currency_id' => '',
+				'currency_code' => '',
+				'currency_value' => '',
+				'ip' => '',
+				'forwarded_ip' => '',
+				'user_agent' => '',
+				'accept_language' => '',
+				'products' => [
+					'product_id' => '',
+					'name' => '',
+					'model' => '',
+					'quantity' => '',
+					'price' => '',
+					'total' => '',
+					'tax' => '', 
+					'reward' => '',
+					'option' => [
+						'product_option_id' => '',
+						'product_option_value_id' => '',
+						'name' => '',
+						'value' => '',
+						'type' => ''
+					]
+				]
+			];
+
+			$this->model_checkout_order->addOrder($data);
+		}
+
 	}
 
 	public function saveOrdersInPluggTo($orders) {
