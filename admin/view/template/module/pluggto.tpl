@@ -51,6 +51,10 @@
           <li>
             <a href="<?php echo $link_basic_fields ?>">Setting Product</a>
           </li>
+
+          <li>
+            <a href="<?php echo $link_log_queue ?>">Queue</a>
+          </li>
       </ul>
       <!-- Tab panes -->
       <div class="tab-content">

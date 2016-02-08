@@ -40,6 +40,7 @@ class ModelPluggtoPluggto extends Model{
           `action` varchar(50) DEFAULT NULL,
           `date_created` datetime DEFAULT NULL,
           `date_modified` datetime DEFAULT NULL,
+          `description` text DEFAULT NULL,
           `status` tinyint(4) DEFAULT NULL,
           PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
@@ -456,6 +457,11 @@ class ModelPluggtoPluggto extends Model{
     }
 
     return $response;
+  }
+
+  public function getAllItemsInQueues(){
+    $sql = "SELECT * FROM `" . DB_PREFIX . "pluggto_notifications` WHERE status = 1";
+    $responseField = $this->db->query($sql);
   }
 
 }
