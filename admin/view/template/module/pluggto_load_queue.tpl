@@ -30,13 +30,16 @@
 
       <div class="col-md-12 text-center" style="margin-bottom: 30px;">
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped" id="tablequeue">
+              <thead>
                 <th>ID</th>
                 <th>Type</th>
                 <th>Status</th>
                 <th>Resource</th>
                 <th>Action</th>
                 <th>Created</th>
+              </thead>
+              <tbody>
             <?php foreach ($queue as $info) { ?>
                 <tr>
                     <td><?php echo $info['id']; ?></td>
@@ -47,9 +50,15 @@
                     <td><?php echo $info['date_created']; ?></td>
                 </tr>
             <?php } ?>
+              </tbody>
             </table>
         </div>
       </div>      
-
     </div>
   </div>
+  <script type="text/javascript" src="../../javascript/jquery.dataTables.min"></script>
+  <script type="text/javascript">
+       $(document).ready(function() {
+           $('#tablequeue').DataTable();
+       });
+  </script>
