@@ -3,61 +3,74 @@
 class ModelPluggtoPluggto extends Model{
  
   public function install() {
-    $this->db->query("
-        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto` (
-          `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-          `api_user` varchar(255) NOT NULL,
-          `api_secret` varchar(255) NOT NULL,
-          `client_id` varchar(255) NOT NULL,
-          `client_secret` varchar(255) NOT NULL
-        ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+    $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto` (
+            `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `api_user` varchar(255) NOT NULL,
+            `api_secret` varchar(255) NOT NULL,
+            `client_id` varchar(255) NOT NULL,
+            `client_secret` varchar(255) NOT NULL
+          ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 
-        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
-          `id` int(11) NOT NULL,
-          `active` tinyint(4) NOT NULL,
-          `refresh_only_stock` tinyint(4) NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;    
+    $this->db->query($sql);
 
-        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_linkage_fields` (
-          `id` int(11) NOT NULL,
-          `field_opencart` varchar(50) NOT NULL,
-          `field_pluggto` varchar(50) NOT NULL,
-          `active` tinyint(4) NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+    $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
+            `id` int(11) NOT NULL,
+            `active` tinyint(4) NOT NULL,
+            `refresh_only_stock` tinyint(4) NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";    
 
-        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_relation_opencart_products` (
-          `id` int(11) NOT NULL,
-          `pluggto_product_id` varchar(255) NOT NULL,
-          `opencart_product_id` int(11) NOT NULL,
-          `active` tinyint(4) NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+    $this->db->query($sql);
 
+    $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_linkage_fields` (
+            `id` int(11) NOT NULL,
+            `field_opencart` varchar(50) NOT NULL,
+            `field_pluggto` varchar(50) NOT NULL,
+            `active` tinyint(4) NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-        CREATE TABLE `" . DB_PREFIX . "`pluggto_notifications` (
-          `id` int(11) NOT NULL AUTO_INCREMENT,
-          `resource_id` varchar(100) NOT NULL,
-          `type` varchar(20) DEFAULT NULL,
-          `action` varchar(50) DEFAULT NULL,
-          `date_created` datetime DEFAULT NULL,
-          `date_modified` datetime DEFAULT NULL,
-          `description` text DEFAULT NULL,
-          `status` tinyint(4) DEFAULT NULL,
-          PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+    $this->db->query($sql);
 
-        CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "order_relation_pluggto_and_opencart` (
-          `id` int(11) NOT NULL,
-          `order_id_opencart` varchar(50) NOT NULL,
-          `order_id_pluggto` varchar(50) NOT NULL,
-          `active` tinyint(4) NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+    $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_relation_opencart_products` (
+            `id` int(11) NOT NULL,
+            `pluggto_product_id` varchar(255) NOT NULL,
+            `opencart_product_id` int(11) NOT NULL,
+            `active` tinyint(4) NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
-        ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
-         ADD PRIMARY KEY (`id`);
+    $this->db->query($sql);
 
-        ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
-        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-    ");
+    $sql = "CREATE TABLE `" . DB_PREFIX . "pluggto_notifications` (
+            `id` int(11) NOT NULL AUTO_INCREMENT,
+            `resource_id` varchar(100) NOT NULL,
+            `type` varchar(20) DEFAULT NULL,
+            `action` varchar(50) DEFAULT NULL,
+            `date_created` datetime DEFAULT NULL,
+            `date_modified` datetime DEFAULT NULL,
+            `description` text DEFAULT NULL,
+            `status` tinyint(4) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+          ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;";
+
+    $this->db->query($sql);
+
+    $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "order_relation_pluggto_and_opencart` (
+            `id` int(11) NOT NULL,
+            `order_id_opencart` varchar(50) NOT NULL,
+            `order_id_pluggto` varchar(50) NOT NULL,
+            `active` tinyint(4) NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+    $this->db->query($sql);
+
+    $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
+            ADD PRIMARY KEY (`id`);";
+
+    $this->db->query($sql);
+
+    $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
+             MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
+    
+    $this->db->query($sql);
   }
 
   public function uninstall() {
