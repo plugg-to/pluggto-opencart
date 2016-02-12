@@ -235,7 +235,8 @@ class ControllerModulePluggTo extends Controller {
         'sku'        => $product['sku'],
         'price'      => $product['price'],
         'quantity'   => $product['quantity'],
-        'variations' => $this->getVariationsToSaveInOpenCart($product['product_id'])
+        'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
+        'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
       ];
       
       $existProduct = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product['product_id']);
@@ -281,6 +282,23 @@ class ControllerModulePluggTo extends Controller {
           ]
         ];
       }
+    }
+
+    return $response;
+  }
+
+  public function getAtrributesToSaveInOpenCart($product_id) {
+    $product    = $this->model_catalog_product->getProduct($product_id);
+    $attributes = $this->model_catalog_product->getProductAttributes($product_id);
+
+    $response = [];
+
+    foreach ($attributes as $i => $attribute) {
+      $response[] = [
+        'code'  => $attribute['attribute_id'],
+        'label' => $attribute['product_attribute_description'][1]['text'],
+        'value' => $attribute['product_attribute_description'][1]['text'],
+      ];
     }
 
     return $response;
@@ -360,6 +378,7 @@ class ControllerModulePluggTo extends Controller {
     $data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
     $data['link_basic_fields'] = $this->url->link('module/pluggto/settingsBasicFields', 'token=' . $this->session->data['token'], 'SSL');
     $data['load_queue'] = $this->url->link('module/pluggto/loadqueue', 'token=' . $this->session->data['token'], 'SSL');
+    $data['link_log_queue'] = $this->url->link('module/pluggto/linkLogQueue', 'token=' . $this->session->data['token'], 'SSL');
 
     $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
@@ -436,6 +455,50 @@ class ControllerModulePluggTo extends Controller {
     $data['default_fields'] = $this->model_pluggto_pluggto->getAllDefaultsFields();
 
     $this->response->setOutput($this->load->view('module/pluggto_fields.tpl', $data)); // aqui
+  }
+
+  public function linkLogQueue(){
+    $this->template = 'module/pluggto.tpl';
+    $this->language->load('module/pluggto');
+
+    $this->document->setTitle($this->language->get('heading_title'));
+
+    $this->load->model('pluggto/pluggto');
+
+    $data['heading_title'] = $this->language->get('heading_title');
+
+    $data['breadcrumbs'] = array();
+    $data['breadcrumbs'][] = array(
+      'text'      => $this->language->get('text_home'),
+      'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+    );
+
+    $data['breadcrumbs'][] = array(
+      'text'      => $this->language->get('text_module'),
+      'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
+    );
+
+    $data['breadcrumbs'][] = array(
+      'text'      => $this->language->get('heading_title'),
+      'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
+    );
+
+    $data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
+    $data['cancel'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+
+    $data['alerts'] = $this->session->data['alerts'];
+    $this->session->data['alerts'] = '';
+
+    $data['button_save'] = $this->language->get('button_save');
+    $data['button_cancel'] = $this->language->get('button_cancel');
+
+    $data['header'] = $this->load->controller('common/header');
+    $data['column_left'] = $this->load->controller('common/column_left');
+    $data['footer'] = $this->load->controller('common/footer');
+
+    $data['queues'] = $this->model_pluggto_pluggto->getAllItemsInQueues();
+
+    $this->response->setOutput($this->load->view('module/pluggto_queue.tpl', $data));
   }
 
   protected function validate() {

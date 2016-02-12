@@ -55,6 +55,7 @@
           <li>
             <a href="<?php echo $load_queue ?>">Queue</a> <!-- Aqui -->
           </li>
+
       </ul>
       <!-- Tab panes -->
       <div class="tab-content">

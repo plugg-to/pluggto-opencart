@@ -32,12 +32,14 @@
         <div class="table-responsive">
             <table class="table table-striped" id="tablequeue">
               <thead>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Resource</th>
-                <th>Action</th>
-                <th>Created</th>
+                <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Resource</th>
+                    <th>Action</th>
+                    <th>Created</th>
+                </tr>
               </thead>
               <tbody>
             <?php foreach ($queue as $info) { ?>
@@ -56,9 +58,11 @@
       </div>      
     </div>
   </div>
-  <script type="text/javascript" src="../../javascript/jquery.dataTables.min"></script>
+  <script src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.min.js"></script>
   <script type="text/javascript">
        $(document).ready(function() {
-           $('#tablequeue').DataTable();
+           $('#tablequeue').DataTable({
+             "order": [[ 3, "desc" ]]
+           });
        });
   </script>
