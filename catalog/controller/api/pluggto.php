@@ -210,8 +210,8 @@ class ControllerApiPluggto extends Controller {
 			'resource_id'   => empty($this->request->post['resource_id']) ? '' : $this->request->post['resource_id'],
 			'type'          => empty($this->request->post['type']) ? '' : $this->request->post['type'],
 			'action'        => empty($this->request->post['action']) ? '' : $this->request->post['action'],
-			'date_created'  => time(),
-			'date_modified' => time(),
+			'date_created'  => date('Y-m-d h:i:s', time()),
+			'date_modified' => date('Y-m-d h:i:s', time()),
 			'status'        => 1
 		];
 
@@ -262,11 +262,10 @@ class ControllerApiPluggto extends Controller {
 			$product = $this->model_pluggto_pluggto->getProduct($value['resource_id']);
 			
 			if (isset($product->Product)) {				
-				$message[$key]['product_id'] = $product->Product->id;
+				$message[$key]['resource_id'] = $product->Product->id;
 
 				$this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
 				$message[$key]['saved'] = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
-				
 			}
 		}
 
