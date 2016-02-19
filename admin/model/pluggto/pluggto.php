@@ -333,12 +333,12 @@ class ModelPluggtoPluggto extends Model{
     $this->load->model('catalog/product');
 
     if (!$this->existProductInOpenCart($product->Product->id) && !$synchronizationSettings->row['refresh_only_stock']){
-      $product_id = $this->model_catalog_product->addProduct($data);     
+      $product_id = $this->model_catalog_product->addProduct($data);
       return $this->createPluggToProductRelactionOpenCartPluggTo($product->Product->id, $product_id);
     }
 
     if ($synchronizationSettings->row['refresh_only_stock']) {
-      $product_id = $this->existProductInOpenCart($product->Product->id);
+      $product_id = $this->existProductInOpenCart($product->Product->id); var_dump($product_id);die;
       return $this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = '" . $this->db->escape($data['quantity']) . "' WHERE product_id = '" . (int)$product_id . "'");
     }
 
