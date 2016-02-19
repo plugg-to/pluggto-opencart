@@ -302,22 +302,23 @@ class ModelPluggtoPluggto extends Model{
 
     if (!$synchronizationSettings->row['refresh_only_stock']) {
       $data = [
-        'sku' => $product->Product->sku,
-        'model' => $product->Product->name,
-        'price' => $product->Product->price,
+        'sku'    => $product->Product->sku,
+        'model'  => $product->Product->name,
+        'price'  => $product->Product->price,
         'weight' => $product->Product->dimension->weight,
         'length' => $product->Product->dimension->length,
-        'width' => $product->Product->dimension->width,
+        'width'  => $product->Product->dimension->width,
         'height' => $product->Product->dimension->height,
         'status' => 1,
+        'image'  => $product->Product->image,
         'product_description' => [
           1 => [
-            'name' => $product->Product->name,
-            'description' => $product->Product->short_description,
-            'tag' => '',
-            'meta_title' => '',
+            'name'             => $product->Product->name,
+            'description'      => $product->Product->short_description,
+            'tag'              => '',
+            'meta_title'       => '',
             'meta_description' => '',
-            'meta_keyword' => '',
+            'meta_keyword'     => '',
           ]
         ],
         'product_store' => [
