@@ -453,7 +453,7 @@ class ControllerModulePluggTo extends Controller {
     $data['types_shippings'] = $this->typesShippings;
 
     $data['default_fields'] = $this->model_pluggto_pluggto->getAllDefaultsFields();
-
+    
     $this->response->setOutput($this->load->view('module/pluggto_fields.tpl', $data)); // aqui
   }
 

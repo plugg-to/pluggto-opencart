@@ -46,7 +46,7 @@
                           <div class="col-sm-10">
                             <select name="fields[width]" class="form-control">
                               <option 
-                                <?php if ($default_fields['width'] ==  "Largura"): ?>
+                                <?php if ($default_fields['width'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -54,7 +54,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['width'] ==  "Altura"): ?>
+                                <?php if ($default_fields['width'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -62,7 +62,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['width'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['width'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -70,7 +70,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['width'] ==  "Peso"): ?>
+                                <?php if ($default_fields['width'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -78,7 +78,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['width'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['width'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -110,7 +110,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['width'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['width'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -118,7 +118,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['width'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['width'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
@@ -133,7 +133,7 @@
                           <div class="col-sm-10">
                             <select name="fields[height]" class="form-control">
                               <option 
-                                <?php if ($default_fields['height'] ==  "Largura"): ?>
+                                <?php if ($default_fields['height'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -141,7 +141,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['height'] ==  "Altura"): ?>
+                                <?php if ($default_fields['height'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -149,7 +149,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['height'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['height'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -157,7 +157,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['height'] ==  "Peso"): ?>
+                                <?php if ($default_fields['height'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -165,7 +165,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['height'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['height'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -197,7 +197,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['height'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['height'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -205,7 +205,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['height'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['height'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
@@ -220,7 +220,7 @@
                           <div class="col-sm-10">
                             <select name="fields[length]" class="form-control">
                               <option 
-                                <?php if ($default_fields['length'] ==  "Largura"): ?>
+                                <?php if ($default_fields['length'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -228,7 +228,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['length'] ==  "Altura"): ?>
+                                <?php if ($default_fields['length'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -236,7 +236,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['length'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['length'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -244,7 +244,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['length'] ==  "Peso"): ?>
+                                <?php if ($default_fields['length'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -252,7 +252,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['length'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['length'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -284,7 +284,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['length'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['length'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -292,7 +292,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['length'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['length'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
@@ -307,7 +307,7 @@
                           <div class="col-sm-10">
                             <select name="fields[weight]" class="form-control">
                               <option 
-                                <?php if ($default_fields['weight'] ==  "Largura"): ?>
+                                <?php if ($default_fields['weight'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -315,7 +315,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['weight'] ==  "Altura"): ?>
+                                <?php if ($default_fields['weight'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -323,7 +323,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['weight'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['weight'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -331,7 +331,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['weight'] ==  "Peso"): ?>
+                                <?php if ($default_fields['weight'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -339,7 +339,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['weight'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['weight'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -371,7 +371,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['weight'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['weight'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -379,7 +379,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['weight'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['weight'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
@@ -394,7 +394,7 @@
                           <div class="col-sm-10">
                             <select name="fields[brand]" class="form-control">
                               <option 
-                                <?php if ($default_fields['brand'] ==  "Largura"): ?>
+                                <?php if ($default_fields['brand'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -402,7 +402,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['brand'] ==  "Altura"): ?>
+                                <?php if ($default_fields['brand'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -410,7 +410,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['brand'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['brand'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -418,7 +418,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['brand'] ==  "Peso"): ?>
+                                <?php if ($default_fields['brand'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -426,7 +426,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['brand'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['brand'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -458,7 +458,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['brand'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['brand'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -466,7 +466,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['brand'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['brand'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
@@ -481,7 +481,7 @@
                           <div class="col-sm-10">
                             <select name="fields[ean]" class="form-control">
                               <option 
-                                <?php if ($default_fields['ean'] ==  "Largura"): ?>
+                                <?php if ($default_fields['ean'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -489,7 +489,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['ean'] ==  "Altura"): ?>
+                                <?php if ($default_fields['ean'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -497,7 +497,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['ean'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['ean'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -505,7 +505,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['ean'] ==  "Peso"): ?>
+                                <?php if ($default_fields['ean'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -513,7 +513,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['ean'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['ean'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -545,7 +545,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['ean'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['ean'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -553,7 +553,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['ean'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['ean'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
@@ -568,7 +568,7 @@
                           <div class="col-sm-10">
                             <select name="fields[nbm]" class="form-control">
                               <option 
-                                <?php if ($default_fields['nbm'] ==  "Largura"): ?>
+                                <?php if ($default_fields['nbm'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -576,7 +576,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['nbm'] ==  "Altura"): ?>
+                                <?php if ($default_fields['nbm'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -584,7 +584,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['nbm'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['nbm'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -592,7 +592,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['nbm'] ==  "Peso"): ?>
+                                <?php if ($default_fields['nbm'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -600,7 +600,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['nbm'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['nbm'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -632,7 +632,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['nbm'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['nbm'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -640,7 +640,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['nbm'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['nbm'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
@@ -655,7 +655,7 @@
                           <div class="col-sm-10">
                             <select name="fields[ncm]" class="form-control">
                               <option 
-                                <?php if ($default_fields['ncm'] ==  "Largura"): ?>
+                                <?php if ($default_fields['ncm'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -663,7 +663,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['ncm'] ==  "Altura"): ?>
+                                <?php if ($default_fields['ncm'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -671,7 +671,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['ncm'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['ncm'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -679,7 +679,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['ncm'] ==  "Peso"): ?>
+                                <?php if ($default_fields['ncm'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -687,7 +687,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['ncm'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['ncm'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -719,7 +719,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['ncm'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['ncm'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -727,7 +727,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['ncm'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['ncm'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
@@ -742,7 +742,7 @@
                           <div class="col-sm-10">
                             <select name="fields[description]" class="form-control">
                               <option 
-                                <?php if ($default_fields['description'] ==  "Largura"): ?>
+                                <?php if ($default_fields['description'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -750,7 +750,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['description'] ==  "Altura"): ?>
+                                <?php if ($default_fields['description'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -758,7 +758,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['description'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['description'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -766,7 +766,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['description'] ==  "Peso"): ?>
+                                <?php if ($default_fields['description'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -774,7 +774,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['description'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['description'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -806,7 +806,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['description'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['description'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -814,7 +814,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['description'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['description'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
@@ -829,7 +829,7 @@
                           <div class="col-sm-10">
                             <select name="fields[isbn]" class="form-control">
                               <option 
-                                <?php if ($default_fields['isbn'] ==  "Largura"): ?>
+                                <?php if ($default_fields['isbn'] ==  "width"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="width"
@@ -837,7 +837,7 @@
                                 Largura
                               </option>
                               <option 
-                                <?php if ($default_fields['isbn'] ==  "Altura"): ?>
+                                <?php if ($default_fields['isbn'] ==  "height"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="height"
@@ -845,7 +845,7 @@
                                 Altura
                               </option>
                               <option 
-                                <?php if ($default_fields['isbn'] ==  "Comprimento"): ?>
+                                <?php if ($default_fields['isbn'] ==  "length"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="length"
@@ -853,7 +853,7 @@
                                 Comprimento
                               </option>
                               <option 
-                                <?php if ($default_fields['isbn'] ==  "Peso"): ?>
+                                <?php if ($default_fields['isbn'] ==  "weight"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="weight"
@@ -861,7 +861,7 @@
                                 Peso
                               </option>
                               <option 
-                                <?php if ($default_fields['isbn'] ==  "Fabricante"): ?>
+                                <?php if ($default_fields['isbn'] ==  "brand"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="brand"
@@ -893,7 +893,7 @@
                                 NCM
                               </option>
                               <option 
-                                <?php if ($default_fields['isbn'] ==  "Descriçao"): ?>
+                                <?php if ($default_fields['isbn'] ==  "description"): ?>
                                   selected
                                 <?php endif; ?> 
                                 value="description"
@@ -901,7 +901,7 @@
                                 Descriçao
                               </option>
                               <option 
-                                <?php if ($default_fields['isbn'] ==  "ISBN"): ?>
+                                <?php if ($default_fields['isbn'] ==  "isbn"): ?>
                                   selected
                                 <?php endif; ?>                                 
                                 value="isbn"
