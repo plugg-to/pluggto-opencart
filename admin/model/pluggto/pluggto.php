@@ -310,7 +310,7 @@ class ModelPluggtoPluggto extends Model{
         'width'  => $product->Product->dimension->width,
         'height' => $product->Product->dimension->height,
         'status' => 1,
-        'image'  => $this->uploadImagesToOpenCart($product->Product->photos),
+        'image'  => 'catalog/' . $this->uploadImagesToOpenCart($product->Product->photos),
         'product_description' => $this->getProductDescriptions($product),
         'product_store' => [
           0
@@ -344,9 +344,11 @@ class ModelPluggtoPluggto extends Model{
         
         $filename = md5(uniqid()) . '.jpg';
 
-        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/cache/catalog/' . $filename, 'w+');;
-        
+        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/cache/catalog/' . $filename, 'w+');        
         fputs($file, $photo);
+
+        $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/catalog/' . $filename, 'w+');        
+        fputs($file2, $photo);
         
         fclose($file);        
 
