@@ -310,7 +310,7 @@ class ModelPluggtoPluggto extends Model{
         'width'  => $product->Product->dimension->width,
         'height' => $product->Product->dimension->height,
         'status' => 1,
-        'image'  => $product->Product->image,
+        'image'  => $this->uploadImagesToOpenCart($product->Product->photos),
         'product_description' => $this->getProductDescriptions($product),
         'product_store' => [
           0
@@ -334,6 +334,27 @@ class ModelPluggtoPluggto extends Model{
     }
 
     return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
+  }
+
+  public function uploadImagesToOpenCart($photos)
+  {
+    foreach ($photos as $i => $photo) {
+      try {
+        $photo = file_get_contents(str_replace('https', 'http', $photo->url));
+        
+        $filename = md5(uniqid()) . '.jpg';
+
+        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/cache/catalog/' . $filename, 'w+');;
+        
+        fputs($file, $photo);
+        
+        fclose($file);        
+
+        return $filename;
+      } catch (Exception $e) {
+        $e->getMessage();
+      }
+    }
   }
 
   public function getProductDescriptions($product)
