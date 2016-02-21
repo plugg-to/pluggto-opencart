@@ -369,6 +369,38 @@ public function prepareToSaveInOpenCart($product) {
         return $string;
     }
 
+    public function getAllPluggToProductRelactionsOpenCart() 
+    {
+        return $this->db->query("SELECT * FROM  " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1");
+    }
+
+    public function updateStockPluggTo($product, $id) 
+    {
+        $url = "http://api.plugg.to/products/" . $id . "/stock";
+        $method = "put";
+        $accesstoken = $this->getAccesstoken();
+        $url = $url . "?access_token=" . $accesstoken;
+        $params = $product;
+        $data = $this->sendRequest($method, $url, $params);
+        return $data;
+    }
+
+    public function updateTo($product, $id) 
+    {
+        $url = "http://api.plugg.to/products/".$id;
+        
+        $method = "put";
+        
+        $accesstoken = $this->getAccesstoken();
+        
+        $url = $url . "?access_token=" . $accesstoken;
+        
+        $params = $product;
+        
+        $data = $this->sendRequest($method, $url, $params);
+        
+        return $data;
+    }
 
 
 
