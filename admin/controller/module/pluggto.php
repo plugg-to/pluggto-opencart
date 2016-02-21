@@ -174,14 +174,29 @@ class ControllerModulePluggTo extends Controller {
     error_reporting(0);
 
     $this->load->model('pluggto/pluggto');
-    $result = $this->model_pluggto_pluggto->getProducts();
+    
+    $result = $this->model_pluggto_pluggto->getProducts(1);
+    
+    $this->saveProducts($result);
 
-    foreach ($result->result as $i => $product) {
-      $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+    $pages = $result->total / 50;
+    
+    for ($i = 2; $i <= $pages; $i++) {
+      $result = $this->model_pluggto_pluggto->getProducts($i);
+      $this->saveProducts($result);
     }
 
     $this->session->data['alerts'] = 'Importação feita com sucesso!';
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+  }
+
+  public function saveProducts($result)
+  {
+    foreach ($result->result as $i => $product) {
+      $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+    }
+
+    return true;
   }
 
   /**

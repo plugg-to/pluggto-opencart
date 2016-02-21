@@ -183,11 +183,11 @@ class ModelPluggtoPluggto extends Model{
     }
   }
 
-  public function getProducts() {
+  public function getProducts($page) {
     $url = "http://api.plugg.to/products";
     $method = "get";
     $accesstoken = $this->getAccesstoken();
-    $params = array("access_token" => $accesstoken);
+    $params = array("access_token" => $accesstoken, "page" => $page);
     $data = $this->sendRequest($method, $url, $params);
     return $data;
   }
@@ -311,16 +311,7 @@ class ModelPluggtoPluggto extends Model{
         'height' => $product->Product->dimension->height,
         'status' => 1,
         'image'  => $product->Product->image,
-        'product_description' => [
-          1 => [
-            'name'             => $product->Product->name,
-            'description'      => $product->Product->short_description,
-            'tag'              => '',
-            'meta_title'       => '',
-            'meta_description' => '',
-            'meta_keyword'     => '',
-          ]
-        ],
+        'product_description' => $this->getProductDescriptions($product),
         'product_store' => [
           0
         ],
@@ -343,6 +334,25 @@ class ModelPluggtoPluggto extends Model{
     }
 
     return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
+  }
+
+  public function getProductDescriptions($product)
+  {
+    $languages = $this->db->query("SELECT * FROM " . DB_PREFIX . "language");
+
+    $response = [];
+    foreach ($languages->rows as $i => $language) {
+      $response[$language['language_id']] = [
+        'name'             => $product->Product->name,
+        'description'      => $product->Product->short_description,
+        'tag'              => '',
+        'meta_title'       => '',
+        'meta_description' => '',
+        'meta_keyword'     => '',
+      ];
+    }
+    
+    return $response;
   }
 
   public function offAllProductsWithPluggTo() {
