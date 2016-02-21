@@ -262,10 +262,23 @@ class ControllerApiPluggto extends Controller {
 			$product = $this->model_pluggto_pluggto->getProduct($value['resource_id']);
 			
 			if (isset($product->Product)) {				
-				$message[$key]['resource_id'] = $product->Product->id;
-
 				$this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+				
+				$message[$key]['resource_id'] = $product->Product->id;
 				$message[$key]['saved'] = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
+			} else {
+				$order = $this->model_pluggto_pluggto->getOrder($value['resource_id']);
+
+				if (isset($order->Order)) {
+					$orderIdOpenCart = $this->model_pluggto_pluggto->createOrderIdOpenCart();
+					$result = $this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $orderIdOpenCart);
+	
+					$message[$key]['resource_id'] = $order->Order->id;
+					$message[$key]['saved'] = $this->model_pluggto_pluggto->updateStatusNotification($order->Order->id);
+				} else {
+					$message[$key]['resource_id'] = $value['resource_id'];
+					$message[$key]['saved'] = "Error: Resource not found";
+				}
 			}
 		}
 

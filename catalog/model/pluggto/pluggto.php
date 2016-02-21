@@ -215,6 +215,17 @@ class ModelPluggtoPluggto extends Model{
       return $data;
   }
 
+  public function getOrder($orderId)
+  {
+      $url = "http://api.plugg.to/orders/".$orderId;
+      $method = "get";
+      $accesstoken = $this->getAccesstoken();
+      $params = array("access_token" => $accesstoken);
+      $data = $this->sendRequest($method, $url, $params);
+    
+      return $data;
+  }
+
   public function getProductsNotification($field = false)
   {
         if (!$field) {
@@ -344,6 +355,18 @@ public function prepareToSaveInOpenCart($product) {
          $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 0 WHERE resource_id = '$productId'";
 
          return $this->db->query($query);
+    }
+
+    public function createOrderIdOpenCart($length = 50) 
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $string = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $string .= $characters[mt_rand(0, strlen($characters) - 1)];
+        }
+
+        return $string;
     }
 
 
