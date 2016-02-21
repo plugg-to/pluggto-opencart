@@ -265,7 +265,7 @@ class ControllerApiPluggto extends Controller {
 				$this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
 				
 				$message[$key]['resource_id'] = $product->Product->id;
-				$message[$key]['saved'] = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
+				$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
 			} else {
 				$order = $this->model_pluggto_pluggto->getOrder($value['resource_id']);
 
@@ -274,13 +274,16 @@ class ControllerApiPluggto extends Controller {
 					$result = $this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $orderIdOpenCart);
 	
 					$message[$key]['resource_id'] = $order->Order->id;
-					$message[$key]['saved'] = $this->model_pluggto_pluggto->updateStatusNotification($order->Order->id);
+					$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($order->Order->id);
 				} else {
 					$message[$key]['resource_id'] = $value['resource_id'];
-					$message[$key]['saved'] = "Error: Resource not found";
+					$message[$key]['saved']       = "Error: Resource not found";
 				}
 			}
 		}
+
+		$priceAndStock = $this->verifyStockAndPriceProducts();
+		array_push($message, $priceAndStock);
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
@@ -297,5 +300,48 @@ class ControllerApiPluggto extends Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));
 	}
+
+	public function verifyStockAndPriceProducts() 
+    {
+        $this->load->model('pluggto/pluggto');
+        $this->load->model('catalog/product');
+
+        $products_pluggto_relations = $this->model_pluggto_pluggto->getAllPluggToProductRelactionsOpenCart();
+
+        $quantityUpdated = false;
+        $priceUpdated    = false;
+
+        foreach ($products_pluggto_relations->rows as $i => $product){
+            $pluggto_product_response  = $this->model_pluggto_pluggto->getProduct($product['pluggto_product_id']);
+            $opencart_product_response = $this->model_catalog_product->getProduct($product['opencart_product_id']);
+
+            if (isset($pluggto_product_response) && $pluggto_product_response->Product->quantity != $opencart_product_response['quantity']){
+	            $data = [
+	              'action'   => 'update',
+	              'quantity' => $opencart_product_response['quantity']
+	            ];
+
+	            $response        = $this->model_pluggto_pluggto->updateStockPluggTo($data, $product['pluggto_product_id']);
+	            $quantityUpdated = true;
+            }
+
+            if (isset($pluggto_product_response) && $pluggto_product_response->Product->price != $opencart_product_response['price']){
+	            $data = [
+	              'price' => $opencart_product_response['price']
+	            ];
+
+	            $response     = $this->model_pluggto_pluggto->updateTo($data, $product['pluggto_product_id']);
+	            $priceUpdated = true;
+            }
+
+        }
+
+        $response = [
+        	'stockUpdated' => $quantityUpdated === true ? "Stock was updated sucessfully"   : "Stock is up to date",
+        	'priceUpdated'  => $priceUpdated   === true ? "Prices were updated sucessfully" : "Prices are up to date"
+        ];
+
+        return $response;
+    }
 
 }
