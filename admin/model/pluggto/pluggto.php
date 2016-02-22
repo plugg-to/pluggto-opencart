@@ -329,7 +329,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     if ($synchronizationSettings->row['refresh_only_stock']) {
-      $product_id = $this->existProductInOpenCart($product->Product->id); var_dump($product_id);die;
+      $product_id = $this->existProductInOpenCart($product->Product->id);
       return $this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = '" . $this->db->escape($data['quantity']) . "' WHERE product_id = '" . (int)$product_id . "'");
     }
 
