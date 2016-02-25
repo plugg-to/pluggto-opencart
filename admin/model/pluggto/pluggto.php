@@ -310,7 +310,8 @@ class ModelPluggtoPluggto extends Model{
         'width'  => $product->Product->dimension->width,
         'height' => $product->Product->dimension->height,
         'status' => 1,
-        'image'  => 'catalog/' . $this->uploadImagesToOpenCart($product->Product->photos),
+        'image'  => 'catalog/' . $this->uploadImagesToOpenCart($product->Product->photos, true),
+        'product_image' => $this->uploadImagesToOpenCart($product->Product->photos, false),
         'product_description' => $this->getProductDescriptions($product),
         'product_store' => [
           0
@@ -320,7 +321,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $data['quantity'] = $product->Product->quantity;
-
+    
     $this->load->model('catalog/product');
 
     if (!$this->existProductInOpenCart($product->Product->id) && !$synchronizationSettings->row['refresh_only_stock']){
@@ -336,8 +337,9 @@ class ModelPluggtoPluggto extends Model{
     return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
   }
 
-  public function uploadImagesToOpenCart($photos)
+  public function uploadImagesToOpenCart($photos, $main=true)
   {
+    $response = [];
     foreach ($photos as $i => $photo) {
       try {
         $photo = file_get_contents(str_replace('https', 'http', $photo->url));
@@ -352,11 +354,18 @@ class ModelPluggtoPluggto extends Model{
         
         fclose($file);        
 
-        return $filename;
+        if ($main)
+          return $filename;
+
+        $response[] = [
+          'image' => $filename,
+          'sort_order' => $i
+        ];
       } catch (Exception $e) {
         $e->getMessage();
       }
     }
+    return $response;
   }
 
   public function getProductDescriptions($product)
