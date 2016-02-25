@@ -240,7 +240,6 @@ class ControllerModulePluggTo extends Controller {
     $this->load->model('pluggto/pluggto');
     
     $products_opencart = $this->model_catalog_product->getProducts();
-
     $productPrepare = [];
     $data = [];
 
@@ -250,6 +249,20 @@ class ControllerModulePluggTo extends Controller {
         'sku'        => $product['sku'],
         'price'      => $product['price'],
         'quantity'   => $product['quantity'],
+        'external'   => $product['product_id'],
+        'description'=> $product['description'],
+        'brand'      => $product['brand'],
+        'ean'        => $product['ean'],
+        'nbm'        => $product['nbm'],
+        'isbn'       => $product['isbn'],
+        'available'  => $product['status'],
+        'dimension'  => [
+          'length' => $product['length'],
+          'width'  => $product['width'],
+          'height' => $product['height']
+        ],
+        'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
+        'link'       => $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
         'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
         'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
       ];
@@ -262,7 +275,6 @@ class ControllerModulePluggTo extends Controller {
       }
       
       $response = $this->model_pluggto_pluggto->createTo($data);
-      
       if (isset($response->Product->id)) {
         $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
       }
@@ -270,6 +282,24 @@ class ControllerModulePluggTo extends Controller {
 
     $this->session->data['alerts'] = 'Exportação feita com sucesso!';
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+  }
+
+  public function getPhotosToSaveInOpenCart($product_id, $image_main) {
+    $images = $this->model_catalog_product->getProductImages($product_id);
+
+    $response = [
+      [
+        'url' =>  $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+        'remove' => true
+      ],
+      [
+        'url'   => $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+        'title' => 'Imagem principal do produto',
+        'order' => 0
+      ]
+    ];
+
+    return $response;
   }
 
   public function getVariationsToSaveInOpenCart($product_id) {
