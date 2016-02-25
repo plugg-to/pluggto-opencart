@@ -358,7 +358,7 @@ class ModelPluggtoPluggto extends Model{
           return $filename;
 
         $response[] = [
-          'image' => $filename,
+          'image' => 'catalog/' . $filename,
           'sort_order' => $i
         ];
       } catch (Exception $e) {
