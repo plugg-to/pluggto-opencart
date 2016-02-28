@@ -239,28 +239,29 @@ class ModelPluggtoPluggto extends Model{
         return $result->rows;
   }
   
-public function prepareToSaveInOpenCart($product) {
+public function prepareToSaveInOpenCart($product) 
+{
     $synchronizationSettings = $this->getSettingsProductsSynchronization();
 
     if (!$synchronizationSettings->row['refresh_only_stock']) {
       $data = [
-        'sku' => $product->Product->sku,
-        'model' => $product->Product->name,
-        'price' => $product->Product->price,
+        'sku'    => $product->Product->sku,
+        'model'  => $product->Product->name,
+        'price'  => $product->Product->price,
         'weight' => $product->Product->dimension->weight,
         'length' => $product->Product->dimension->length,
-        'width' => $product->Product->dimension->width,
+        'width'  => $product->Product->dimension->width,
         'height' => $product->Product->dimension->height,
         'status' => 1,
         'product_description' => [
-          1 => [
-            'name' => $product->Product->name,
-            'description' => $product->Product->short_description,
-            'tag' => '',
-            'meta_title' => '',
-            'meta_description' => '',
-            'meta_keyword' => '',
-          ]
+            1 => [
+                'name'             => $product->Product->name,
+                'description'      => $product->Product->short_description,
+                'tag'              => '',
+                'meta_title'       => '',
+                'meta_description' => '',
+                'meta_keyword'     => '',
+            ]
         ],
         'product_store' => [
           0
@@ -491,6 +492,17 @@ public function prepareToSaveInOpenCart($product) {
         
         return $data;
     }
+
+    public function getProducts() 
+    {
+        $url         = "http://api.plugg.to/products";
+        $method      = "get";
+        $accesstoken = $this->getAccesstoken();
+        $params      = array("access_token" => $accesstoken);
+        $data        = $this->sendRequest($method, $url, $params);
+        
+        return $data;
+  }
 
 
 }

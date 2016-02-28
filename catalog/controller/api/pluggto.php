@@ -29,13 +29,15 @@ class ControllerApiPluggto extends Controller {
         //$num_orders_pluggto  = $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
         //$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
         
-        $test = $this->saveProductsInPluggto();
+        $importProducts = $this->saveProductsInPluggto();
+        $exportProducts = $this->importAllProductsToOpenCart();
 
-        print_r($test);die;
+        //print_r($test);die;
         
         $response = [
             'orders_created_pluggto' => $num_orders_pluggto,
-            'productsExported'       => $test
+            'productsExported'       => $exportProducts,
+            'productsImported'       => $importProducts,
         ];
 
 		$this->response->addHeader('Content-Type: application/json');
@@ -221,7 +223,7 @@ class ControllerApiPluggto extends Controller {
         $this->load->model('pluggto/pluggto');
 
         $json = [
-            'HTTPcode' => 200,
+            'action' => "import products from pluggto",
         ];
         
         $products_opencart = $this->model_catalog_product->getProducts();
@@ -257,6 +259,12 @@ class ControllerApiPluggto extends Controller {
 
             if ($existProduct->num_rows > 0) {
                 $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
+                
+                $productId = $response->Product->id;
+
+                $json[$messageIndex]['status']  = true;
+                $json[$messageIndex]['message'] = "Product '$productId' updated successfully";
+
                 continue;
             }
 
@@ -274,6 +282,28 @@ class ControllerApiPluggto extends Controller {
         }
         
         return json_encode($json);
+    }
+
+    public function importAllProductsToOpenCart() 
+    {        
+        $this->load->model('pluggto/pluggto');
+
+        $response = [
+            'action' => "export products to pluggto",
+        ];
+        
+        $result = $this->model_pluggto_pluggto->getProducts();
+        
+        foreach ($result->result as $i => $product) {
+           $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+           
+           $productId = $product->Product->id;
+           
+           $response[$i]['status']  = $return;
+           $response[$i]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
+        }
+
+        return json_encode($response);
     }
 
 
