@@ -255,12 +255,18 @@ class ControllerApiPluggto extends Controller {
 
             if ($existProduct->num_rows > 0) {
                 $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
-                var_dump($response);die;
                 
-                $productId = $response->Product->id;
+                if (isset($response->Product)) {
+                    $productId = $response->Product->id;
 
-                $json[$messageIndex]['status']  = true;
-                $json[$messageIndex]['message'] = "Product '$productId' updated successfully";
+                    $json[$messageIndex]['status']  = true;
+                    $json[$messageIndex]['message'] = "Product '$productId' updated successfully";
+                } else {
+                    $productId = $existProduct->row['pluggto_product_id'];
+                    
+                    $json[$messageIndex]['status']  = false;
+                    $json[$messageIndex]['message'] = "Could not update product $productId ";
+                }                
 
                 continue;
             }
