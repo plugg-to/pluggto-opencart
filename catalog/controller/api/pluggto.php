@@ -31,8 +31,6 @@ class ControllerApiPluggto extends Controller {
         
         $exportProducts = $this->saveProductsInPluggto();
         $importProducts = $this->importAllProductsToOpenCart();
-
-        //print_r($test);die;
         
         $response = [
             'orders_created_pluggto' => $num_orders_pluggto,
