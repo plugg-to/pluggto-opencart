@@ -29,8 +29,8 @@ class ControllerApiPluggto extends Controller {
         //$num_orders_pluggto  = $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
         //$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
         
-        $importProducts = $this->saveProductsInPluggto();
-        $exportProducts = $this->importAllProductsToOpenCart();
+        $exportProducts = $this->saveProductsInPluggto();
+        $importProducts = $this->importAllProductsToOpenCart();
 
         //print_r($test);die;
         
@@ -223,7 +223,7 @@ class ControllerApiPluggto extends Controller {
         $this->load->model('pluggto/pluggto');
 
         $json = [
-            'action' => "import products from pluggto",
+            'action' => "export products to pluggto",
         ];
         
         $products_opencart = $this->model_catalog_product->getProducts();
@@ -289,7 +289,7 @@ class ControllerApiPluggto extends Controller {
         $this->load->model('pluggto/pluggto');
 
         $response = [
-            'action' => "export products to pluggto",
+            'action' => "import products from pluggto",
         ];
         
         $result = $this->model_pluggto_pluggto->getProducts();
