@@ -176,7 +176,6 @@ class ControllerModulePluggTo extends Controller {
     $this->load->model('pluggto/pluggto');
     
     $result = $this->model_pluggto_pluggto->getProducts(1);
-    
     $this->saveProducts($result);
 
     $pages = $result->total / 50;
@@ -236,6 +235,8 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function exportAllProductsToPluggTo() {
+    error_reporting(0);
+
     $this->load->model('catalog/product');
     $this->load->model('pluggto/pluggto');
     
@@ -262,7 +263,7 @@ class ControllerModulePluggTo extends Controller {
           'height' => $product['height']
         ],
         'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
-        'link'       => $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
+        'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
         'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
         'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
       ];
@@ -271,10 +272,20 @@ class ControllerModulePluggTo extends Controller {
       
       if ($existProduct->num_rows > 0) {
         $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
+
+        if ($response->type == "not_found") {
+          $response = $this->model_pluggto_pluggto->createTo($data);   
+
+          if (isset($response->Product->id)) {
+            $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
+          }      
+        }
+
         continue;
       }
       
       $response = $this->model_pluggto_pluggto->createTo($data);
+      
       if (isset($response->Product->id)) {
         $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
       }
@@ -289,11 +300,11 @@ class ControllerModulePluggTo extends Controller {
 
     $response = [
       [
-        'url' =>  $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+        'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
         'remove' => true
       ],
       [
-        'url'   => $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+        'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
         'title' => 'Imagem principal do produto',
         'order' => 0
       ]

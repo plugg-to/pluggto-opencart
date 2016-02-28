@@ -258,6 +258,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $result = curl_exec($ch);
+
     return json_decode($result);
   }
 
@@ -313,6 +314,7 @@ class ModelPluggtoPluggto extends Model{
         'image'  => 'catalog/' . $this->uploadImagesToOpenCart($product->Product->photos, true),
         'product_image' => $this->uploadImagesToOpenCart($product->Product->photos, false),
         'product_description' => $this->getProductDescriptions($product),
+        'product_option' => $this->getProductOptionToOpenCart($product),
         'product_store' => [
           0
         ],
@@ -365,6 +367,33 @@ class ModelPluggtoPluggto extends Model{
         $e->getMessage();
       }
     }
+    return $response;
+  }
+
+  public function getProductOptionToOpenCart($product)
+  {
+    if (empty($product->Product->variations)){
+      return false;
+    }
+
+    $response = [];
+    foreach ($product->Product->variations as $i => $variation) {
+      $response[] = [
+        'type' => 'select',
+        'product_option_value' => $variation->name,
+        'option_id' => 11,
+        'option_value_id' =>  48,
+        'quantity' => $variation->quantity,
+        'subtract' => 1,
+        'price' => 0,
+        'price_prefix' => '+',
+        'points' => 0,
+        'points_prefix' => '+',
+        'weight' => $variation->dimension->weight,
+        'weight_prefix' => '+'
+      ];
+    }
+
     return $response;
   }
 

@@ -22,8 +22,8 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronGetProductsAndOrders() {
-		$num_orders_pluggto  = $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
-		$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
+		$num_orders_pluggto  	= $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
+		$num_orders_opencart 	= $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode(['orders_created_pluggto' => $num_orders_pluggto]));
@@ -74,21 +74,21 @@ class ControllerApiPluggto extends Controller {
 		foreach ($orders as $i => $order) {
 			$data = [
 				'invoice_prefix' => '',
-				'store_id' => $order->Order['id'],
+				'store_id' => $order->Order->id,
 				'store_name' => '',
 				'store_url' => '',
 				'customer_id' => '',
 				'customer_group_id' => '',
-				'firstname' => $order->Order['payer_name'],
-				'lastname' => $order->Order['payer_lastname'],
-				'email' => $order->Order['receiver_email'],
-				'telephone' => $order->Order['receiver_phone'],
-				'fax' => $order->Order['receiver_phone'],
+				'firstname' => $order->Order->payer_name,
+				'lastname' => $order->Order->payer_lastname,
+				'email' => $order->Order->receiver_email,
+				'telephone' => $order->Order->receiver_phone,
+				'fax' => $order->Order->receiver_phone,
 				'custom_field' => '',
-				'payment_firstname' => $order->Order['payer_name'],
-				'payment_lastname' => $order->Order['payer_lastname'],
-				'payment_company' => $order->Order['payer_razao_social'],
-				'payment_address_1' => $order->Order['payer_address_reference'],
+				'payment_firstname' => $order->Order->payer_name,
+				'payment_lastname' => $order->Order->payer_lastname,
+				'payment_company' => $order->Order->payer_razao_social,
+				'payment_address_1' => $order->Order->payer_address_reference,
 				'payment_city' => '',
 				'payment_postcode' => '',
 				'payment_country' => 'Brasil',
