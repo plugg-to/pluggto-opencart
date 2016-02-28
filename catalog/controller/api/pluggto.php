@@ -255,6 +255,7 @@ class ControllerApiPluggto extends Controller {
 
             if ($existProduct->num_rows > 0) {
                 $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
+                var_dump($response);die;
                 
                 $productId = $response->Product->id;
 
