@@ -402,6 +402,95 @@ public function prepareToSaveInOpenCart($product) {
         return $data;
     }
 
+    public function getPhotosToSaveInOpenCart($product_id, $image_main)
+    {
+        $this->load->model('catalog/product');
+
+        $images = $this->model_catalog_product->getProductImages($product_id);
+
+        $response = [
+          [
+            'url' =>  $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+            'remove' => true
+          ],
+          [
+            'url'   => $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+            'title' => 'Imagem principal do produto',
+            'order' => 0
+          ]
+        ];
+
+        return $response;
+    }
+
+    public function getVariationsToSaveInOpenCart($product_id) 
+    {
+        $this->load->model('catalog/product');
+
+        $product = $this->model_catalog_product->getProduct($product_id);
+        $options = $this->model_catalog_product->getProductOptions($product_id);
+
+        $response = [];
+        foreach ($options as $i => $option) {
+          foreach ($option['product_option_value'] as $item) {
+            $response[] = [
+              'name'     => $product['name'],
+              'external' => $option['product_option_id'],
+              'quantity' => $item['quantity'],
+              'special_price' => '',
+              'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+              'sku' => $product['sku'],
+              'ean' => '',
+              'photos' => [],
+              'attributes' => [],
+              'dimesion' => [
+                'length' => $product['length'],
+                'width'  => $product['width'],
+                'height' => $product['height'],
+                'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
+              ]
+            ];
+          }
+        }
+
+        return $response;
+    }
+
+    public function getAtrributesToSaveInOpenCart($product_id) 
+    {
+        $this->load->model('catalog/product');
+
+        $product    = $this->model_catalog_product->getProduct($product_id);
+        $attributes = $this->model_catalog_product->getProductAttributes($product_id);
+
+        $response = [];
+
+        foreach ($attributes as $i => $attribute) {
+          $response[] = [
+            'code'  => $attribute['attribute_id'],
+            'label' => $attribute['product_attribute_description'][1]['text'],
+            'value' => $attribute['product_attribute_description'][1]['text'],
+          ];
+        }
+
+        return $response;
+    }
+
+    public function getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id_opencart) {
+        return $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1 AND opencart_product_id = " . $product_id_opencart . "");
+    }
+
+    public function createTo($product) 
+    {    
+        $url         = "http://api.plugg.to/products";
+        $method      = "post";
+        $accesstoken = $this->getAccesstoken();
+        $url         = $url."?access_token=".$accesstoken;
+        $params      = $product;
+        $data        = $this->sendRequest($method, $url, $params);
+        
+        return $data;
+    }
 
 
 }
