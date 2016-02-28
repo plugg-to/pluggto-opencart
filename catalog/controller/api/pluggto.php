@@ -26,8 +26,8 @@ class ControllerApiPluggto extends Controller {
 	public function cronGetProductsAndOrders() {
 		
 
-        //$num_orders_pluggto  = $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
-        //$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
+        $num_orders_pluggto  = $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
+        $num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
         
         $exportProducts = $this->saveProductsInPluggto();
         $importProducts = $this->importAllProductsToOpenCart();
