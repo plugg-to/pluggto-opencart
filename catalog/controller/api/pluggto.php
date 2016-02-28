@@ -2,8 +2,10 @@
 
 class ControllerApiPluggto extends Controller {
 
-	public function index() {
+	public function index() 
+    {
 		$json = ['status' => 'operational', 'HTTPcode' => 200];
+
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
@@ -24,9 +26,20 @@ class ControllerApiPluggto extends Controller {
 	public function cronGetProductsAndOrders() {
 		$num_orders_pluggto  	= $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
 		$num_orders_opencart 	= $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
+        
+        $exportProducts = $this->saveProductsInPluggto();
+        $importProducts = $this->importAllProductsToOpenCart();
+
+        //print_r($test);die;
+        
+        $response = [
+            'orders_created_pluggto' => $num_orders_pluggto,
+            'productsExported'       => $exportProducts,
+            'productsImported'       => $importProducts,
+        ];
 
 		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode(['orders_created_pluggto' => $num_orders_pluggto]));
+		$this->response->setOutput(json_encode($response));
 	}
 
 	public function existNewOrdersOpenCart() {
@@ -201,6 +214,96 @@ class ControllerApiPluggto extends Controller {
      		}
     	}
 	}
+
+	public function saveProductsInPluggto()
+	{
+		$this->load->model('catalog/product');
+        $this->load->model('pluggto/pluggto');
+
+        $json = [
+            'action' => "export products to pluggto",
+        ];
+        
+        $products_opencart = $this->model_catalog_product->getProducts();
+        $productPrepare = [];
+        $data = [];
+
+        $messageIndex = 0;
+        foreach ($products_opencart as $product) {
+            $data = [
+                'name'       => isset($product['name']) ? $product['name'] : '',
+                'sku'        => isset($product['sku']) ? $product['sku'] : '',
+                'price'      => isset($product['price']) ? $product['price'] : '',
+                'quantity'   => isset($product['quantity']) ? $product['quantity'] : '',
+                'external'   => isset($product['product_id']) ? $product['product_id'] : '',
+                'description'=> isset($product['description']) ? $product['description'] : '',
+                'brand'      => isset($product['brand']) ? $product['brand'] : '',
+                'ean'        => isset($product['ean']) ? $product['ean'] : '',
+                'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
+                'isbn'       => isset($product['isbn']) ? $product['isbn'] : '',
+                'available'  => isset($product['status']) ? $product['status'] : '',
+                'dimension'  => [
+                  'length' => $product['length'],
+                  'width'  => $product['width'],
+                  'height' => $product['height']
+                ],
+                'photos'     => $this->model_pluggto_pluggto->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
+                'link'       => $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
+                'variations' => $this->model_pluggto_pluggto->getVariationsToSaveInOpenCart($product['product_id']),
+                'attributes' => $this->model_pluggto_pluggto->getAtrributesToSaveInOpenCart($product['product_id']),
+            ];
+
+            $existProduct = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product['product_id']);
+
+            if ($existProduct->num_rows > 0) {
+                $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
+                
+                $productId = $response->Product->id;
+
+                $json[$messageIndex]['status']  = true;
+                $json[$messageIndex]['message'] = "Product '$productId' updated successfully";
+
+                continue;
+            }
+
+            $response = $this->model_pluggto_pluggto->createTo($data);
+            
+            if (isset($response->Product->id)) {
+                $json[$messageIndex]['status']  = $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
+                $json[$messageIndex]['message'] = "Products created successfully";
+            } else {
+                $json[$messageIndex]['status']  = false;
+                $json[$messageIndex]['message'] = "Products could not be created";
+            }
+
+            $messageIndex++;
+        }
+        
+        return json_encode($json);
+    }
+
+    public function importAllProductsToOpenCart() 
+    {        
+        $this->load->model('pluggto/pluggto');
+
+        $response = [
+            'action' => "import products from pluggto",
+        ];
+        
+        $result = $this->model_pluggto_pluggto->getProducts();
+        
+        foreach ($result->result as $i => $product) {
+           $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+           
+           $productId = $product->Product->id;
+           
+           $response[$i]['status']  = $return;
+           $response[$i]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
+        }
+
+        return json_encode($response);
+    }
+
 
 	public function getNotification() 
 	{
