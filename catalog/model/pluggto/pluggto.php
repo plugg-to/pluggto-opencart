@@ -283,7 +283,6 @@ public function prepareToSaveInOpenCart($product)
       $product_id = $this->existProductInOpenCart($product->Product->id);
       return $this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = '" . $this->db->escape($data['quantity']) . "' WHERE product_id = '" . (int)$product_id . "'");
     }
-
     return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
   }
 

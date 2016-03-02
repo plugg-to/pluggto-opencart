@@ -1,4 +1,10 @@
 <?php
+
+ini_set("display_errors", "1");
+ini_set('max_execution_time', 0);
+error_reporting(E_ALL);
+
+
 class ControllerModulePluggTo extends Controller {
   private $error = array();
 
@@ -171,7 +177,6 @@ class ControllerModulePluggTo extends Controller {
   * Importar todos os produtos do pluggto para o opencart
   **/
   public function importAllProductsToOpenCart() {
-    error_reporting(0);
 
     $this->load->model('pluggto/pluggto');
     
@@ -235,7 +240,7 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function exportAllProductsToPluggTo() {
-    error_reporting(0);
+
 
     $this->load->model('catalog/product');
     $this->load->model('pluggto/pluggto');
@@ -252,9 +257,9 @@ class ControllerModulePluggTo extends Controller {
         'quantity'   => $product['quantity'],
         'external'   => $product['product_id'],
         'description'=> $product['description'],
-        'brand'      => $product['brand'],
+        'brand'      => isset($product['brand']) ? $product['brand'] : '',
         'ean'        => $product['ean'],
-        'nbm'        => $product['nbm'],
+        'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
         'isbn'       => $product['isbn'],
         'available'  => $product['status'],
         'dimension'  => [
@@ -273,7 +278,7 @@ class ControllerModulePluggTo extends Controller {
       if ($existProduct->num_rows > 0) {
         $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
 
-        if ($response->type == "not_found") {
+        if (isset($response->type) and $response->type == "not_found") {
           $response = $this->model_pluggto_pluggto->createTo($data);   
 
           if (isset($response->Product->id)) {
