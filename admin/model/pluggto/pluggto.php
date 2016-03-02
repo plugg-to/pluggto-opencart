@@ -339,48 +339,66 @@ class ModelPluggtoPluggto extends Model{
     return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
   }
 
-  public function uploadImagesToOpenCart($photos, $main=true)
-  {
+  public function uploadImagesToOpenCart($photos, $main=true){
+    $this->load->model('tool/image');
+    
     $response = [];
     foreach ($photos as $i => $photo) {
-      try {
-        $photo = file_get_contents(str_replace('https', 'http', $photo->url));
-        
-        $filename = md5(uniqid()) . '.jpg';
+      $photo = file_get_contents(str_replace('https', 'http', $photo->url));
 
-        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/cache/catalog/' . $filename, 'w+');        
+      $filename = md5(uniqid());
+
+      $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/cache/catalog/' . $filename . '.jpg', 'w+');        
+      fputs($file, $photo);
+      fclose($file);        
+
+      $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/catalog/' . $filename . '.jpg', 'w+');        
+      fputs($file2, $photo);
+      fclose($file2);        
+      
+      $sizes = [
+        [
+          'width' => 40,
+          'height' => 40,
+        ],
+        [
+          'width' => 100,
+          'height' => 100,
+        ]
+      ];
+
+      foreach ($sizes as $size) {
+        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/cache/catalog/' . $filename . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');      
         fputs($file, $photo);
+        fclose($file);      
 
-        $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/catalog/' . $filename, 'w+');        
+        $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/catalog/' . $filename  . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');        
         fputs($file2, $photo);
-        
-        fclose($file);        
-
-        if ($main)
-          return $filename;
-
-        $response[] = [
-          'image' => 'catalog/' . $filename,
-          'sort_order' => $i
-        ];
-      } catch (Exception $e) {
-        $e->getMessage();
+        fclose($file2);    
       }
+
+      if ($main)
+        return $filename . '.jpg';
+
+      $response[] = [
+        'image' => 'catalog/' . $filename . '.jpg',
+        'sort_order' => $i
+      ];
     }
+
     return $response;
   }
 
   public function getProductOptionToOpenCart($product)
   {
     if (empty($product->Product->variations)){
-      return false;
+      return [];
     }
-
+    // echo '<pre>';print_r($product->Product->variations);exit;
     $response = [];
     foreach ($product->Product->variations as $i => $variation) {
       $response[] = [
-        'type' => 'select',
-        'product_option_value' => $variation->name,
+        'value' => $variation->name,
         'option_id' => 11,
         'option_value_id' =>  48,
         'quantity' => $variation->quantity,
