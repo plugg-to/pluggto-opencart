@@ -240,8 +240,6 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function exportAllProductsToPluggTo() {
-
-
     $this->load->model('catalog/product');
     $this->load->model('pluggto/pluggto');
     
@@ -253,6 +251,7 @@ class ControllerModulePluggTo extends Controller {
       $data = [
         'name'       => $product['name'],
         'sku'        => $product['sku'],
+        'grant_type' => "authorization_code",
         'price'      => $product['price'],
         'quantity'   => $product['quantity'],
         'external'   => $product['product_id'],

@@ -229,17 +229,17 @@ class ModelPluggtoPluggto extends Model{
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($ch, CURLOPT_POST, 1);
       
-      if (isset($params['grant_type']) && !empty($params['grant_type'])) {
+      // if (isset($params['grant_type']) && !empty($params['grant_type'])) {
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
-      } else {
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . json_encode($params))
-        );
-        echo json_encode($params);
-      }
+      // } else {
+      //   curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+      //   curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+      //       'Content-Type: application/json',
+      //       'Content-Length: ' . json_encode($params))
+      //   );
+      //   echo json_encode($params);
+      // }
 
     }elseif (strtolower ( $method ) == "put") {
 
@@ -256,9 +256,9 @@ class ModelPluggtoPluggto extends Model{
       );
 
     }
-
+    
     $result = curl_exec($ch);
-
+    
     return json_decode($result);
   }
 
