@@ -348,11 +348,11 @@ class ModelPluggtoPluggto extends Model{
 
       $filename = md5(uniqid());
 
-      $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/cache/catalog/' . $filename . '.jpg', 'w+');        
+      $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/image/cache/catalog/' . $filename . '.jpg', 'w+');        
       fputs($file, $photo);
       fclose($file);        
 
-      $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/catalog/' . $filename . '.jpg', 'w+');        
+      $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/image/catalog/' . $filename . '.jpg', 'w+');        
       fputs($file2, $photo);
       fclose($file2);        
       
@@ -368,11 +368,11 @@ class ModelPluggtoPluggto extends Model{
       ];
 
       foreach ($sizes as $size) {
-        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/cache/catalog/' . $filename . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');      
+        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/image/cache/catalog/' . $filename . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');      
         fputs($file, $photo);
         fclose($file);      
 
-        $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/upload/image/catalog/' . $filename  . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');        
+        $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/image/catalog/' . $filename  . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');        
         fputs($file2, $photo);
         fclose($file2);    
       }
