@@ -2,7 +2,7 @@
 
 ini_set("display_errors", "1");
 ini_set('max_execution_time', 0);
-error_reporting(0);
+error_reporting(-1);
 
 
 class ControllerModulePluggTo extends Controller {
@@ -270,6 +270,7 @@ class ControllerModulePluggTo extends Controller {
         'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
         'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
         'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
+        'special_price' => $this->getSpecialPriceProductToPluggTo($product['product_id'])
       ];
       
       $existProduct = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product['product_id']);
@@ -297,6 +298,11 @@ class ControllerModulePluggTo extends Controller {
 
     $this->session->data['alerts'] = 'Exportação feita com sucesso!';
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+  }
+
+  public function getSpecialPriceProductToPluggTo($product_id) {
+    $specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
+    return $specialPrice[0]['price'];
   }
 
   public function getPhotosToSaveInOpenCart($product_id, $image_main) {

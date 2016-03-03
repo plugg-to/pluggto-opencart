@@ -344,13 +344,15 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getProductSpecialPriceToOpenCart($product){
-    return [
+    $response = [
       'customer_group_id' => 1,
       'priority' => 0,
       'price' => $product->Product->special_price,
       'date_start' => null,
       'date_end' => null
     ];
+
+    return ($product->Product->special_price > 0) ? $response : null;
   }
 
   public function uploadImagesToOpenCart($photos, $main=true){
@@ -403,8 +405,7 @@ class ModelPluggtoPluggto extends Model{
     return $response;
   }
 
-  public function getProductOptionToOpenCart($product)
-  {
+  public function getProductOptionToOpenCart($product){
     if (empty($product->Product->variations)){
       return [];
     }
@@ -429,8 +430,7 @@ class ModelPluggtoPluggto extends Model{
     return $response;
   }
 
-  public function getProductDescriptions($product)
-  {
+  public function getProductDescriptions($product){
     $languages = $this->db->query("SELECT * FROM " . DB_PREFIX . "language");
 
     $response = [];
@@ -576,8 +576,7 @@ class ModelPluggtoPluggto extends Model{
     return $response;
   }
 
-  public function getNotifications($limit = 100)
-  {
+  public function getNotifications($limit = 100){
     $query = "SELECT * FROM ".DB_PREFIX."pluggto_notifications LIMIT ".$limit;
 
     return $this->db->query($query)->rows;
