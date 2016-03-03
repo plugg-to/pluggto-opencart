@@ -300,7 +300,7 @@ class ModelPluggtoPluggto extends Model{
 
   public function prepareToSaveInOpenCart($product) {
     $synchronizationSettings = $this->getSettingsProductsSynchronization();
-
+    
     if (!$synchronizationSettings->row['refresh_only_stock']) {
       $data = [
         'sku'    => $product->Product->sku,
@@ -315,6 +315,7 @@ class ModelPluggtoPluggto extends Model{
         'product_image' => $this->uploadImagesToOpenCart($product->Product->photos, false),
         'product_description' => $this->getProductDescriptions($product),
         'product_option' => $this->getProductOptionToOpenCart($product),
+        'product_special' => $this->getProductSpecialPriceToOpenCart($product),
         'product_store' => [
           0
         ],
@@ -333,10 +334,23 @@ class ModelPluggtoPluggto extends Model{
 
     if ($synchronizationSettings->row['refresh_only_stock']) {
       $product_id = $this->existProductInOpenCart($product->Product->id);
+      $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "'");
       return $this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = '" . $this->db->escape($data['quantity']) . "' WHERE product_id = '" . (int)$product_id . "'");
     }
 
+    $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product->Product->id . "'");
+
     return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
+  }
+
+  public function getProductSpecialPriceToOpenCart($product){
+    return [
+      'customer_group_id' => 1,
+      'priority' => 0,
+      'price' => $product->Product->special_price,
+      'date_start' => null,
+      'date_end' => null
+    ];
   }
 
   public function uploadImagesToOpenCart($photos, $main=true){
@@ -368,11 +382,11 @@ class ModelPluggtoPluggto extends Model{
       ];
 
       foreach ($sizes as $size) {
-        $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/image/cache/catalog/' . $filename . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');      
+        $file = fopen(DIR_IMAGE . 'cache/catalog/' . $filename . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');      
         fputs($file, $photo);
         fclose($file);      
 
-        $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/image/catalog/' . $filename  . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');        
+        $file2 = fopen(DIR_IMAGE . 'catalog/' . $filename  . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');        
         fputs($file2, $photo);
         fclose($file2);    
       }
@@ -394,7 +408,7 @@ class ModelPluggtoPluggto extends Model{
     if (empty($product->Product->variations)){
       return [];
     }
-    // echo '<pre>';print_r($product->Product->variations);exit;
+    
     $response = [];
     foreach ($product->Product->variations as $i => $variation) {
       $response[] = [
