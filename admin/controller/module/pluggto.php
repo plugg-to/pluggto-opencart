@@ -284,7 +284,7 @@ class ControllerModulePluggTo extends Controller {
             $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
           }      
         }
-
+        
         continue;
       }
       
@@ -357,7 +357,10 @@ class ControllerModulePluggTo extends Controller {
       $response[] = [
         'code'  => $attribute['attribute_id'],
         'label' => $attribute['product_attribute_description'][1]['text'],
-        'value' => $attribute['product_attribute_description'][1]['text'],
+        'value' => [
+          'code'  => $attribute['attribute_id'],
+          'label' => $attribute['product_attribute_description'][1]['text'],
+        ]
       ];
     }
 
