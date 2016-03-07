@@ -413,17 +413,23 @@ class ModelPluggtoPluggto extends Model{
     $response = [];
     foreach ($product->Product->variations as $i => $variation) {
       $response[] = [
-        'value' => $variation->name,
+        'name' => 'Tamanho',//$variation->name,
+        'type' => 'select',
+        'required' => 1,
         'option_id' => 11,
-        'option_value_id' =>  48,
-        'quantity' => $variation->quantity,
-        'subtract' => 1,
-        'price' => 0,
-        'price_prefix' => '+',
-        'points' => 0,
-        'points_prefix' => '+',
-        'weight' => $variation->dimension->weight,
-        'weight_prefix' => '+'
+        'product_option_id' => 239,
+        'product_option_value' => [
+          'option_value_id' =>  48,
+          'product_option_value_id' => null,
+          'quantity' => $variation->quantity,
+          'subtract' => 1,
+          'price' => 0,
+          'price_prefix' => '+',
+          'points' => 0,
+          'points_prefix' => '+',
+          'weight' => $variation->dimension->weight,
+          'weight_prefix' => '+',
+        ]
       ];
     }
 
