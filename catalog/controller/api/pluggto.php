@@ -24,8 +24,8 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronGetProductsAndOrders() {
-		//$num_orders_pluggto  	= $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
-		//$num_orders_opencart 	= $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
+		$num_orders_pluggto  	= $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
+		$num_orders_opencart 	= $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
         
         $exportProducts = $this->saveProductsInPluggto();
         $importProducts = $this->importAllProductsToOpenCart();
@@ -200,7 +200,7 @@ class ControllerApiPluggto extends Controller {
     			'payer_razao_social'  => '',
     			'payer_ie'			  => '',
     			'payer_gender'        => 'n/a',
-    			'items'				  => [],
+    			'items'				  => $this->getItemsToOrderPluggTo($order),
     			'shipments'           => [],
      		];
 
@@ -211,6 +211,31 @@ class ControllerApiPluggto extends Controller {
 	     		$cont++;
      		}
     	}
+	}
+
+	public function getItemsToOrderPluggTo($order){
+		$this->load->model('pluggto/pluggto');
+		$this->load->model('account/order');
+
+		$items = $this->model_account_order->getOrderProducts($order['order_id']);
+		
+		$response = [];
+		foreach ($items as $item) {
+			$responseGetRelaction = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($item['product_id']);
+			
+			$response[] = [
+				'id' => $responseGetRelaction->row['pluggto_product_id'],
+				'sku' => null,
+				'price' => $item['price'],
+				'discount' => null,
+				'quantity' => $item['quantity'],
+				'total' => $item['total'],
+				'external' => $item['product_id'],
+				'variation' => []
+			];
+		}
+
+		return $response;
 	}
 
 	public function saveProductsInPluggto()

@@ -173,8 +173,7 @@ class ModelPluggtoPluggto extends Model{
     return json_decode($result);
   }
 
-  public function validateFields($fields) 
-  {
+  public function validateFields($fields){
     foreach ($fields as $key => $field) {
       if (empty($field)) {
         return $key;
@@ -183,8 +182,7 @@ class ModelPluggtoPluggto extends Model{
     return true;
   }
 
-  public function createNotification($fields) 
-  {
+  public function createNotification($fields){
     $validate = $this->validateFields($fields);
 
     if ($validate === true) {
@@ -193,8 +191,7 @@ class ModelPluggtoPluggto extends Model{
     return $validate;
   }
 
-  public function saveNotification($fileds) 
-  {
+  public function saveNotification($fileds){
       $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action, date_created, date_modified, status) 
                       VALUES 
                             ('".$fileds['resource_id']."', '".$fileds['type']."', '".$fileds['action']."', '".$fileds['date_created']."', 
@@ -204,8 +201,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
  
-  public function getProduct($product_id) 
-  {
+  public function getProduct($product_id){
       $url = "http://api.plugg.to/products/".$product_id;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
@@ -215,8 +211,7 @@ class ModelPluggtoPluggto extends Model{
       return $data;
   }
 
-  public function getOrder($orderId)
-  {
+  public function getOrder($orderId){
       $url = "http://api.plugg.to/orders/".$orderId;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
@@ -226,8 +221,7 @@ class ModelPluggtoPluggto extends Model{
       return $data;
   }
 
-  public function getProductsNotification($field = false)
-  {
+  public function getProductsNotification($field = false){
         if (!$field) {
             $field = '*';
         }
@@ -239,8 +233,7 @@ class ModelPluggtoPluggto extends Model{
         return $result->rows;
   }
   
-public function prepareToSaveInOpenCart($product) 
-{
+  public function prepareToSaveInOpenCart($product) {
     $synchronizationSettings = $this->getSettingsProductsSynchronization();
 
     if (!$synchronizationSettings->row['refresh_only_stock']) {
@@ -286,221 +279,220 @@ public function prepareToSaveInOpenCart($product)
     return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
   }
 
-  public function getSettingsProductsSynchronization()
-  {
+  public function getSettingsProductsSynchronization(){
         $sql = "SELECT * FROM " . DB_PREFIX . "settings_products_synchronization ORDER BY id DESC LIMIT 1";
         return $this->db->query($sql);    
   }
 
-   public function formatObjectCategoryToList($categoriesObject) 
-    {
-        $response = [];
-        
-        foreach ($categoriesObject as $i => $category) {
-          $auxiliar[] = $category->name;
-        }
+  public function formatObjectCategoryToList($categoriesObject) 
+  {
+      $response = [];
+      
+      foreach ($categoriesObject as $i => $category) {
+        $auxiliar[] = $category->name;
+      }
 
-        if (empty($auxiliar))
-          return false;
+      if (empty($auxiliar))
+        return false;
 
-        $response = $this->findCategoriesInOpenCart($auxiliar);
+      $response = $this->findCategoriesInOpenCart($auxiliar);
 
-        return $response;
-    }
+      return $response;
+  }
 
-    public function findCategoriesInOpenCart($namesOfCategories)
-    {
-        $response = [];
+  public function findCategoriesInOpenCart($namesOfCategories)
+  {
+      $response = [];
 
-        $this->load->model('catalog/category');
-        $categories = $this->prepareDataCategoryToArraySearch($this->model_catalog_category->getCategories());
+      $this->load->model('catalog/category');
+      $categories = $this->prepareDataCategoryToArraySearch($this->model_catalog_category->getCategories());
 
-        foreach ($namesOfCategories as $i => $names) {
-          $id_category = array_search(explode(' >', $names)[0], $categories);
-          $response[] = $id_category;
-        }
+      foreach ($namesOfCategories as $i => $names) {
+        $id_category = array_search(explode(' >', $names)[0], $categories);
+        $response[] = $id_category;
+      }
 
-        return $response;
-    }
+      return $response;
+  }
 
-    public function prepareDataCategoryToArraySearch($categoriesOpenCart) 
-    {
-        $response = [];
+  public function prepareDataCategoryToArraySearch($categoriesOpenCart) 
+  {
+      $response = [];
 
-        foreach ($categoriesOpenCart as $i => $category) {
-          $response[$category['category_id']] = $category['name'];
-        }
-        
-        return $response;
-    }
+      foreach ($categoriesOpenCart as $i => $category) {
+        $response[$category['category_id']] = $category['name'];
+      }
+      
+      return $response;
+  }
 
-    public function existProductInOpenCart($id) 
-    {
-        $sql = "SELECT * FROM `" . DB_PREFIX . "pluggto_products_relation_opencart_products` WHERE `pluggto_product_id` = '" . $id . "' AND `active` = 1";
-        $response = $this->db->query($sql);
+  public function existProductInOpenCart($id) 
+  {
+      $sql = "SELECT * FROM `" . DB_PREFIX . "pluggto_products_relation_opencart_products` WHERE `pluggto_product_id` = '" . $id . "' AND `active` = 1";
+      $response = $this->db->query($sql);
 
-        if (empty($response->rows))
-          return false;
+      if (empty($response->rows))
+        return false;
 
-        return $response->row['opencart_product_id'];
-    }
+      return $response->row['opencart_product_id'];
+  }
 
-    public function createPluggToProductRelactionOpenCartPluggTo($pluggto_product_id, $opencart_product_id) 
-    {
-         return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
-    }
+  public function createPluggToProductRelactionOpenCartPluggTo($pluggto_product_id, $opencart_product_id) 
+  {
+       return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
+  }
 
-    public function updateStatusNotification($productId)
-    {
-         $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 0 WHERE resource_id = '$productId'";
+  public function updateStatusNotification($productId)
+  {
+       $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 0 WHERE resource_id = '$productId'";
 
-         return $this->db->query($query);
-    }
+       return $this->db->query($query);
+  }
 
-    public function createOrderIdOpenCart($length = 50) 
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $string = '';
+  public function createOrderIdOpenCart($length = 50) 
+  {
+      $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      $string = '';
 
-        for ($i = 0; $i < $length; $i++) {
-            $string .= $characters[mt_rand(0, strlen($characters) - 1)];
-        }
+      for ($i = 0; $i < $length; $i++) {
+          $string .= $characters[mt_rand(0, strlen($characters) - 1)];
+      }
 
-        return $string;
-    }
+      return $string;
+  }
 
-    public function getAllPluggToProductRelactionsOpenCart() 
-    {
-        return $this->db->query("SELECT * FROM  " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1");
-    }
+  public function getAllPluggToProductRelactionsOpenCart() 
+  {
+      return $this->db->query("SELECT * FROM  " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1");
+  }
 
-    public function updateStockPluggTo($product, $id) 
-    {
-        $url = "http://api.plugg.to/products/" . $id . "/stock";
-        $method = "put";
-        $accesstoken = $this->getAccesstoken();
-        $url = $url . "?access_token=" . $accesstoken;
-        $params = $product;
-        $data = $this->sendRequest($method, $url, $params);
-        return $data;
-    }
+  public function updateStockPluggTo($product, $id) 
+  {
+      $url = "http://api.plugg.to/products/" . $id . "/stock";
+      $method = "put";
+      $accesstoken = $this->getAccesstoken();
+      $url = $url . "?access_token=" . $accesstoken;
+      $params = $product;
+      $data = $this->sendRequest($method, $url, $params);
+      return $data;
+  }
 
-    public function updateTo($product, $id) 
-    {
-        $url = "http://api.plugg.to/products/".$id;
-        
-        $method = "put";
-        
-        $accesstoken = $this->getAccesstoken();
-        
-        $url = $url . "?access_token=" . $accesstoken;
-        
-        $params = $product;
-        
-        $data = $this->sendRequest($method, $url, $params);
-        
-        return $data;
-    }
+  public function updateTo($product, $id) 
+  {
+      $url = "http://api.plugg.to/products/".$id;
+      
+      $method = "put";
+      
+      $accesstoken = $this->getAccesstoken();
+      
+      $url = $url . "?access_token=" . $accesstoken;
+      
+      $params = $product;
+      
+      $data = $this->sendRequest($method, $url, $params);
+      
+      return $data;
+  }
 
-    public function getPhotosToSaveInOpenCart($product_id, $image_main)
-    {
-        $this->load->model('catalog/product');
+  public function getPhotosToSaveInOpenCart($product_id, $image_main)
+  {
+      $this->load->model('catalog/product');
 
-        $images = $this->model_catalog_product->getProductImages($product_id);
+      $images = $this->model_catalog_product->getProductImages($product_id);
 
-        $response = [
-          [
-            'url' =>  $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
-            'remove' => true
-          ],
-          [
-            'url'   => $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
-            'title' => 'Imagem principal do produto',
-            'order' => 0
-          ]
-        ];
+      $response = [
+        [
+          'url' =>  $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+          'remove' => true
+        ],
+        [
+          'url'   => $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+          'title' => 'Imagem principal do produto',
+          'order' => 0
+        ]
+      ];
 
-        return $response;
-    }
+      return $response;
+  }
 
-    public function getVariationsToSaveInOpenCart($product_id) 
-    {
-        $this->load->model('catalog/product');
+  public function getVariationsToSaveInOpenCart($product_id) 
+  {
+      $this->load->model('catalog/product');
 
-        $product = $this->model_catalog_product->getProduct($product_id);
-        $options = $this->model_catalog_product->getProductOptions($product_id);
+      $product = $this->model_catalog_product->getProduct($product_id);
+      $options = $this->model_catalog_product->getProductOptions($product_id);
 
-        $response = [];
-        foreach ($options as $i => $option) {
-          foreach ($option['product_option_value'] as $item) {
-            $response[] = [
-              'name'     => $product['name'],
-              'external' => $option['product_option_id'],
-              'quantity' => $item['quantity'],
-              'special_price' => '',
-              'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
-              'sku' => $product['sku'],
-              'ean' => '',
-              'photos' => [],
-              'attributes' => [],
-              'dimesion' => [
-                'length' => $product['length'],
-                'width'  => $product['width'],
-                'height' => $product['height'],
-                'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
-              ]
-            ];
-          }
-        }
-
-        return $response;
-    }
-
-    public function getAtrributesToSaveInOpenCart($product_id) 
-    {
-        $this->load->model('catalog/product');
-
-        $product    = $this->model_catalog_product->getProduct($product_id);
-        $attributes = $this->model_catalog_product->getProductAttributes($product_id);
-
-        $response = [];
-
-        foreach ($attributes as $i => $attribute) {
+      $response = [];
+      foreach ($options as $i => $option) {
+        foreach ($option['product_option_value'] as $item) {
           $response[] = [
-            'code'  => $attribute['attribute_id'],
-            'label' => $attribute['product_attribute_description'][1]['text'],
-            'value' => $attribute['product_attribute_description'][1]['text'],
+            'name'     => $product['name'],
+            'external' => $option['product_option_id'],
+            'quantity' => $item['quantity'],
+            'special_price' => '',
+            'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+            'sku' => $product['sku'],
+            'ean' => '',
+            'photos' => [],
+            'attributes' => [],
+            'dimesion' => [
+              'length' => $product['length'],
+              'width'  => $product['width'],
+              'height' => $product['height'],
+              'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
+            ]
           ];
         }
+      }
 
-        return $response;
-    }
+      return $response;
+  }
 
-    public function getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id_opencart) {
-        return $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1 AND opencart_product_id = " . $product_id_opencart . "");
-    }
+  public function getAtrributesToSaveInOpenCart($product_id) 
+  {
+      $this->load->model('catalog/product');
 
-    public function createTo($product) 
-    {    
-        $url         = "http://api.plugg.to/products";
-        $method      = "post";
-        $accesstoken = $this->getAccesstoken();
-        $url         = $url."?access_token=".$accesstoken;
-        $params      = $product;
-        $data        = $this->sendRequest($method, $url, $params);
-        
-        return $data;
-    }
+      $product    = $this->model_catalog_product->getProduct($product_id);
+      $attributes = $this->model_catalog_product->getProductAttributes($product_id);
 
-    public function getProducts() 
-    {
-        $url         = "http://api.plugg.to/products";
-        $method      = "get";
-        $accesstoken = $this->getAccesstoken();
-        $params      = array("access_token" => $accesstoken);
-        $data        = $this->sendRequest($method, $url, $params);
-        
-        return $data;
+      $response = [];
+
+      foreach ($attributes as $i => $attribute) {
+        $response[] = [
+          'code'  => $attribute['attribute_id'],
+          'label' => $attribute['product_attribute_description'][1]['text'],
+          'value' => $attribute['product_attribute_description'][1]['text'],
+        ];
+      }
+
+      return $response;
+  }
+
+  public function getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id_opencart) {
+      return $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1 AND opencart_product_id = " . $product_id_opencart . "");
+  }
+
+  public function createTo($product) 
+  {    
+      $url         = "http://api.plugg.to/products";
+      $method      = "post";
+      $accesstoken = $this->getAccesstoken();
+      $url         = $url."?access_token=".$accesstoken;
+      $params      = $product;
+      $data        = $this->sendRequest($method, $url, $params);
+      
+      return $data;
+  }
+
+  public function getProducts() 
+  {
+      $url         = "http://api.plugg.to/products";
+      $method      = "get";
+      $accesstoken = $this->getAccesstoken();
+      $params      = array("access_token" => $accesstoken);
+      $data        = $this->sendRequest($method, $url, $params);
+      
+      return $data;
   }
 
 
