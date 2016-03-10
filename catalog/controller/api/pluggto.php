@@ -59,7 +59,7 @@ class ControllerApiPluggto extends Controller {
 		$response = [];
 
 		$notifications = $this->model_pluggto_pluggto->getNotifications(100, 'orders');
-
+		
 		foreach ($notifications as $notification) {
 			$order = $this->model_pluggto_pluggto->getOrderPluggTo($notification['resource_id']);
 
@@ -151,7 +151,7 @@ class ControllerApiPluggto extends Controller {
 					]
 				]
 			];
-			echo '<pre>';print_r($data);exit;
+
 			$this->model_checkout_order->addOrder($data);
 		}
 	}

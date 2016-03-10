@@ -324,7 +324,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $data['quantity'] = $product->Product->quantity;
-    echo '<pre>';print_r($data);exit;
+    
     $this->load->model('catalog/product');
 
     if (!$this->existProductInOpenCart($product->Product->id) && !$synchronizationSettings->row['refresh_only_stock']){
