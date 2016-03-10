@@ -2,6 +2,8 @@ Para instalar você deve copiar os diretorios desta pasta e colar no seu opencar
 
 E pronto o modulo foi instalado.
 
+Variações devem conter nomes iguais nas duas plataformas para poderem ser associadas
+
 Dúvidas acesse
 
 plugg.to

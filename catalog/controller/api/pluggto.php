@@ -24,7 +24,7 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronOrders() {
-		$num_orders_pluggto  	= $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
+		// $num_orders_pluggto  	= $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
 		$num_orders_opencart 	= $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
                 
         $response = [
@@ -58,15 +58,13 @@ class ControllerApiPluggto extends Controller {
 
 		$response = [];
 
-		$allOrders = $this->model_pluggto_pluggto->getOrdersPluggTo();
+		$notifications = $this->model_pluggto_pluggto->getNotifications(100, 'orders');
 
-		if (!$allOrders->result) {
-			return false;
-		}
+		foreach ($notifications as $notification) {
+			$order = $this->model_pluggto_pluggto->getOrderPluggTo($notification['resource_id']);
 
-		foreach ($allOrders->result as $order) {
-			if ($this->model_pluggto_pluggto->orderExistInPluggTo($order->Order->external)) {
-				continue;
+			if (!isset($order->Order) && empty($order->Order)) {
+				echo 'criar funcao de log';exit;
 			}
 
 			$response[] = $order;
@@ -76,6 +74,7 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function saveOrdersInOpenCart($orders) {
+
 		$this->load->model('checkout/order');
 
 		foreach ($orders as $i => $order) {
@@ -152,10 +151,9 @@ class ControllerApiPluggto extends Controller {
 					]
 				]
 			];
-
+			echo '<pre>';print_r($data);exit;
 			$this->model_checkout_order->addOrder($data);
 		}
-
 	}
 
 	public function saveOrdersInPluggTo($orders) {

@@ -589,8 +589,8 @@ class ModelPluggtoPluggto extends Model{
     return $response;
   }
 
-  public function getNotifications($limit = 100){
-    $query = "SELECT * FROM " . DB_PREFIX . "pluggto_notifications WHERE status = 1 LIMIT " . $limit;
+  public function getNotifications($limit = 100, $type = 'products'){
+    $query = "SELECT * FROM " . DB_PREFIX . "pluggto_notifications WHERE status = 1 AND type = '" . $type . "' LIMIT " . $limit;
 
     return $this->db->query($query)->rows;
   }

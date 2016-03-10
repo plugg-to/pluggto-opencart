@@ -96,6 +96,15 @@ class ModelPluggtoPluggto extends Model{
     return $data;    
   }
 
+  public function getOrderPluggTo($id) {
+    $url = "http://api.plugg.to/orders";
+    $method = "get";
+    $accesstoken = $this->getAccesstoken();
+    $url = $url."/" . $id . "?access_token=".$accesstoken;
+    $data = $this->sendRequest($method, $url, []);
+    return $data;        
+  }
+
   public function getCredentials() {
     $sql = "SELECT * FROM `". DB_PREFIX . "pluggto`
             ORDER BY id DESC
@@ -231,6 +240,12 @@ class ModelPluggtoPluggto extends Model{
         $result = $this->db->query($query);
 
         return $result->rows;
+  }
+
+  public function getNotifications($limit = 100, $type = 'products'){
+    $query = "SELECT * FROM " . DB_PREFIX . "pluggto_notifications WHERE status = 1 AND type = '" . $type . "' LIMIT " . $limit;
+    
+    return $this->db->query($query)->rows;
   }
   
   public function prepareToSaveInOpenCart($product) {
