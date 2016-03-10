@@ -324,7 +324,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $data['quantity'] = $product->Product->quantity;
-    
+    echo '<pre>';print_r($data);exit;
     $this->load->model('catalog/product');
 
     if (!$this->existProductInOpenCart($product->Product->id) && !$synchronizationSettings->row['refresh_only_stock']){
@@ -360,15 +360,20 @@ class ModelPluggtoPluggto extends Model{
     
     $response = [];
     foreach ($photos as $i => $photo) {
+      $type = substr($photo->url, -4);
+
       $photo = file_get_contents(str_replace('https', 'http', $photo->url));
+      
+      if (!$photo)
+        return null;
 
       $filename = md5(uniqid());
 
-      $file = fopen($_SERVER['DOCUMENT_ROOT'] . '/image/cache/catalog/' . $filename . '.jpg', 'w+');        
+      $file = fopen(DIR_IMAGE . 'cache/catalog/' . $filename . $type, 'w+');        
       fputs($file, $photo);
       fclose($file);        
 
-      $file2 = fopen($_SERVER['DOCUMENT_ROOT'] . '/image/catalog/' . $filename . '.jpg', 'w+');        
+      $file2 = fopen(DIR_IMAGE . 'catalog/' . $filename . $type, 'w+');        
       fputs($file2, $photo);
       fclose($file2);        
       
@@ -383,21 +388,16 @@ class ModelPluggtoPluggto extends Model{
         ]
       ];
 
+      $filename = $filename . $type;
       foreach ($sizes as $size) {
-        $file = fopen(DIR_IMAGE . 'cache/catalog/' . $filename . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');      
-        fputs($file, $photo);
-        fclose($file);      
-
-        $file2 = fopen(DIR_IMAGE . 'catalog/' . $filename  . '-' . $size['width'] . 'x'. $size['height'] . '.jpg', 'w+');        
-        fputs($file2, $photo);
-        fclose($file2);    
+        $this->model_tool_image->resize('catalog/' . $filename, $size['width'], $size['height']);
       }
 
       if ($main)
-        return $filename . '.jpg';
+        return $filename;
 
       $response[] = [
-        'image' => 'catalog/' . $filename . '.jpg',
+        'image' => 'catalog/' . $filename,
         'sort_order' => $i
       ];
     }
@@ -409,31 +409,38 @@ class ModelPluggtoPluggto extends Model{
     if (empty($product->Product->variations)){
       return [];
     }
-    
-    $response = [];
+
+    $response   = [];
+    $response[] = [
+      'name' => 'Size',
+      'type' => 'select',
+      'required' => 1,
+      'option_id' => 11,
+      'product_option_id' => null,
+    ];
+
     foreach ($product->Product->variations as $i => $variation) {
-      $response[] = [
-        'name' => 'Tamanho',//$variation->name,
-        'type' => 'select',
-        'required' => 1,
-        'option_id' => 11,
-        'product_option_id' => 239,
-        'product_option_value' => [
-          'option_value_id' =>  48,
+      $response[0]['product_option_value'][] = [
+          'option_value_id' => $this->getOptionValueIDByName($variation->name),
           'product_option_value_id' => null,
           'quantity' => $variation->quantity,
           'subtract' => 1,
-          'price' => 0,
+          'price' => null,
           'price_prefix' => '+',
-          'points' => 0,
+          'points' => null,
           'points_prefix' => '+',
-          'weight' => $variation->dimension->weight,
+          'weight' => null,
           'weight_prefix' => '+',
-        ]
       ];
     }
 
     return $response;
+  }
+
+  public function getOptionValueIDByName($name){
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
+    
+    return $result->row['option_value_id'];
   }
 
   public function getProductDescriptions($product){
@@ -583,7 +590,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getNotifications($limit = 100){
-    $query = "SELECT * FROM ".DB_PREFIX."pluggto_notifications LIMIT ".$limit;
+    $query = "SELECT * FROM " . DB_PREFIX . "pluggto_notifications WHERE status = 1 LIMIT " . $limit;
 
     return $this->db->query($query)->rows;
   }

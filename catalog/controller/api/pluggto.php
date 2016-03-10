@@ -334,7 +334,6 @@ class ControllerApiPluggto extends Controller {
         return json_encode($response);
     }
 
-
 	public function getNotification() 
 	{
 		$this->load->model('pluggto/pluggto');
@@ -392,31 +391,23 @@ class ControllerApiPluggto extends Controller {
 
 		$message = [];
 		foreach ($productsQuery as $key => $value) {			
+			if ($value['type'] != 'products') {
+				continue;
+			}
+
 			$product = $this->model_pluggto_pluggto->getProduct($value['resource_id']);
-			
+
 			if (isset($product->Product)) {				
 				$this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
 				
 				$message[$key]['resource_id'] = $product->Product->id;
 				$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
-			} else {
-				$order = $this->model_pluggto_pluggto->getOrder($value['resource_id']);
-
-				if (isset($order->Order)) {
-					$orderIdOpenCart = $this->model_pluggto_pluggto->createOrderIdOpenCart();
-					$result = $this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $orderIdOpenCart);
-	
-					$message[$key]['resource_id'] = $order->Order->id;
-					$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($order->Order->id);
-				} else {
-					$message[$key]['resource_id'] = $value['resource_id'];
-					$message[$key]['saved']       = "Error: Resource not found";
-				}
 			}
 		}
 
-		$priceAndStock = $this->verifyStockAndPriceProducts();
-		array_push($message, $priceAndStock);
+		// $priceAndStock = $this->verifyStockAndPriceProducts();
+
+		array_push($message, null);
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
