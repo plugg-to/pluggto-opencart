@@ -23,17 +23,13 @@ class ControllerApiPluggto extends Controller {
 
 	}
 
-	public function cronGetProductsAndOrders() {
+	public function cronOrders() {
 		$num_orders_pluggto  	= $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
 		$num_orders_opencart 	= $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
-        
-        $exportProducts = $this->saveProductsInPluggto();
-        $importProducts = $this->importAllProductsToOpenCart();
-        
+                
         $response = [
-            'orders_created_pluggto' => $num_orders_pluggto,
-            'productsExported'       => $exportProducts,
-            'productsImported'       => $importProducts,
+            'orders_created_opencart' => $num_orders_opencart,
+            'orders_created_pluggto'  => $num_orders_pluggto
         ];
 
 		$this->response->addHeader('Content-Type: application/json');
