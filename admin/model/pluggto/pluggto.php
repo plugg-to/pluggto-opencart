@@ -151,6 +151,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function setCredentials($api_user, $api_secret, $client_id, $client_secret) {
+    $this->db->query("DELETE FROM " . DB_PREFIX . "pluggto");
     $sql = "INSERT INTO `" . DB_PREFIX . "pluggto` ( api_user, api_secret, client_id, client_secret)
             VALUES ('".$api_user."', '".$api_secret."','".$client_id ."','".$client_secret."')";
 
@@ -222,26 +223,16 @@ class ModelPluggtoPluggto extends Model{
         CURLOPT_URL => $url
       ));
 
-    }elseif (strtolower ( $method ) == "post") {
+    } elseif (strtolower ( $method ) == "post") {
 
       curl_setopt($ch, CURLOPT_URL, $url);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($ch, CURLOPT_POST, 1);
-      
-      // if (isset($params['grant_type']) && !empty($params['grant_type'])) {
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
-      // } else {
-      //   curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-      //   curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-      //       'Content-Type: application/json',
-      //       'Content-Length: ' . json_encode($params))
-      //   );
-      //   echo json_encode($params);
-      // }
+      curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
 
-    }elseif (strtolower ( $method ) == "put") {
+    } elseif (strtolower ( $method ) == "put") {
 
       $data_string = json_encode($params);
 
@@ -278,6 +269,22 @@ class ModelPluggtoPluggto extends Model{
     return $data;
   }
 
+  public function sendToPluggTo($product, $sku) {
+    $url = "http://api.plugg.to/products/" . $sku;
+    
+    $method = "put";
+    
+    $accesstoken = $this->getAccesstoken();
+    
+    $url = $url . "?access_token=" . $accesstoken;
+    
+    $params = $product;
+    
+    $data = $this->sendRequest($method, $url, $params);
+    
+    return $data;    
+  }
+
   public function updateStockPluggTo($product, $id) {
     $url = "http://api.plugg.to/products/" . $id . "/stock";
     $method = "put";
@@ -299,166 +306,8 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function prepareToSaveInOpenCart($product) {
-    $synchronizationSettings = $this->getSettingsProductsSynchronization();
-    
-    if (!$synchronizationSettings->row['refresh_only_stock']) {
-      $data = [
-        'sku'    => $product->Product->sku,
-        'model'  => $product->Product->name,
-        'price'  => $product->Product->price,
-        'weight' => $product->Product->dimension->weight,
-        'length' => $product->Product->dimension->length,
-        'width'  => $product->Product->dimension->width,
-        'height' => $product->Product->dimension->height,
-        'status' => 1,
-        'image'  => 'catalog/' . $this->uploadImagesToOpenCart($product->Product->photos, true),
-        'product_image' => $this->uploadImagesToOpenCart($product->Product->photos, false),
-        'product_description' => $this->getProductDescriptions($product),
-        'product_option' => $this->getProductOptionToOpenCart($product),
-        'product_special' => $this->getProductSpecialPriceToOpenCart($product),
-        'product_store' => [
-          0
-        ],
-        'product_category' => $this->formatObjectCategoryToList($product->Product->categories)
-      ];
-    }
-
-    $data['quantity'] = $product->Product->quantity;
-    
-    $this->load->model('catalog/product');
-
-    if (!$this->existProductInOpenCart($product->Product->id) && !$synchronizationSettings->row['refresh_only_stock']){
-      $product_id = $this->model_catalog_product->addProduct($data);
-      return $this->createPluggToProductRelactionOpenCartPluggTo($product->Product->id, $product_id);
-    }
-
-    if ($synchronizationSettings->row['refresh_only_stock']) {
-      $product_id = $this->existProductInOpenCart($product->Product->id);
-      $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "'");
-      return $this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = '" . $this->db->escape($data['quantity']) . "' WHERE product_id = '" . (int)$product_id . "'");
-    }
-
-    $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product->Product->id . "'");
-
-    return $this->model_catalog_product->editProduct($this->existProductInOpenCart($product->Product->id), $data);
-  }
-
-  public function getProductSpecialPriceToOpenCart($product){
-    $response = [
-      'customer_group_id' => 1,
-      'priority' => 0,
-      'price' => $product->Product->special_price,
-      'date_start' => null,
-      'date_end' => null
-    ];
-
-    return ($product->Product->special_price > 0) ? $response : null;
-  }
-
-  public function uploadImagesToOpenCart($photos, $main=true){
-    $this->load->model('tool/image');
-    
-    $response = [];
-    foreach ($photos as $i => $photo) {
-      $type = substr($photo->url, -4);
-
-      $photo = file_get_contents(str_replace('https', 'http', $photo->url));
-      
-      if (!$photo)
-        return null;
-
-      $filename = md5(uniqid());
-
-      $file = fopen(DIR_IMAGE . 'cache/catalog/' . $filename . $type, 'w+');        
-      fputs($file, $photo);
-      fclose($file);        
-
-      $file2 = fopen(DIR_IMAGE . 'catalog/' . $filename . $type, 'w+');        
-      fputs($file2, $photo);
-      fclose($file2);        
-      
-      $sizes = [
-        [
-          'width' => 40,
-          'height' => 40,
-        ],
-        [
-          'width' => 100,
-          'height' => 100,
-        ]
-      ];
-
-      $filename = $filename . $type;
-      foreach ($sizes as $size) {
-        $this->model_tool_image->resize('catalog/' . $filename, $size['width'], $size['height']);
-      }
-
-      if ($main)
-        return $filename;
-
-      $response[] = [
-        'image' => 'catalog/' . $filename,
-        'sort_order' => $i
-      ];
-    }
-
-    return $response;
-  }
-
-  public function getProductOptionToOpenCart($product){
-    if (empty($product->Product->variations)){
-      return [];
-    }
-
-    $response   = [];
-    $response[] = [
-      'name' => 'Size',
-      'type' => 'select',
-      'required' => 1,
-      'option_id' => 11,
-      'product_option_id' => null,
-    ];
-
-    foreach ($product->Product->variations as $i => $variation) {
-      $response[0]['product_option_value'][] = [
-          'option_value_id' => $this->getOptionValueIDByName($variation->name),
-          'product_option_value_id' => null,
-          'quantity' => $variation->quantity,
-          'subtract' => 1,
-          'price' => null,
-          'price_prefix' => '+',
-          'points' => null,
-          'points_prefix' => '+',
-          'weight' => null,
-          'weight_prefix' => '+',
-      ];
-    }
-
-    return $response;
-  }
-
-  public function getOptionValueIDByName($name){
-    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
-    
-    return $result->row['option_value_id'];
-  }
-
-  public function getProductDescriptions($product){
-    $languages = $this->db->query("SELECT * FROM " . DB_PREFIX . "language");
-
-    $response = [];
-    foreach ($languages->rows as $i => $language) {
-      $response[$language['language_id']] = [
-        'name'             => $product->Product->name,
-        'description'      => $product->Product->short_description,
-        'tag'              => '',
-        'meta_title'       => '',
-        'meta_description' => '',
-        'meta_keyword'     => '',
-      ];
-    }
-    
-    return $response;
+    file_get_contents(HTTP_CATALOG . 'index.php?route=api/pluggto/importAllProductsToOpenCart');
+    return true;
   }
 
   public function offAllProductsWithPluggTo() {

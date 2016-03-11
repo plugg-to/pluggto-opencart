@@ -239,61 +239,7 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function exportAllProductsToPluggTo() {
-    $this->load->model('catalog/product');
-    $this->load->model('pluggto/pluggto');
-    
-    $products_opencart = $this->model_catalog_product->getProducts();
-    $productPrepare = [];
-    $data = [];
-
-    foreach ($products_opencart as $product) {
-      $data = [
-        'name'       => $product['name'],
-        'sku'        => $product['sku'],
-        'grant_type' => "authorization_code",
-        'price'      => $product['price'],
-        'quantity'   => $product['quantity'],
-        'external'   => $product['product_id'],
-        'description'=> $product['description'],
-        'brand'      => isset($product['brand']) ? $product['brand'] : '',
-        'ean'        => $product['ean'],
-        'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
-        'isbn'       => $product['isbn'],
-        'available'  => $product['status'],
-        'dimension'  => [
-          'length' => $product['length'],
-          'width'  => $product['width'],
-          'height' => $product['height']
-        ],
-        'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
-        'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
-        'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
-        'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
-        'special_price' => $this->getSpecialPriceProductToPluggTo($product['product_id'])
-      ];
-      
-      $existProduct = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product['product_id']);
-      
-      if ($existProduct->num_rows > 0) {
-        $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
-
-        if (isset($response->type) and $response->type == "not_found") {
-          $response = $this->model_pluggto_pluggto->createTo($data);   
-
-          if (isset($response->Product->id)) {
-            $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
-          }      
-        }
-        
-        continue;
-      }
-      
-      $response = $this->model_pluggto_pluggto->createTo($data);
-      
-      if (isset($response->Product->id)) {
-        $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
-      }
-    }
+    file_get_contents(HTTP_CATALOG . 'index.php?route=api/pluggto/cronProducts');
 
     $this->session->data['alerts'] = 'Exportação feita com sucesso!';
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
@@ -301,7 +247,7 @@ class ControllerModulePluggTo extends Controller {
 
   public function getSpecialPriceProductToPluggTo($product_id) {
     $specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
-    return $specialPrice[0]['price'];
+    return end($specialPrice)['special'];
   }
 
   public function getPhotosToSaveInOpenCart($product_id, $image_main) {
@@ -325,7 +271,7 @@ class ControllerModulePluggTo extends Controller {
   public function getVariationsToSaveInOpenCart($product_id) {
     $product = $this->model_catalog_product->getProduct($product_id);
     $options = $this->model_catalog_product->getProductOptions($product_id);
-
+  
     $response = [];
     foreach ($options as $i => $option) {
       foreach ($option['product_option_value'] as $item) {
@@ -333,9 +279,9 @@ class ControllerModulePluggTo extends Controller {
           'name'     => $product['name'],
           'external' => $option['product_option_id'],
           'quantity' => $item['quantity'],
-          'special_price' => '',
+          'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
           'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
-          'sku' => $product['sku'],
+          'sku' => 'sku-' . $option['product_option_id'],
           'ean' => '',
           'photos' => [],
           'attributes' => [],
@@ -353,12 +299,30 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function getAtrributesToSaveInOpenCart($product_id) {
+    $this->load->model('catalog/product');
+
     $product    = $this->model_catalog_product->getProduct($product_id);
     $attributes = $this->model_catalog_product->getProductAttributes($product_id);
 
     $response = [];
 
     foreach ($attributes as $i => $attribute) {
+      if (isset($attribute['attribute']) && !empty($attribute['attribute']))
+      {
+        foreach ($attribute['attribute'] as $i => $attr) {
+          $response[] = [
+            'code'  => $attr['attribute_id'],
+            'label' => $attr['text'],
+            'value' => [
+              'code'  => $attr['attribute_id'],
+              'label' => $attr['text'],
+            ]
+          ];
+        }
+
+        continue;
+      }
+
       $response[] = [
         'code'  => $attribute['attribute_id'],
         'label' => $attribute['product_attribute_description'][1]['text'],
