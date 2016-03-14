@@ -106,14 +106,17 @@ class ControllerApiPluggto extends Controller {
 		if (!empty($productsQueue))
 		{
 			foreach ($productsQueue as $product) {
-		        $product = $this->model_catalog_product->getProduct($product['product_id']);
-		        echo '<pre>';print_r($product);exit();
-	            // $return = $this->exportAllProductsToPluggTo($product);
-				
-				$response[$product['product_id']]['status']  = $return;
-				$response[$product['product_id']]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
+				try {
+			        $product = $this->model_catalog_product->getProduct($product['product_id']);
+		            $return = $this->model_pluggto_pluggto->exportAllProductsToPluggTo($product);
+					
+					$response[$product['product_id']]['status']  = $return;
+					$response[$product['product_id']]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
 
-				$this->model_pluggto_pluggto->processedQueueProduct($product['product_id']);
+					$this->model_pluggto_pluggto->processedQueueProduct($product['product_id']);
+				} catch (Exception $e) {
+					continue;
+				}
 			}
 		}
 
@@ -122,13 +125,17 @@ class ControllerApiPluggto extends Controller {
 		if (!empty($productsQueue))
 		{
 			foreach ($productsQueue as $product) {
-		        $product = $this->model_pluggto_pluggto->getProduct($product['product_id_pluggto']);
-	            $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
-				
-				$response[$product->Product->id]['status']  = $return;
-				$response[$product->Product->id]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
+				try {
+			        $product = $this->model_pluggto_pluggto->getProduct($product['product_id_pluggto']);
+		            $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+					
+					$response[$product->Product->id]['status']  = $return;
+					$response[$product->Product->id]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
 
-				$this->model_pluggto_pluggto->processedQueueProduct($product->Product->id, "pluggto");
+					$this->model_pluggto_pluggto->processedQueueProduct($product->Product->id, "pluggto");
+				} catch (Exception $e) {
+					continue;
+				}
 			}
 		}
 
