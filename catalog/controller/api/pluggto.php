@@ -36,6 +36,104 @@ class ControllerApiPluggto extends Controller {
 		$this->response->setOutput(json_encode($response));
 	}
 
+	public function cronProducts(){
+		if (isset($this->request->server['HTTP_ORIGIN'])) {
+			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
+		
+			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+		
+			$this->response->addHeader('Access-Control-Max-Age: 1000');
+		
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');		
+		}
+
+		$this->response->addHeader('Content-Type: application/json');
+		
+		$this->response->setOutput($this->exportAllProductsToPluggTo());	
+	}
+
+	public function cronUpdateProducts(){
+		$this->load->model('pluggto/pluggto');
+
+		$productsQuery = $this->model_pluggto_pluggto->getProductsNotification();
+
+		$message = [];
+		foreach ($productsQuery as $key => $value) {			
+			if ($value['type'] != 'products') {
+				continue;
+			}
+
+			$product = $this->model_pluggto_pluggto->getProduct($value['resource_id']);
+
+			if (isset($product->Product)) {				
+				$response = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+				
+				$message[$key]['resource_id'] = $product->Product->id;
+				$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
+			}
+		}
+
+		// $priceAndStock = $this->verifyStockAndPriceProducts();
+
+		array_push($message, null);
+
+		if (isset($this->request->server['HTTP_ORIGIN'])) {
+			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
+			$this->response->addHeader('Access-Control-Allow-Methods: GET');
+			$this->response->addHeader('Access-Control-Max-Age: 1000');
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		}
+		
+		$response = [
+			'code'    => 200,
+			'message' => $message
+		];
+
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($response));
+	}
+
+	public function processQueue(){
+		$this->load->model('catalog/product');
+		$this->load->model('pluggto/pluggto');
+
+		$productsQueue = $this->model_pluggto_pluggto->getQueuesProducts('opencart');
+
+        $response = [
+            'action' => "import products from pluggto",
+        ];
+
+		if (!empty($productsQueue))
+		{
+			foreach ($productsQueue as $product) {
+		        $product = $this->model_catalog_product->getProduct($product['product_id']);
+	            $return = $this->model_pluggto_pluggto->exportAllProductsToPluggTo($product);
+				
+				$response[$product['product_id']]['status']  = $return;
+				$response[$product['product_id']]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
+
+				$this->model_pluggto_pluggto->processedQueueProduct($product['product_id']);
+			}
+		}
+
+		$productsQueue = $this->model_pluggto_pluggto->getQueuesProducts('pluggto');
+		
+		if (!empty($productsQueue))
+		{
+			foreach ($productsQueue as $product) {
+		        $product = $this->model_pluggto_pluggto->getProduct($product['product_id_pluggto']);
+	            $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+				
+				$response[$product->Product->id]['status']  = $return;
+				$response[$product->Product->id]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
+
+				$this->model_pluggto_pluggto->processedQueueProduct($product->Product->id, "pluggto");
+			}
+		}
+
+		$this->response->setOutput(json_encode($response));
+	}
+
 	public function existNewOrdersOpenCart() {
     	$this->load->model('pluggto/pluggto');
 
@@ -238,61 +336,39 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
-	public function cronProducts(){
-		if (isset($this->request->server['HTTP_ORIGIN'])) {
-			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
-		
-			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
-		
-			$this->response->addHeader('Access-Control-Max-Age: 1000');
-		
-			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');		
-		}
-
-		$this->response->addHeader('Content-Type: application/json');
-		
-		$this->response->setOutput($this->exportAllProductsToPluggTo());	
-	}
-
-  	public function exportAllProductsToPluggTo() {
-	    $this->load->model('catalog/product');
-	    $this->load->model('pluggto/pluggto');
-	    
-	    $products_opencart = $this->model_catalog_product->getProducts();
+  	public function exportAllProductsToPluggTo($product) {
 	    $productPrepare = [];
 	    $data = [];
 
-	    foreach ($products_opencart as $product) {
-	    	if (empty($product['sku']))
-	    		echo 'not exist sku on product';
+    	if (empty($product['sku']))
+    		echo 'not exist sku on product';
 
-			$data = [
-				'name'       => $product['name'],
-				'sku'        => $product['sku'],
-				'grant_type' => "authorization_code",
-				'price'      => $product['price'],
-				'quantity'   => $product['quantity'],
-				'external'   => $product['product_id'],
-				'description'=> $product['description'],
-				'brand'      => isset($product['brand']) ? $product['brand'] : '',
-				'ean'        => $product['ean'],
-				'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
-				'isbn'       => $product['isbn'],
-				'available'  => $product['status'],
-				'dimension'  => [
-					'length' => $product['length'],
-					'width'  => $product['width'],
-					'height' => $product['height']
-				],
-				'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
-				'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
-				'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
-				'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
-				'special_price' => $this->getSpecialPriceProductToPluggTo($product['product_id'])
-			];
-			
+		$data = [
+			'name'       => $product['name'],
+			'sku'        => $product['sku'],
+			'grant_type' => "authorization_code",
+			'price'      => $product['price'],
+			'quantity'   => $product['quantity'],
+			'external'   => $product['product_id'],
+			'description'=> $product['description'],
+			'brand'      => isset($product['brand']) ? $product['brand'] : '',
+			'ean'        => $product['ean'],
+			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
+			'isbn'       => $product['isbn'],
+			'available'  => $product['status'],
+			'dimension'  => [
+				'length' => $product['length'],
+				'width'  => $product['width'],
+				'height' => $product['height']
+			],
+			'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
+			'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
+			'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
+			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
+			'special_price' => $this->getSpecialPriceProductToPluggTo($product['product_id'])
+		];
+
 			$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
-	    }
 
 	    return true;
 	}
@@ -378,10 +454,9 @@ class ControllerApiPluggto extends Controller {
         ];
         
         $result = $this->model_pluggto_pluggto->getProducts(1);
-        
         foreach ($result->result as $i => $product) {
            $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
-           
+		
            $productId = $product->Product->id;
            
            $response[$i]['status']  = $return;
@@ -439,50 +514,9 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
-	public function cronUpdateProducts(){
-		$this->load->model('pluggto/pluggto');
-
-		$productsQuery = $this->model_pluggto_pluggto->getProductsNotification();
-
-		$message = [];
-		foreach ($productsQuery as $key => $value) {			
-			if ($value['type'] != 'products') {
-				continue;
-			}
-
-			$product = $this->model_pluggto_pluggto->getProduct($value['resource_id']);
-
-			if (isset($product->Product)) {				
-				$response = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
-				
-				$message[$key]['resource_id'] = $product->Product->id;
-				$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
-			}
-		}
-
-		// $priceAndStock = $this->verifyStockAndPriceProducts();
-
-		array_push($message, null);
-
-		if (isset($this->request->server['HTTP_ORIGIN'])) {
-			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
-			$this->response->addHeader('Access-Control-Allow-Methods: GET');
-			$this->response->addHeader('Access-Control-Max-Age: 1000');
-			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-		}
-		
-		$response = [
-			'code'    => 200,
-			'message' => $message
-		];
-
-		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($response));
-	}
-
 	public function getSpecialPriceProductToPluggTo($product_id) {
 		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
-		return end($specialPrice)['special'];
+		return reset($specialPrice)['special'];
 	}
 
 	public function getPhotosToSaveInOpenCart($product_id, $image_main) {
@@ -490,11 +524,11 @@ class ControllerApiPluggto extends Controller {
 
 		$response = [
 		  [
-		    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+		    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
 		    'remove' => true
 		  ],
 		  [
-		    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
+		    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
 		    'title' => 'Imagem principal do produto',
 		    'order' => 0
 		  ]

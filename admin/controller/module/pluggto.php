@@ -2,7 +2,7 @@
 
 ini_set("display_errors", "1");
 ini_set('max_execution_time', 0);
-error_reporting(0);
+error_reporting(-1);
 
 
 class ControllerModulePluggTo extends Controller {
@@ -178,18 +178,10 @@ class ControllerModulePluggTo extends Controller {
   **/
   public function importAllProductsToOpenCart() {
     $this->load->model('pluggto/pluggto');
-    
-    $result = $this->model_pluggto_pluggto->getProducts(1);
-    $this->saveProducts($result);
 
-    $pages = $result->total / 50;
-    
-    for ($i = 2; $i <= $pages; $i++) {
-      $result = $this->model_pluggto_pluggto->getProducts($i);
-      $this->saveProducts($result);
-    }
+    $this->model_pluggto_pluggto->saveImportationQueue();
 
-    $this->session->data['alerts'] = 'Importação feita com sucesso!';
+    $this->session->data['alerts'] = 'Importação agendada com sucesso!';
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
@@ -239,9 +231,11 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function exportAllProductsToPluggTo() {
-    file_get_contents(HTTP_CATALOG . 'index.php?route=api/pluggto/cronProducts');
+    $this->load->model('pluggto/pluggto');
 
-    $this->session->data['alerts'] = 'Exportação feita com sucesso!';
+    $this->model_pluggto_pluggto->saveExportationQueue();
+
+    $this->session->data['alerts'] = 'Exportação agendada com sucesso!';
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 

@@ -247,6 +247,18 @@ class ModelPluggtoPluggto extends Model{
     return $this->db->query($query)->rows;
   }
 
+  public function getQueuesProducts($origin='opencart'){
+        if ($origin != "opencart"){
+          $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id_pluggto <> ''";
+        } else {
+          $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id <> ''";
+        }
+
+        $result = $this->db->query($query);
+
+        return $result->rows;
+  }
+
   public function prepareToSaveInOpenCart($product) {
     $synchronizationSettings = $this->getSettingsProductsSynchronization();
     
@@ -474,6 +486,17 @@ class ModelPluggtoPluggto extends Model{
   public function updateStatusNotification($productId)
   {
        $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 0 WHERE resource_id = '$productId'";
+
+       return $this->db->query($query);
+  }
+
+  public function processedQueueProduct($productId, $origin)
+  {
+      if ($origin == "opencart")
+        $query = "UPDATE ".DB_PREFIX."pluggto_products_queue SET process = 1 WHERE product_id = '$productId'";
+
+      if ($origin == "pluggto")
+        $query = "UPDATE ".DB_PREFIX."pluggto_products_queue SET process = 1 WHERE product_id_pluggto = '$productId'";
 
        return $this->db->query($query);
   }

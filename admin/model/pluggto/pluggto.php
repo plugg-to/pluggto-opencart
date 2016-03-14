@@ -71,6 +71,21 @@ class ModelPluggtoPluggto extends Model{
              MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
     
     $this->db->query($sql);
+
+    $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_queue` (
+            `id` int(11) NOT NULL,
+              `product_id` int(11) NOT NULL,
+              `product_id_pluggto` varchar(255) NOT NULL,
+              `process` int(11) NOT NULL,
+              `response` text NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+            ALTER TABLE `oc_pluggto_products_queue`
+             ADD PRIMARY KEY (`id`);
+            ALTER TABLE `oc_pluggto_products_queue`
+            MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+            ";
+
+    $this->db->query($sql);
   }
 
   public function uninstall() {
@@ -193,6 +208,15 @@ class ModelPluggtoPluggto extends Model{
     return $data;
   }
 
+  public function getProductsTableData() {
+    $url = "http://api.plugg.to/products/tableData";
+    $method = "get";
+    $accesstoken = $this->getAccesstoken();
+    $params = array("access_token" => $accesstoken);
+    $data = $this->sendRequest($method, $url, $params);
+    return $data;    
+  }
+
   public function getProduct($product_id) {
     $url = "http://api.plugg.to/products/".$product_id;
     $method = "get";
@@ -217,7 +241,7 @@ class ModelPluggtoPluggto extends Model{
         $i++;
         $url = $url . $value;
       }
-
+      
       curl_setopt_array($ch, array(
         CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_URL => $url
@@ -449,5 +473,33 @@ class ModelPluggtoPluggto extends Model{
     $responseField = $this->db->query($sql);
   }
 
+  public function saveImportationQueue(){
+    $this->load->model('catalog/product');
 
+    $products = $this->model_catalog_product->getProducts();
+    
+    $this->insertAllIDsOpenCart($products);
+  }
+
+  public function insertAllIDsOpenCart($products){
+    foreach ($products as $product) {
+      $sql = 'INSERT INTO ' . DB_PREFIX . 'pluggto_products_queue (product_id,process) VALUES ("' . $product['product_id'] . '", "0")';
+      $this->db->query($sql);
+    }
+  }
+
+  public function insertAllIDsPluggto($products){
+    foreach ($products->Products as $product) {
+      $sql = 'INSERT INTO ' . DB_PREFIX . 'pluggto_products_queue (product_id_pluggto, process) VALUES ("' . $product->id . '", "0")';
+      $this->db->query($sql);
+    }
+  }
+
+  public function saveExportationQueue(){
+    $this->load->model('catalog/product');
+
+    $products = $this->getProductsTableData();
+    
+    $this->insertAllIDsPluggto($products);
+  }
 }

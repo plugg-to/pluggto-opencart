@@ -156,12 +156,12 @@
                           <a href="<?php echo $link_export_all_products_to_pluggto; ?>" id="export-products" class="btn btn-danger">Exportação de todos os produtos para o PluggTo</a>
                         </div>
                       </div>
-                      <div class="form-group">
+<!--                       <div class="form-group">
                         <label class="col-sm-2 control-label" for="input-name">Desvincular todos produtos com o Plugg.To</label>
                         <div class="col-sm-10">
                           <a href="<?php echo $link_off_all_products_pluggto; ?>" id="off-all-products" class="btn btn-primary">Desvincular todos produtos com o Plugg.To</a>
                         </div>
-                      </div>
+                      </div> -->
                       </div>
                       <div class="form-group" style="float: right; padding-right: 15px;">
                         <button type="submit" class="btn btn-success">Salvar</button>
