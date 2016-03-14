@@ -107,7 +107,8 @@ class ControllerApiPluggto extends Controller {
 		{
 			foreach ($productsQueue as $product) {
 		        $product = $this->model_catalog_product->getProduct($product['product_id']);
-	            $return = $this->model_pluggto_pluggto->exportAllProductsToPluggTo($product);
+		        echo '<pre>';print_r($product);exit();
+	            // $return = $this->exportAllProductsToPluggTo($product);
 				
 				$response[$product['product_id']]['status']  = $return;
 				$response[$product['product_id']]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";

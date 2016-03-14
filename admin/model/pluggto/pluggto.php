@@ -476,9 +476,9 @@ class ModelPluggtoPluggto extends Model{
   public function saveImportationQueue(){
     $this->load->model('catalog/product');
 
-    $products = $this->model_catalog_product->getProducts();
+    $products = $this->getProductsTableData();
     
-    $this->insertAllIDsOpenCart($products);
+    $this->insertAllIDsPluggto($products);
   }
 
   public function insertAllIDsOpenCart($products){
@@ -498,8 +498,8 @@ class ModelPluggtoPluggto extends Model{
   public function saveExportationQueue(){
     $this->load->model('catalog/product');
 
-    $products = $this->getProductsTableData();
+    $products = $this->model_catalog_product->getProducts();
     
-    $this->insertAllIDsPluggto($products);
+    $this->insertAllIDsOpenCart($products);
   }
 }
