@@ -248,6 +248,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getQueuesProducts($origin='opencart'){
+    echo $origin;exit;
       $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action) VALUES ('fasdfasdfasdf', 'fasdfasdfasdf', 'asdfasdf')";
         if ($origin != "opencart"){
           $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id_pluggto <> ''";
