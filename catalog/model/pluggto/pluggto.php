@@ -187,6 +187,16 @@ class ModelPluggtoPluggto extends Model{
     return $data;
   }
 
+  public function editOrder($params, $id) {
+    $url = "http://api.plugg.to/orders/" . $id;
+    $method = "put";
+    $accesstoken = $this->getAccesstoken();
+    $url = $url."?access_token=".$accesstoken;
+    $params = $params;
+    $data = $this->sendRequest($method, $url, $params);
+    return $data;
+  }
+
   public function getOrdersPluggTo() {
     $url = "http://api.plugg.to/orders";
     $method = "get";
@@ -305,7 +315,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getOrder($orderId){
-      $url = "http://api.plugg.to/orders/".$orderId;
+      $url = "http://api.plugg.to/orders/" . $orderId;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);

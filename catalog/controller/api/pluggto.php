@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(0);
+error_reporting(-1);
 
 class ControllerApiPluggto extends Controller {
 
@@ -24,12 +24,21 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronOrders() {
-		// $num_orders_pluggto  	= $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
-		$num_orders_opencart 	= $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
-         
+		$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
+        
         $response = [
             'orders_created_or_updated_opencart' => $num_orders_opencart,
-            // 'orders_created_pluggto'  => $num_orders_pluggto
+        ];
+
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($response));
+	}
+
+	public function cronUpdateOrders() {
+		$num_orders_pluggto = $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
+	        
+        $response = [
+            'orders_created_or_updated_pluggto' => $num_orders_pluggto,
         ];
 
 		$this->response->addHeader('Content-Type: application/json');
@@ -154,10 +163,6 @@ class ControllerApiPluggto extends Controller {
 		$allOrders = $this->model_pluggto_pluggto->getOrders();
 
 		foreach ($allOrders->rows as $order) {
-			if ($this->model_pluggto_pluggto->orderExistInPluggTo($order['order_id'])) {
-				continue;
-			}
-
 			$response[] = $order;
 		}
 
@@ -175,7 +180,8 @@ class ControllerApiPluggto extends Controller {
 			$order = $this->model_pluggto_pluggto->getOrderPluggTo($notification['resource_id']);
 
 			if (!isset($order->Order) && empty($order->Order)) {
-				echo 'criar funcao de log';exit;
+				// echo 'criar funcao de log';exit;
+				continue;
 			}
 
 			$response[$notification['resource_id']] = $order;
@@ -191,7 +197,7 @@ class ControllerApiPluggto extends Controller {
 		foreach ($orders as $id_pluggto => $order) {
 			try {
 				$data = [
-					'invoice_prefix' 	 => 'INV-' . date('Y') . '-' . base64_encode((isset($order->Order->id) ? $order->Order->id : uniqid())),
+					'invoice_prefix' 	 => (isset($order->Order->id) ? $order->Order->id : null),
 					'store_id'			 => (isset($order->Order->id) ? $order->Order->id : null),
 					'store_name' 		 => $this->config->get('config_name'),
 					'store_url' 		 => HTTP_SERVER,
@@ -317,6 +323,7 @@ class ControllerApiPluggto extends Controller {
     	$this->load->model('pluggto/pluggto');
 
     	$cont = 0;
+    	$response = [];
     	foreach ($orders as $order) {
     		$params = [
     			'external' 			  => $order['order_id'],
@@ -351,17 +358,27 @@ class ControllerApiPluggto extends Controller {
     			'payer_razao_social'  => '',
     			'payer_ie'			  => '',
     			'payer_gender'        => 'n/a',
-    			'items'				  => $this->getItemsToOrderPluggTo($order),
+    			// 'items'				  => $this->getItemsToOrderPluggTo($order),
     			'shipments'           => [],
      		];
 
-     		$response = $this->model_pluggto_pluggto->createOrder($params);
+     		$order_id = $order['invoice_prefix'];
 
-     		if ($response->Order->id) {
-	     		$this->model_pluggto_pluggto->createRelationOrder($response->Order->id, $order['order_id']);
-	     		$cont++;
+     		try {
+	     		$existOrderOnPluggTo = $this->model_pluggto_pluggto->getOrder($order_id);
+	     		
+	     		if (empty($existOrderOnPluggTo->error)){
+	     			$response[$order_id] = $this->model_pluggto_pluggto->editOrder($params, $order_id);
+	     		} else {
+	     			$response[$order_id] = $this->model_pluggto_pluggto->createOrder($params);     			
+	     			continue;
+	     		}   
+     		} catch (Exception $e) {
+     			$response[$order_id] = $e->getMessage();
      		}
     	}
+
+    	return $response;
 	}
 
 	public function getItemsToOrderPluggTo($order){
@@ -371,9 +388,7 @@ class ControllerApiPluggto extends Controller {
 		$items = $this->model_account_order->getOrderProducts($order['order_id']);
 		
 		$response = [];
-		foreach ($items as $item) {
-			$responseGetRelaction = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($item['product_id']);
-			
+		foreach ($items as $item) {			
 			$response[] = [
 				'id' => $responseGetRelaction->row['pluggto_product_id'],
 				'sku' => null,
