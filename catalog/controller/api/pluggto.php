@@ -26,10 +26,10 @@ class ControllerApiPluggto extends Controller {
 	public function cronOrders() {
 		// $num_orders_pluggto  	= $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
 		$num_orders_opencart 	= $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
-                
+         
         $response = [
-            'orders_created_opencart' => $num_orders_opencart,
-            'orders_created_pluggto'  => $num_orders_pluggto
+            'orders_created_or_updated_opencart' => $num_orders_opencart,
+            // 'orders_created_pluggto'  => $num_orders_pluggto
         ];
 
 		$this->response->addHeader('Content-Type: application/json');
@@ -64,18 +64,23 @@ class ControllerApiPluggto extends Controller {
 			}
 
 			$product = $this->model_pluggto_pluggto->getProduct($value['resource_id']);
-
-			if (isset($product->Product)) {				
-				$response = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
-				
-				$message[$key]['resource_id'] = $product->Product->id;
-				$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
+			
+			$product = isset($product->result[0]) ? $product->result[0] : (isset($product->Product) ? $product : null);
+			
+			if (isset($product)) {				
+				try {
+					$response = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);						
+					
+					$message[$key]['resource_id'] = $product->Product->id;
+					$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
+				} catch (Exception $e) {
+					$message[$key]['resource_id'] = $product->Product->id;
+					$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
+				}					
 			}
 		}
 
 		// $priceAndStock = $this->verifyStockAndPriceProducts();
-
-		array_push($message, null);
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
@@ -108,12 +113,12 @@ class ControllerApiPluggto extends Controller {
 			foreach ($productsQueue as $product) {
 				try {
 			        $product = $this->model_catalog_product->getProduct($product['product_id']);
-		            $return = $this->model_pluggto_pluggto->exportAllProductsToPluggTo($product);
+		            $return = $this->exportAllProductsToPluggTo($product);
 					
 					$response[$product['product_id']]['status']  = $return;
 					$response[$product['product_id']]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
 
-					$this->model_pluggto_pluggto->processedQueueProduct($product['product_id']);
+					$this->model_pluggto_pluggto->processedQueueProduct($product['product_id'], "opencart");
 				} catch (Exception $e) {
 					continue;
 				}
@@ -173,77 +178,97 @@ class ControllerApiPluggto extends Controller {
 				echo 'criar funcao de log';exit;
 			}
 
-			$response[] = $order;
+			$response[$notification['resource_id']] = $order;
 		}
-
+		
 		return $response;
 	}
 
 	public function saveOrdersInOpenCart($orders) {
-
+		$i = 0;
 		$this->load->model('checkout/order');
 
-		foreach ($orders as $i => $order) {
-			$data = [
-				'invoice_prefix' 	 => '',
-				'store_id'			 => (isset($order->Order->id) ? $order->Order->id : null),
-				'store_name' 		 => '',
-				'store_url' 		 => '',
-				'customer_id' 		 => '',
-				'customer_group_id'  => '',
-				'firstname' 		 => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
-				'lastname' 			 => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
-				'email' 			 => (isset($order->Order->receiver_email) ? $order->Order->receiver_email : null),
-				'telephone' 		 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
-				'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
-				'custom_field' 		 => '',
-				'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
-				'payment_lastname' 	 => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
-				'payment_company' 	 => (isset($order->Order->payer_razao_social) ? $order->Order->payer_razao_social : null),
-				'payment_address_1'  => (isset($order->Order->payer_address_reference) ? $order->Order->payer_address_reference : null),
-				'payment_city' 		 => (isset($order->Order->payer_city) ? $order->Order->payer_city : null),
-				'payment_postcode' 	 => (isset($order->Order->payer_zipcode) ? $order->Order->payer_zipcode : null),
-				'payment_country' 	 => (isset($order->Order->payer_country) ? $order->Order->payer_country : null),
-				'payment_country_id' => 30,
-				'payment_zone' 		 => '',
-				'payment_zone_id' 	 => '',
-				'payment_address_format' => '',
-				'payment_custom_field'   => '',
-				'payment_method' 	 => '',
-				'payment_code'		 => '',
-				'shipping_firstname' => (isset($order->Order->receiver_name) ? $order->Order->receiver_name : null),
-				'shipping_lastname'  => (isset($order->Order->receiver_lastname) ? $order->Order->receiver_lastname : null),
-				'shipping_company' 	 => '',
-				'shipping_address_1' => (isset($order->Order->receiver_address) ? $order->Order->receiver_address : null),
-				'shipping_address_2' => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
-				'shipping_city' 	 => (isset($order->Order->receiver_city) ? $order->Order->receiver_city : null),
-				'shipping_postcode'  => (isset($order->Order->receiver_zipcode) ? $order->Order->receiver_zipcode : null),
-				'shipping_country'   => (isset($order->Order->receiver_country) ? $order->Order->receiver_country : null),
-				'shipping_zone' 	 => '',
-				'shipping_zone_id' 	 => '',
-				'shipping_address_format' => '',
-				'shipping_custom_field' => '',
-				'shipping_method' 	 => (isset($order->Order->shipments[0]->shipping_method) ? $order->Order->shipments[0]->shipping_method : null),
-				'shipping_code' 	 => (isset($order->Order->shipments[0]->track_code) ? $order->Order->shipments[0]->track_code : null),
-				'comment' 			 => '',
-				'total' 			 => (isset($order->Order->total) ? $order->Order->total : null),
-				'affiliate_id' 		 => '',
-				'commission' 		 => '',
-				'marketing_id' 		 => '',
-				'tracking' 			 => '',
-				'language_id' 		 => '',
-				'currency_id' 		 => '',
-				'currency_code' 	 => '',
-				'currency_value' 	 => '',
-				'ip' 				 => '',
-				'forwarded_ip'		 => '',
-				'user_agent' 		 => '',
-				'accept_language' 	 => '',
-				'products' 			 => $this->getProductsToSaveOpenCart($order)
-			];
+		foreach ($orders as $id_pluggto => $order) {
+			try {
+				$data = [
+					'invoice_prefix' 	 => 'INV-' . date('Y') . '-' . base64_encode((isset($order->Order->id) ? $order->Order->id : uniqid())),
+					'store_id'			 => (isset($order->Order->id) ? $order->Order->id : null),
+					'store_name' 		 => $this->config->get('config_name'),
+					'store_url' 		 => HTTP_SERVER,
+					'customer_id' 		 => 0,
+					'customer_group_id'  => 1,
+					'firstname' 		 => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
+					'lastname' 			 => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
+					'email' 			 => (isset($order->Order->receiver_email) ? $order->Order->receiver_email : null),
+					'telephone' 		 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
+					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
+					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
+					'payment_lastname' 	 => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
+					'payment_company' 	 => (isset($order->Order->payer_razao_social) ? $order->Order->payer_razao_social : null),
+					'payment_address_1'  => (isset($order->Order->payer_address) ? $order->Order->payer_address : null),
+					'payment_city' 		 => (isset($order->Order->payer_city) ? $order->Order->payer_city : null),
+					'payment_postcode' 	 => (isset($order->Order->payer_zipcode) ? $order->Order->payer_zipcode : null),
+					'payment_country' 	 => (isset($order->Order->payer_country) ? $order->Order->payer_country : null),
+					'payment_country_id' => 30,
+					'payment_zone' 		 => (isset($order->Order->payer_city) ? $order->Order->payer_city : null),
+					'payment_zone_id' 	 => $this->getPaymentZoneIDByCity((isset($order->Order->payer_city) ? $order->Order->payer_city : null)),
+					'payment_method' 	 => $this->getPaymentMethodByOrderPluggTo($order->Order),
+					'payment_code'		 => $this->getPaymentCodeByOrderPluggTo($order->Order),
+					'shipping_firstname' => (isset($order->Order->receiver_name) ? $order->Order->receiver_name : null),
+					'shipping_lastname'  => (isset($order->Order->receiver_lastname) ? $order->Order->receiver_lastname : null),
+					'shipping_company' 	 => '',
+					'shipping_address_1' => (isset($order->Order->receiver_address) ? $order->Order->receiver_address : null),
+					'shipping_address_2' => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
+					'shipping_city' 	 => (isset($order->Order->receiver_city) ? $order->Order->receiver_city : null),
+					'shipping_postcode'  => (isset($order->Order->receiver_zipcode) ? $order->Order->receiver_zipcode : null),
+					'shipping_country'   => (isset($order->Order->receiver_country) ? $order->Order->receiver_country : null),
+					'shipping_zone' 	 => (isset($order->Order->receiver_city) ? $order->Order->receiver_city : null),
+					'shipping_zone_id' 	 => $this->getPaymentZoneIDByCity((isset($order->Order->receiver_city) ? $order->Order->receiver_city : null)),
+					'shipping_method' 	 => (isset($order->Order->shipments[0]->shipping_method) ? $order->Order->shipments[0]->shipping_method : null),
+					'shipping_code' 	 => (isset($order->Order->shipments[0]->track_code) ? $order->Order->shipments[0]->track_code : null),
+					'store_id'			 => 0,
+					'comment' 			 => '',
+					'total' 			 => (isset($order->Order->total) ? $order->Order->total : null),
+					'totals'			 => [
+						[
+							'code'  	 => 'sub_total',
+							'title' 	 => 'Sub-total',
+							'value' 	 => (isset($order->Order->total) ? $order->Order->total : null),
+							'sort_order' => 1,
+						],
+						[
+							'code'  	 => 'total',
+							'title' 	 => 'Total',
+							'value' 	 => (isset($order->Order->total) ? $order->Order->total : null),
+							'sort_order' => 9,
+						],
+					],
+					'currency_id' 		 => $this->model_pluggto_pluggto->getCurrencyMain()['currency_id'],
+					'currency_code' 	 => $this->model_pluggto_pluggto->getCurrencyMain()['currency_code'],
+					'currency_value' 	 => $this->model_pluggto_pluggto->getCurrencyMain()['currency_value'],
+					'products' 			 => $this->getProductsToSaveOpenCart($order)
+				];
 
-			$this->model_checkout_order->addOrder($data);
+				$existOrderID = $this->model_pluggto_pluggto->checkOrderByIDPluggTo($id_pluggto);
+
+				if ($existOrderID) {
+					$response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
+					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+				} else {
+					$response_id = $this->model_checkout_order->addOrder($data);
+					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+				}
+				
+				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(['success' => true, 'message' => 'OK']));
+
+			} catch (Exception $e) {
+				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(['success' => false, 'message' => $e->getMessage()]));
+			}
+
+			$i++;
 		}
+
+		return $i;
 	}
 
 	public function getProductsToSaveOpenCart($order) {
@@ -254,18 +279,38 @@ class ControllerApiPluggto extends Controller {
 		$response = [];
 		foreach ($order->Order->items as $key => $item) {
 			$response[] = [
-				'product_id' => $item->id,
+				'product_id' => $this->model_pluggto_pluggto->getIDItemBySKU($item->id),
 				'name'       => $item->name,
 				'model'	     => $item->name,
 				'quantity'   => $item->quantity,
 				'price'		 => $item->price,
 				'total'		 => $item->total,
-				'tax'		 => null,
-				'reward'	 => null
+				'tax'		 => 0,
+				'reward'	 => 0,	
+				'option'     => [],
+				'download'   => []
 			];
 		}
 
 		return $response;
+	}
+
+	public function getPaymentZoneIDByCity($city) {
+		$response = $this->model_pluggto_pluggto->getPaymentZoneIDByCity($city);
+
+		if (!empty($response->row)) {
+			return $response->row['zone_id'];
+		}
+
+		return null;
+	}
+
+	public function getPaymentMethodByOrderPluggTo($order) {
+		return 'PluggTo';
+	}
+
+	public function getPaymentCodeByOrderPluggTo($order) {
+		return 'free_checkout';
 	}
 
 	public function saveOrdersInPluggTo($orders) {
@@ -476,11 +521,14 @@ class ControllerApiPluggto extends Controller {
 
 	public function getNotification(){
 		$this->load->model('pluggto/pluggto');
+		
+		$inputJSON = file_get_contents('php://input');
+		$data      = json_decode($inputJSON, true); //convert JSON into array
 
 		$fields = [
-			'resource_id'   => empty($this->request->post['resource_id']) ? '' : $this->request->post['resource_id'],
-			'type'          => empty($this->request->post['type']) ? '' : $this->request->post['type'],
-			'action'        => empty($this->request->post['action']) ? '' : $this->request->post['action'],
+			'resource_id'   => empty($data['id']) ? '' : $data['id'],
+			'type'          => empty($data['type']) ? '' : $data['type'],
+			'action'        => empty($data['action']) ? '' : $data['action'],
 			'date_created'  => date('Y-m-d h:i:s', time()),
 			'date_modified' => date('Y-m-d h:i:s', time()),
 			'status'        => 1

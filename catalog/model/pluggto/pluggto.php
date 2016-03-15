@@ -77,6 +77,106 @@ class ModelPluggtoPluggto extends Model{
     return $this->db->query($sql);
   }
 
+  public function getPaymentZoneIDByCity($city) {
+    $sql = 'SELECT zone_id FROM ' . DB_PREFIX . 'zone WHERE name LIKE "%' . $city . '%"';
+    return $this->db->query($sql);
+  }
+
+  public function getCurrencyMain() {
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'currency WHERE code = "BRL"';
+    $response = $this->db->query($sql);
+
+    if (!empty($response->row)) {
+      return [
+        'currency_code'  => $response->row['code'],
+        'currency_id'    => $response->row['currency_id'],
+        'currency_value' => $response->row['value']
+      ];
+    }
+    
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'currency WHERE code = "USD"';
+    $response = $this->db->query($sql);
+
+    return [
+      'currency_code'  => $response->row['code'],
+      'currency_id'    => $response->row['currency_id'],
+      'currency_value' => $response->row['value']
+    ];
+  }
+
+  public function getStatusSaleByHistory($status_history) {
+    
+    if (empty($status_history)) {
+      return 1;//status correspondente a pendente
+    }
+
+    switch (end($status_history)->status) {
+      case 'pending':
+        return 1;
+      break; 
+      case 'paid': 
+        return 5;
+      break;
+      case 'approved': 
+        return 2;
+      break;
+      case 'waiting_invoice': 
+        return 2;
+      break;
+      case 'invoiced': 
+        return 2;
+      break;
+      case 'invoice_error': 
+        return 8;
+      break;
+      case 'shipping_informed': 
+        return 5;
+      break;
+      case 'shipped': 
+        return 5;
+      break;
+      case 'shipping_error': 
+        return 10;
+      break;
+      case 'delivered': 
+        return 5;
+      break;  
+      case 'canceled': 
+        return 9;
+      break;
+      case 'under_review':
+        return 13;
+      break;
+      default:
+        return 1;
+      break;
+    }
+  }
+
+  public function getIDItemBySKU($sku){
+    $sql = 'SELECT product_id FROM ' . DB_PREFIX . 'product WHERE sku = "' . $sku . '"';
+    
+    $response = $this->db->query($sql);
+    
+    if (!empty($response->row)) {
+      return $response->row->product_id;
+    }
+
+    return false;
+  }
+
+  public function checkOrderByIDPluggTo($pluggto_id) {
+    $sql = 'SELECT order_id FROM ' . DB_PREFIX . 'order WHERE invoice_prefix = "INV-' . date('Y') . "-" . base64_encode($pluggto_id) . '"';
+    
+    $response = $this->db->query($sql);
+    
+    if (!empty($response->row)) {
+      return $response->row->order_id;
+    }
+
+    return false;
+  }
+
   public function createOrder($params) {
     $url = "http://api.plugg.to/orders";
     $method = "post";
@@ -182,29 +282,15 @@ class ModelPluggtoPluggto extends Model{
     return json_decode($result);
   }
 
-  public function validateFields($fields){
-    foreach ($fields as $key => $field) {
-      if (empty($field)) {
-        return $key;
-      }
-    }
-    return true;
-  }
-
   public function createNotification($fields){
-    $validate = $this->validateFields($fields);
-
-    if ($validate === true) {
-      return $this->saveNotification($fields);
-    }
-    return $validate;
+    return $this->saveNotification($fields);
   }
 
-  public function saveNotification($fileds){
+  public function saveNotification($field){
       $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action, date_created, date_modified, status) 
                       VALUES 
-                            ('".$fileds['resource_id']."', '".$fileds['type']."', '".$fileds['action']."', '".$fileds['date_created']."', 
-                             '".$fileds['date_modified']."', '".$fileds['status']."')";
+                            ('".$field['resource_id']."', '".$field['type']."', '".$field['action']."', '".$field['date_created']."', 
+                             '".$field['date_modified']."', '".$field['status']."')";
       
       return $this->db->query($sql);
   }
@@ -214,8 +300,7 @@ class ModelPluggtoPluggto extends Model{
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
-      $data = $this->sendRequest($method, $url, $params);
-    
+      $data = $this->sendRequest($method, $url, $params);    
       return $data;
   }
 
@@ -248,7 +333,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getQueuesProducts($origin='opencart'){
-      $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action) VALUES ('fasdfasdfasdf', 'fasdfasdfasdf', 'asdfasdf')";
+        // var_dump($this->saveNotification(array('resource_id' => 'testeteste', 'type' => 'teste', 'action' => 'updated', 'date_created' => date('Y-m-d'), 'date_modified' => date('Y-m-d'), 'status' => 0))); echo '--------';
         if ($origin != "opencart"){
           $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id_pluggto <> ''";
         } else {
@@ -286,7 +371,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $data['quantity'] = $product->Product->quantity;
-    
+    echo '<pre>';print_r($data);exit;
     $this->load->model('catalog/product');
 
     $query = "SELECT product_id FROM ".DB_PREFIX."product WHERE sku = '" . $product->Product->sku . "'";
@@ -484,11 +569,17 @@ class ModelPluggtoPluggto extends Model{
        return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
   }
 
-  public function updateStatusNotification($productId)
+  public function updateStatusNotification($id, $response="")
   {
-       $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 0 WHERE resource_id = '$productId'";
+      if (!$response['success']) {
+        $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 1, description = '$response' WHERE resource_id = '$id'";
 
-       return $this->db->query($query);
+        return $this->db->query($query);
+      }
+
+      $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 0, description = '$response' WHERE resource_id = '$id'";
+
+      return $this->db->query($query);
   }
 
   public function processedQueueProduct($productId, $origin)
