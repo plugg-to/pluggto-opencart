@@ -35,7 +35,9 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronUpdateOrders() {
-		$num_orders_pluggto = $this->saveOrdersInPluggTo($this->existNewOrdersOpenCart());
+		$this->load->model('pluggto/pluggto');
+
+		$num_orders_pluggto = $this->saveOrdersInPluggTo($this->model_pluggto_pluggto->getOrders()->rows);
 	        
         $response = [
             'orders_created_or_updated_pluggto' => $num_orders_pluggto,
@@ -156,19 +158,6 @@ class ControllerApiPluggto extends Controller {
 		$this->response->setOutput(json_encode($response));
 	}
 
-	public function existNewOrdersOpenCart() {
-    	$this->load->model('pluggto/pluggto');
-
-    	$response  = [];
-		$allOrders = $this->model_pluggto_pluggto->getOrders();
-
-		foreach ($allOrders->rows as $order) {
-			$response[] = $order;
-		}
-
-		return $response;
-	}
-
 	public function existNewOrdersPluggTo() {
 		$this->load->model('pluggto/pluggto');
 
@@ -254,7 +243,7 @@ class ControllerApiPluggto extends Controller {
 					'currency_value' 	 => $this->model_pluggto_pluggto->getCurrencyMain()['currency_value'],
 					'products' 			 => $this->getProductsToSaveOpenCart($order)
 				];
-				
+
 				$existOrderID = $this->model_pluggto_pluggto->checkOrderByIDPluggTo($id_pluggto);
 
 				if ($existOrderID) {
@@ -325,11 +314,13 @@ class ControllerApiPluggto extends Controller {
     	$cont = 0;
     	$response = [];
     	foreach ($orders as $order) {
+    		$totals = $this->model_pluggto_pluggto->getOrderTotals($order['order_id']);
+    		
     		$params = [
     			'external' 			  => $order['order_id'],
-    			'status' 			  => 'pending', //$order['order_status'],
-    			'total' 			  => $order['total'],
-    			'subtotal' 			  => '',
+    			'status' 			  => $this->model_pluggto_pluggto->getStatusToPluggToByStatusOpenCart($order['order_status_id']),
+    			'total' 			  => $totals[0]['value'],
+    			'subtotal' 			  => $totals[1]['value'],
     			'shipping' 			  => '',
     			'discount' 			  => '',
     			'receiver_name'       => $order['shipping_firstname'],
@@ -358,7 +349,7 @@ class ControllerApiPluggto extends Controller {
     			'payer_razao_social'  => '',
     			'payer_ie'			  => '',
     			'payer_gender'        => 'n/a',
-    			// 'items'				  => $this->getItemsToOrderPluggTo($order),
+    			'items'				  => $this->getItemsToOrderPluggTo($order),
     			'shipments'           => [],
      		];
 

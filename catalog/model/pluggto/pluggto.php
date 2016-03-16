@@ -82,6 +82,30 @@ class ModelPluggtoPluggto extends Model{
     return $this->db->query($sql);
   }
 
+  public function getOrderTotals($order_id) {
+    $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_total WHERE order_id = '" . (int)$order_id . "' ORDER BY sort_order");
+    
+    return $query->rows;
+  }
+
+  public function getStatusToPluggToByStatusOpenCart($status_opencart) {
+    if (!$status_opencart) {
+      return 1;
+    }
+
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'order_status WHERE order_status_id = ' . $status_opencart;
+    $response = $this->db->query($sql);
+
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_pluggto = "' . $response->row['name'] . '"';
+    $response_field = $this->db->query($sql);
+
+    if (empty($response_field->row)) {
+      return -1;
+    }
+
+    return $response_field->row['field_opencart'];
+  }
+
   public function getCurrencyMain() {
     $sql = 'SELECT * FROM ' . DB_PREFIX . 'currency WHERE code = "BRL"';
     $response = $this->db->query($sql);

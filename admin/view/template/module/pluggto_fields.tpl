@@ -34,7 +34,7 @@
             <div class="row" style="width: 99%;">
               <form action="<?php echo $action_basic_fields; ?>" method="post" enctype="multipart/form-data" id="form-banner" class="form-horizontal">
                 <div class="col-md-12" style="margin-left: 20px;">
-                  <div class="panel panel-default">
+                  <!-- <div class="panel panel-default">
                     <div class="panel-heading">
                       <h3 class="panel-title">
                         <i class="fa fa-pencil"></i> Atrelamento de Campos Basicos (Produto)
@@ -912,7 +912,7 @@
                           </div>
                         </div>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="panel panel-default">
                     <div class="panel-heading">
                       <h3 class="panel-title">
