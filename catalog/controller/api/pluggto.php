@@ -19,7 +19,7 @@ class ControllerApiPluggto extends Controller {
 		}
 
 		$this->response->addHeader('Content-Type: application/json');
-		
+			
 		$this->response->setOutput(json_encode('$json'));
 	}
 
@@ -254,7 +254,7 @@ class ControllerApiPluggto extends Controller {
 					'currency_value' 	 => $this->model_pluggto_pluggto->getCurrencyMain()['currency_value'],
 					'products' 			 => $this->getProductsToSaveOpenCart($order)
 				];
-
+				
 				$existOrderID = $this->model_pluggto_pluggto->checkOrderByIDPluggTo($id_pluggto);
 
 				if ($existOrderID) {
