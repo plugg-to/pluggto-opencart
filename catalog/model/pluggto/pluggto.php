@@ -381,7 +381,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $data['quantity'] = $product->Product->quantity;
-    echo '<pre>';print_r($data);exit;
+
     $this->load->model('catalog/product');
 
     $query = "SELECT product_id FROM ".DB_PREFIX."product WHERE sku = '" . $product->Product->sku . "'";
@@ -579,13 +579,13 @@ class ModelPluggtoPluggto extends Model{
        return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
   }
 
-  public function updateStatusNotification($id, $response="")
+  public function updateStatusNotification($id, $response=[])
   {
-      if (!$response['success']) {
-        $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 1, description = '$response' WHERE resource_id = '$id'";
+      // if (!$response['success']) {
+      //   $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 1, description = '$response' WHERE resource_id = '$id'";
 
-        return $this->db->query($query);
-      }
+      //   return $this->db->query($query);
+      // }
 
       $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 0, description = '$response' WHERE resource_id = '$id'";
 
