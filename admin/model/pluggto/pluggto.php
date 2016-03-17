@@ -15,7 +15,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_log` (
-              `id` int(11) NOT NULL,
+              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
               `data` TEXT NOT NULL,
               `function` varchar(50) NOT NULL,
               `date` DATE
