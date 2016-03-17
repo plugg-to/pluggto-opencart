@@ -385,7 +385,6 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getQueuesProducts($origin='opencart'){
-        // var_dump($this->saveNotification(array('resource_id' => 'testeteste', 'type' => 'teste', 'action' => 'updated', 'date_created' => date('Y-m-d'), 'date_modified' => date('Y-m-d'), 'status' => 0))); echo '--------';
         if ($origin != "opencart"){
           $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id_pluggto <> ''";
         } else {
@@ -409,6 +408,7 @@ class ModelPluggtoPluggto extends Model{
         'length' => $product->Product->dimension->length,
         'width'  => $product->Product->dimension->width,
         'height' => $product->Product->dimension->height,
+        'stock'  => 1,
         'status' => 1,
         'image'  => 'catalog/' . $this->uploadImagesToOpenCart($product->Product->photos, true),
         'product_image' => $this->uploadImagesToOpenCart($product->Product->photos, false),
@@ -436,7 +436,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$sku->row['product_id'] . "'");
-    
+
     return $this->model_catalog_product->editProduct($sku->row['product_id'], $data);
   }
 
