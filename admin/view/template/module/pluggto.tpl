@@ -35,7 +35,7 @@
 
     <div class="alert alert-info" style="margin-top: 30px;">
       <p>Modulo de integração com a plataforma plugg.to mais informações acesse <a href="http://plugg.to">plugg.to</a> </p>
-      <p>Version: <b>1.0.0.0</b> </p>
+      <p>Version: <b>1.0.0.0</b> <i>BETA</i></p>
     </div>
   </div>
 
