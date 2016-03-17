@@ -1,8 +1,8 @@
 <?php
 
-ini_set("display_errors", "0");
+ini_set("display_errors", "1");
 ini_set('max_execution_time', 0);
-error_reporting(0);
+error_reporting(-1);
 
 
 class ControllerModulePluggTo extends Controller {
@@ -308,7 +308,7 @@ class ControllerModulePluggTo extends Controller {
     $data['alerts'] = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
 
-    $data['button_save'] = $this->language->get('button_save');
+    $data['button_pull'] = $this->url->link('module/pluggto/pullModule', 'token=' . $this->session->data['token'], 'SSL');;
     $data['button_cancel'] = $this->language->get('button_cancel');
 
     $data['button_add_module'] = $this->language->get('button_add_module');

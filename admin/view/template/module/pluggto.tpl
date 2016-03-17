@@ -12,9 +12,9 @@
     <div class="container-fluid">
       
       <div class="pull-right">
-        <button type="submit" form="form-latest" data-toggle="tooltip" title="<?php echo $button_save; ?>" class="btn btn-primary">
-          <i class="fa fa-save"></i>
-        </button>
+        <a href="<?php echo $button_pull; ?>" target="_blank" data-toggle="tooltip" title="Atualizar código do modulo." class="btn btn-warning">
+          <i class="fa fa-refresh"></i> Atualizar Modulo
+        </a>
         <a href="<?php echo $cancel; ?>" data-toggle="tooltip" title="<?php echo $button_cancel; ?>" class="btn btn-default">
           <i class="fa fa-reply"></i>
         </a>
@@ -32,7 +32,13 @@
 
   <div class="col-md-12 text-center" style="margin-bottom: 30px;">
     <img src="http://plugg.to/wp-content/uploads/2015/10/PluggTo-Header-Logo-Verde.png" alt="" /> 
+
+    <div class="alert alert-info" style="margin-top: 30px;">
+      <p>Modulo de integração com a plataforma plugg.to mais informações acesse <a href="http://plugg.to">plugg.to</a> </p>
+      <p>Version: <b>1.0.0.0</b> </p>
+    </div>
   </div>
+
 
   <?php if (!empty($access_status)) { ?>
     <h3><?php echo $access_status ?></h3>
@@ -41,19 +47,19 @@
     <div class="row" style="width: 97%;  margin-left: 15px;">
       <ul class="nav nav-tabs">
           <li class="nav active">
-            <a href="#A" data-toggle="tab">Keys Integration</a>
+            <a href="#A" data-toggle="tab">Chaves de Integração</a>
           </li>
           
           <li class="nav">
-            <a href="#B" data-toggle="tab">Settings</a>
+            <a href="#B" data-toggle="tab">Configurações iniciais</a>
           </li>
           
           <li>
-            <a href="<?php echo $link_basic_fields ?>">Setting Product</a> <!-- Aqui -->
+            <a href="<?php echo $link_basic_fields ?>">Configurações de Campos</a> <!-- Aqui -->
           </li>
 
           <li>
-            <a href="<?php echo $load_queue ?>">Queue</a> <!-- Aqui -->
+            <a href="<?php echo $load_queue ?>">Notificações</a> <!-- Aqui -->
           </li>          
 
       </ul>
@@ -66,7 +72,7 @@
                 <div class="panel panel-default">
                   <div class="panel-heading">
                     <h3 class="panel-title">
-                      <i class="fa fa-pencil"></i> Keys Integration
+                      <i class="fa fa-pencil"></i> Chaves de Integração
                     </h3>
                   </div>
                   <div class="panel-body">
@@ -112,7 +118,7 @@
                 <div class="panel panel-default">
                   <div class="panel-heading">
                     <h3 class="panel-title">
-                      <i class="fa fa-pencil"></i> Products synchronization
+                      <i class="fa fa-pencil"></i> Sicronização de Produtos
                     </h3>
                   </div>
                   <div class="panel-body">
