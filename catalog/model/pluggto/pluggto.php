@@ -408,7 +408,7 @@ class ModelPluggtoPluggto extends Model{
         'length' => $product->Product->dimension->length,
         'width'  => $product->Product->dimension->width,
         'height' => $product->Product->dimension->height,
-        'stock'  => 1,
+       'subtract'=> 1,
         'status' => 1,
         'image'  => 'catalog/' . $this->uploadImagesToOpenCart($product->Product->photos, true),
         'product_image' => $this->uploadImagesToOpenCart($product->Product->photos, false),

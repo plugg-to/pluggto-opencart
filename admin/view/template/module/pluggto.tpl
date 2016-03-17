@@ -12,7 +12,7 @@
     <div class="container-fluid">
       
       <div class="pull-right">
-        <a href="<?php echo $button_pull; ?>" target="_blank" data-toggle="tooltip" title="Atualizar código do modulo." class="btn btn-warning">
+        <a href="https://bitbucket.org/pluggto/opencart/downloads" target="_blank" data-toggle="tooltip" title="Atualizar código do modulo." class="btn btn-warning">
           <i class="fa fa-refresh"></i> Atualizar Modulo
         </a>
         <a href="<?php echo $cancel; ?>" data-toggle="tooltip" title="<?php echo $button_cancel; ?>" class="btn btn-default">
