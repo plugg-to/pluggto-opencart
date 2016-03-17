@@ -14,6 +14,15 @@ class ModelPluggtoPluggto extends Model{
 
       $this->db->query($sql);
 
+      $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_log` (
+              `id` int(11) NOT NULL,
+              `data` TEXT NOT NULL,
+              `function` varchar(50) NOT NULL,
+              `date` DATE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+      $this->db->query($sql);
+
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
               `id` int(11) NOT NULL,
               `active` tinyint(4) NOT NULL,

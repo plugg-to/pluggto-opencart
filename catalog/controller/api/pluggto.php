@@ -24,11 +24,15 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronOrders() {
+		$this->load->model('pluggto/pluggto');
+
 		$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
         
         $response = [
             'orders_created_or_updated_opencart' => $num_orders_opencart,
         ];
+
+        $this->model_pluggto_pluggto->createLog(print_r($response, 1), 'cronOrders');
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));
@@ -42,6 +46,8 @@ class ControllerApiPluggto extends Controller {
         $response = [
             'orders_created_or_updated_pluggto' => $num_orders_pluggto,
         ];
+
+        $this->model_pluggto_pluggto->createLog(print_r($response, 1), 'cronUpdateOrders');
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));
@@ -105,6 +111,8 @@ class ControllerApiPluggto extends Controller {
 			'message' => $message
 		];
 
+        $this->model_pluggto_pluggto->createLog(print_r($response, 1), 'cronUpdateProducts');
+		
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));
 	}
@@ -155,6 +163,8 @@ class ControllerApiPluggto extends Controller {
 			}
 		}
 
+        $this->model_pluggto_pluggto->createLog(print_r($response, 1), 'processQueue');
+
 		$this->response->setOutput(json_encode($response));
 	}
 
@@ -169,7 +179,7 @@ class ControllerApiPluggto extends Controller {
 			$order = $this->model_pluggto_pluggto->getOrderPluggTo($notification['resource_id']);
 
 			if (!isset($order->Order) && empty($order->Order)) {
-				// echo 'criar funcao de log';exit;
+				$this->model_pluggto_pluggto->createLog(print_r($order, 1), 'existNewOrdersPluggTo');
 				continue;
 			}
 
@@ -457,7 +467,9 @@ class ControllerApiPluggto extends Controller {
 			'special_price' => $this->getSpecialPriceProductToPluggTo($product['product_id'])
 		];
 
-			$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
+		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
+
+		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 
 	    return true;
 	}
@@ -531,6 +543,8 @@ class ControllerApiPluggto extends Controller {
 
             $messageIndex++;
         }
+
+		$this->model_pluggto_pluggto->createLog(print_r($json, 1), 'saveProductsInPluggto');
         
         return json_encode($json);
     }
@@ -551,6 +565,8 @@ class ControllerApiPluggto extends Controller {
            $response[$i]['status']  = $return;
            $response[$i]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
         }
+
+		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'importAllProductsToOpenCart');
 
         return json_encode($response);
     }
@@ -584,6 +600,8 @@ class ControllerApiPluggto extends Controller {
 			$this->response->addHeader('Access-Control-Max-Age: 1000');
 			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 		}
+
+		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'getNotification');
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));

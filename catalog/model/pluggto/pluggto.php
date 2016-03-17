@@ -338,6 +338,10 @@ class ModelPluggtoPluggto extends Model{
     return $this->saveNotification($fields);
   }
 
+  public function createLog($data, $function){
+    return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_log (data, function, date) VALUES ('" . $data . "', '" . $function . "', '" . date('Y-m-d') . "')")
+  }
+
   public function saveNotification($field){
       $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action, date_created, date_modified, status) 
                       VALUES 
