@@ -88,9 +88,13 @@ class ModelPluggtoPluggto extends Model{
     return $query->rows;
   }
 
+  public function getShippingMethodToPluggByOpenCart($input){
+    return $input;
+  }
+
   public function getStatusToPluggToByStatusOpenCart($status_opencart) {
     if (!$status_opencart) {
-      return 1;
+      return 'pending';
     }
 
     $sql = 'SELECT * FROM ' . DB_PREFIX . 'order_status WHERE order_status_id = ' . $status_opencart;

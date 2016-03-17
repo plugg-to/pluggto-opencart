@@ -309,6 +309,7 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function saveOrdersInPluggTo($orders) {
+		$this->load->model('checkout/order');
     	$this->load->model('pluggto/pluggto');
 
     	$cont = 0;
@@ -333,7 +334,7 @@ class ControllerApiPluggto extends Controller {
     			'receiver_phone_area' => '',
     			'receiver_phone'      => $order['telephone'],
     			'receiver_email'      => $order['email'],
-    			'delivery_type'       => 'onehour', //$order['shipping_method'],
+    			// 'delivery_type'       => $this->model_pluggto_pluggto->getShippingMethodToPluggByOpenCart($order['shipping_method']),
     			'payer_name'          => $order['shipping_firstname'],
     			'payer_lastname'      => $order['shipping_lastname'],
     			'payer_address'       => $order['shipping_address_1'],
@@ -350,26 +351,55 @@ class ControllerApiPluggto extends Controller {
     			'payer_ie'			  => '',
     			'payer_gender'        => 'n/a',
     			'items'				  => $this->getItemsToOrderPluggTo($order),
-    			'shipments'           => [],
+    			'shipments'           => $this->getDataShipmentsByOrder($order),
      		];
 
      		$order_id = $order['invoice_prefix'];
 
      		try {
+
 	     		$existOrderOnPluggTo = $this->model_pluggto_pluggto->getOrder($order_id);
-	     		
+				
 	     		if (empty($existOrderOnPluggTo->error)){
+
+	     			$params['shipments'][0]['id'] = isset($existOrderOnPluggTo->Order->shipments[0]->id) ? $existOrderOnPluggTo->Order->shipments[0]->id : null;
+	     			
 	     			$response[$order_id] = $this->model_pluggto_pluggto->editOrder($params, $order_id);
+	
 	     		} else {
-	     			$response[$order_id] = $this->model_pluggto_pluggto->createOrder($params);     			
+					
+	     			$temp = $this->model_pluggto_pluggto->createOrder($params);     			
+	     			
+	     			$response[$temp->Order->id] = $response;
+
+					$order['invoice_prefix'] = $temp->Order->id;
+
+		     		$this->model_checkout_order->editOrder($order['order_id'], $order);
+	
 	     			continue;
-	     		}   
+	
+	     		} 
+
      		} catch (Exception $e) {
+    
      			$response[$order_id] = $e->getMessage();
+    
      		}
     	}
 
     	return $response;
+	}
+
+	public function getDataShipmentsByOrder($order){
+		$response = [
+			[
+				'external' 		   => $order['order_id'],
+				'shipping_company' => $order['shipping_company'],
+				'shipping_method'  => $order['shipping_method']
+			]
+		];
+		
+		return $response;
 	}
 
 	public function getItemsToOrderPluggTo($order){
