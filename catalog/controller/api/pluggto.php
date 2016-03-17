@@ -440,7 +440,7 @@ class ControllerApiPluggto extends Controller {
 	    $data = [];
 
     	if (empty($product['sku']))
-    		echo 'not exist sku on product';
+			$this->model_pluggto_pluggto->createLog(print_r(['message' => 'not exist sku', 'sku' => $product['sku']], 1), 'exportAllProductsToPluggTo');
 
 		$data = [
 			'name'       => $product['name'],
