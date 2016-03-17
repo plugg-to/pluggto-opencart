@@ -423,7 +423,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $data['quantity'] = $product->Product->quantity;
-
+    
     $this->load->model('catalog/product');
 
     $query = "SELECT product_id FROM ".DB_PREFIX."product WHERE sku = '" . $product->Product->sku . "'";
@@ -436,7 +436,7 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$sku->row['product_id'] . "'");
-
+    
     return $this->model_catalog_product->editProduct($sku->row['product_id'], $data);
   }
 
@@ -460,15 +460,26 @@ class ModelPluggtoPluggto extends Model{
     
     $response = [];
     foreach ($photos as $i => $photo) {
+    
       $type = substr($photo->url, -4);
 
+      $filename = $photo->id;
+      
       $photo = file_get_contents(str_replace('https', 'http', $photo->url));
       
       if (!$photo)
         return null;
 
-      $filename = md5(uniqid());
+      if (file_exists(DIR_IMAGE . 'cache/catalog/' . $filename)){
+        unlink(DIR_IMAGE . 'cache/catalog/' . $filename);
+      }
 
+      if (file_exists(DIR_IMAGE . 'catalog/' . $filename)){
+        unlink(DIR_IMAGE . 'catalog/' . $filename . '-40x40' . $type);
+        unlink(DIR_IMAGE . 'catalog/' . $filename . '-100x100' . $type);
+        unlink(DIR_IMAGE . 'catalog/' . $filename);
+      }
+      
       $file = fopen(DIR_IMAGE . 'cache/catalog/' . $filename . $type, 'w+');        
       fputs($file, $photo);
       fclose($file);        
