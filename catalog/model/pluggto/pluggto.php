@@ -339,7 +339,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function createLog($data, $function){
-    return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_log (data, function, date) VALUES ('" . $data . "', '" . $function . "', '" . date('Y-m-d') . "')")
+    return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_log (data, function, date) VALUES ('" . $data . "', '" . $function . "', '" . date('Y-m-d') . "')");
   }
 
   public function saveNotification($field){
