@@ -924,118 +924,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Pendentes:</label>
                           <div class="col-sm-10">
                             <select name="fields[pending]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['pending'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['pending'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['pending'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['pending'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['pending'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['pending'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['pending'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['pending'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['pending'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['pending'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['pending'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['pending'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['pending'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['pending'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['pending'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>
@@ -1043,118 +941,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Pagos:</label>
                           <div class="col-sm-10">
                             <select name="fields[paid]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['paid'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['paid'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['paid'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['paid'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['paid'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['paid'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['paid'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['paid'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['paid'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['paid'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['paid'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['paid'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['paid'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['paid'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['paid'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>

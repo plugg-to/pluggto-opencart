@@ -9,10 +9,19 @@ class ControllerModulePluggTo extends Controller {
   private $error = array();
 
   private $typesShippings = array(
-    'flatrate' => 'Fixed',
-    'freeshipping' => 'Free',
-    'pedroteixeira_correios' => 'Correios',
-    'mercadolivre' => 'Meli Envios'
+    'sedex_sem_contrato' => 'Sedex sem Contrato',
+    'sedex_com_contrato' => 'Sedex com Contrato',
+    'esedex_com_contrato' => 'E-Sedex com Contrato',
+    'pac_sem_contrato' => 'PAC sem Contrato',
+    'pac_com_contrato' => 'PAC com Contrato',
+    'sedex_10' => 'Sedex 10',
+    'sedex_hoje' => 'Sedex HOJE',
+    'sedex_a_cobrar' => 'Sedex a Cobrar',
+    'pac_gf' => 'PAC GF',
+    'carta_comercial' => 'Carta Comercial',
+    'carta_comercial_registrada' => 'Carta Comercial Registrada',
+    'free' => 'Frete Gratis',
+    'frete_register' => 'Frete por carta registrada'
   );
 
   public function install() {
