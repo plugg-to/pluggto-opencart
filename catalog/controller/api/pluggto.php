@@ -1,5 +1,6 @@
 <?php
 
+ini_set('memory_limit', '-1');
 error_reporting(0);
 
 class ControllerApiPluggto extends Controller {
