@@ -376,7 +376,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function formatObjectCategoryToList($categoriesObject) {
-    $response = [];
+    $response = array();
     
     foreach ($categoriesObject as $i => $category) {
       $auxiliar[] = $category->name;
@@ -391,13 +391,14 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function findCategoriesInOpenCart($namesOfCategories) {
-    $response = [];
+    $response = array();
 
     $this->load->model('catalog/category');
     $categories = $this->prepareDataCategoryToArraySearch($this->model_catalog_category->getCategories());
 
     foreach ($namesOfCategories as $i => $names) {
-      $id_category = array_search(explode(' >', $names)[0], $categories);
+      $explode = explode(' >', $names);
+      $id_category = array_search($explode[0], $categories);
       $response[] = $id_category;
     }
 
@@ -405,7 +406,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function prepareDataCategoryToArraySearch($categoriesOpenCart) {
-    $response = [];
+    $response = array();
 
     foreach ($categoriesOpenCart as $i => $category) {
       $response[$category['category_id']] = $category['name'];
@@ -467,7 +468,7 @@ class ModelPluggtoPluggto extends Model{
     if ($data->num_rows <= 0) 
       return false;
 
-    $response = [];
+    $response = array();
 
     foreach ($data->rows as $i => $value) {
       $response[$value['field_opencart']] = $value['field_pluggto'];
@@ -519,4 +520,10 @@ class ModelPluggtoPluggto extends Model{
     
     $this->insertAllIDsOpenCart($products);
   }
+
+  public function getStatusOpenCart(){
+    $response = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_status");
+    return $response->rows;
+  }
+
 }

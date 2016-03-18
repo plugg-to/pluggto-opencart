@@ -1162,118 +1162,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Aprovados:</label>
                           <div class="col-sm-10">
                             <select name="fields[approved]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['approved'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['approved'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['approved'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['approved'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['approved'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['approved'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['approved'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['approved'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['approved'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['approved'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['approved'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['approved'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['approved'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['approved'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['approved'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>
@@ -1281,118 +1179,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Aguardando Fatura:</label>
                           <div class="col-sm-10">
                             <select name="fields[waiting_invoice]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['waiting_invoice'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['waiting_invoice'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['waiting_invoice'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['waiting_invoice'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['waiting_invoice'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['waiting_invoice'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['waiting_invoice'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['waiting_invoice'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['waiting_invoice'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['waiting_invoice'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['waiting_invoice'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['waiting_invoice'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['waiting_invoice'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['waiting_invoice'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['waiting_invoice'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>
@@ -1400,118 +1196,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Faturada:</label>
                           <div class="col-sm-10">
                             <select name="fields[invoiced]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['invoiced'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['invoiced'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['invoiced'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['invoiced'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['invoiced'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['invoiced'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['invoiced'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['invoiced'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['invoiced'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['invoiced'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['invoiced'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['invoiced'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['invoiced'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['invoiced'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['invoiced'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>
@@ -1519,118 +1213,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Erro na Fatura:</label>
                           <div class="col-sm-10">
                             <select name="fields[invoice_error]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['invoice_error'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['invoice_error'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['invoice_error'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['invoice_error'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['invoice_error'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['invoice_error'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['invoice_error'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['invoice_error'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['invoice_error'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['invoice_error'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['invoice_error'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['invoice_error'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['invoice_error'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['invoice_error'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['invoice_error'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>
@@ -1638,118 +1230,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Entrega Informada:</label>
                           <div class="col-sm-10">
                             <select name="fields[shipping_informed]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['shipping_informed'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['shipping_informed'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['shipping_informed'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['shipping_informed'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['shipping_informed'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['shipping_informed'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['shipping_informed'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['shipping_informed'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['shipping_informed'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['shipping_informed'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['shipping_informed'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['shipping_informed'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['shipping_informed'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['shipping_informed'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['shipping_informed'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>                        
@@ -1757,118 +1247,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Entregue:</label>
                           <div class="col-sm-10">
                             <select name="fields[shipped]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['shipped'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['shipped'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['shipped'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['shipped'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['shipped'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['shipped'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['shipped'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['shipped'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['shipped'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['shipped'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['shipped'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['shipped'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['shipped'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['shipped'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['shipped'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>
@@ -1876,118 +1264,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Erro na entrega:</label>
                           <div class="col-sm-10">
                             <select name="fields[shipping_error]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['shipping_error'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['shipping_error'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['shipping_error'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['shipping_error'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['shipping_error'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['shipping_error'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['shipping_error'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['shipping_error'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['shipping_error'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['shipping_error'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['shipping_error'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['shipping_error'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['shipping_error'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['shipping_error'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['shipping_error'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>                        
@@ -1995,118 +1281,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Entregues:</label>
                           <div class="col-sm-10">
                             <select name="fields[delivered]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['delivered'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['delivered'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['delivered'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['delivered'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['delivered'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['delivered'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['delivered'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['delivered'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['delivered'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['delivered'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['delivered'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['delivered'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['delivered'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['delivered'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['delivered'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>
@@ -2114,118 +1298,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Cancelados:</label>
                           <div class="col-sm-10">
                             <select name="fields[canceled]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['canceled'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['canceled'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="Canceled"
-                                <?php if(@$default_fields['canceled'] == "Canceled"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['canceled'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['canceled'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="Canceled Reversal"
-                                <?php if(@$default_fields['canceled'] == "Canceled Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Canceled Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['canceled'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['canceled'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['canceled'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['canceled'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['canceled'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['canceled'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['canceled'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['canceled'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['canceled'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>
@@ -2233,118 +1315,16 @@
                           <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos que precisam ser revisados:</label>
                           <div class="col-sm-10">
                             <select name="fields[under_review]" class="form-control">
-                              <option 
-                                value="Processing"
-                                <?php if(@$default_fields['under_review'] == "Processing"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processing
-                              </option>
-                              <option 
-                                value="Shipped"
-                                <?php if(@$default_fields['under_review'] == "Shipped"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Shipped
-                              </option>
-                              <option 
-                                value="under_review"
-                                <?php if(@$default_fields['under_review'] == "under_review"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                under_review
-                              </option>
-                              <option 
-                                value="Complete"
-                                <?php if(@$default_fields['under_review'] == "Complete"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Complete
-                              </option>
-                              <option 
-                                value="Denied"
-                                <?php if(@$default_fields['under_review'] == "Denied"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Denied
-                              </option>
-                              <option 
-                                value="under_review Reversal"
-                                <?php if(@$default_fields['under_review'] == "under_review Reversal"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                under_review Reversal
-                              </option>
-                              <option 
-                                value="Failed"
-                                <?php if(@$default_fields['under_review'] == "Failed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Failed
-                              </option>
-                              <option 
-                                value="Refunded"
-                                <?php if(@$default_fields['under_review'] == "Refunded"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Refunded
-                              </option>
-                              <option 
-                                value="Reversed"
-                                <?php if(@$default_fields['under_review'] == "Reversed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Reversed
-                              </option>
-                              <option 
-                                value="Chargeback"
-                                <?php if(@$default_fields['under_review'] == "Chargeback"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Chargeback
-                              </option>
-                              <option 
-                                value="Pending"
-                                <?php if(@$default_fields['under_review'] == "Pending"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Pending
-                              </option>
-                              <option 
-                                value="Voided"
-                                <?php if(@$default_fields['under_review'] == "Voided"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Voided
-                              </option>
-                              <option 
-                                value="Processed"
-                                <?php if(@$default_fields['under_review'] == "Processed"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Processed
-                              </option>
-                              <option 
-                                value="Expired"
-                                <?php if(@$default_fields['under_review'] == "Expired"): ?>
-                                  selected
-                                <?php endif; ?>
-                              >
-                                Expired
-                              </option>
+                              <?php foreach ($status_opencart as $status): ?>
+                                <option 
+                                  value="<?php echo $status['name']; ?>"
+                                  <?php if(@$default_fields['under_review'] == $status['name']): ?>
+                                    selected
+                                  <?php endif; ?>
+                                >
+                                  <?php echo $status['name']; ?>
+                                </option>
+                              <?php endforeach; ?>
                             </select>
                           </div>
                         </div>

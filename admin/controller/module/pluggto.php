@@ -8,12 +8,12 @@ error_reporting(-1);
 class ControllerModulePluggTo extends Controller {
   private $error = array();
 
-  private $typesShippings = [
+  private $typesShippings = array(
     'flatrate' => 'Fixed',
     'freeshipping' => 'Free',
     'pedroteixeira_correios' => 'Correios',
     'mercadolivre' => 'Meli Envios'
-  ];
+  );
 
   public function install() {
     $this->load->model('pluggto/pluggto');
@@ -31,10 +31,10 @@ class ControllerModulePluggTo extends Controller {
   public function saveSettingsProductsSynchronization() {
     $this->load->model('pluggto/pluggto');
 
-    $data = [
+    $data = array(
       'refresh_only_stock' => $this->request->post['refresh_only_stock'],
       'active' => $this->request->post['active']
-    ];
+    );
         
     $this->session->data['alerts'] = 'Configurações salvas com sucesso!';
     
@@ -93,18 +93,18 @@ class ControllerModulePluggTo extends Controller {
       $opencart_product_response = $this->model_catalog_product->getProduct($product['opencart_product_id']);
 
       if (isset($pluggto_product_response) && $pluggto_product_response->Product->quantity != $opencart_product_response['quantity']){
-        $data = [
+        $data = array(
           'action' => 'update',
           'quantity' => $opencart_product_response['quantity']
-        ];
+        );
 
         $response = $this->model_pluggto_pluggto->updateStockPluggTo($data, $product['pluggto_product_id']);
       }
       
       if (isset($pluggto_product_response) && $pluggto_product_response->Product->price != $opencart_product_response['price']){
-        $data = [
+        $data = array(
           'price' => $opencart_product_response['price']
-        ];
+        );
 
         $response = $this->model_pluggto_pluggto->updateTo($data, $product['pluggto_product_id']);
       }
@@ -131,17 +131,17 @@ class ControllerModulePluggTo extends Controller {
   public function getPhotosToSaveInOpenCart($product_id, $image_main) {
     $images = $this->model_catalog_product->getProductImages($product_id);
 
-    $response = [
-      [
+    $response = array(
+      array(
         'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
         'remove' => true
-      ],
-      [
+      ),
+      array(
         'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
         'title' => 'Imagem principal do produto',
         'order' => 0
-      ]
-    ];
+      )
+    );
 
     return $response;
   }
@@ -150,10 +150,10 @@ class ControllerModulePluggTo extends Controller {
     $product = $this->model_catalog_product->getProduct($product_id);
     $options = $this->model_catalog_product->getProductOptions($product_id);
   
-    $response = [];
+    $response = array();
     foreach ($options as $i => $option) {
       foreach ($option['product_option_value'] as $item) {
-        $response[] = [
+        $response[] = array(
           'name'     => $product['name'],
           'external' => $option['product_option_id'],
           'quantity' => $item['quantity'],
@@ -161,15 +161,15 @@ class ControllerModulePluggTo extends Controller {
           'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
           'sku' => 'sku-' . $option['product_option_id'],
           'ean' => '',
-          'photos' => [],
-          'attributes' => [],
-          'dimesion' => [
+          'photos' => array(),
+          'attributes' => array(),
+          'dimesion' => array(
             'length' => $product['length'],
             'width'  => $product['width'],
             'height' => $product['height'],
             'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
-          ]
-        ];
+          )
+        );
       }
     }
 
@@ -182,33 +182,33 @@ class ControllerModulePluggTo extends Controller {
     $product    = $this->model_catalog_product->getProduct($product_id);
     $attributes = $this->model_catalog_product->getProductAttributes($product_id);
 
-    $response = [];
+    $response = array();
 
     foreach ($attributes as $i => $attribute) {
       if (isset($attribute['attribute']) && !empty($attribute['attribute']))
       {
         foreach ($attribute['attribute'] as $i => $attr) {
-          $response[] = [
+          $response[] = array(
             'code'  => $attr['attribute_id'],
             'label' => $attr['text'],
-            'value' => [
+            'value' => array(
               'code'  => $attr['attribute_id'],
               'label' => $attr['text'],
-            ]
-          ];
+            )
+          );
         }
 
         continue;
       }
 
-      $response[] = [
+      $response[] = array(
         'code'  => $attribute['attribute_id'],
         'label' => $attribute['product_attribute_description'][1]['text'],
-        'value' => [
+        'value' => array(
           'code'  => $attribute['attribute_id'],
           'label' => $attribute['product_attribute_description'][1]['text'],
-        ]
-      ];
+        )
+      );
     }
 
     return $response;
@@ -347,22 +347,24 @@ class ControllerModulePluggTo extends Controller {
       'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action_basic_fields']   = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
+    $data['cancel']                = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
 
-    $data['alerts'] = $this->session->data['alerts'];
+    $data['alerts']                = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
 
-    $data['button_save'] = $this->language->get('button_save');
+    $data['button_save']   = $this->language->get('button_save');
     $data['button_cancel'] = $this->language->get('button_cancel');
 
-    $data['header'] = $this->load->controller('common/header');
+    $data['header']      = $this->load->controller('common/header');
     $data['column_left'] = $this->load->controller('common/column_left');
-    $data['footer'] = $this->load->controller('common/footer');
+    $data['footer']      = $this->load->controller('common/footer');
 
     $data['types_shippings'] = $this->typesShippings;
 
-    $data['default_fields'] = $this->model_pluggto_pluggto->getAllDefaultsFields();
+    $data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
+
+    $data['status_opencart'] = $this->model_pluggto_pluggto->getStatusOpenCart();
     
     $this->response->setOutput($this->load->view('module/pluggto_fields.tpl', $data)); // aqui
   }

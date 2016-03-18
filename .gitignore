@@ -214,3 +214,13 @@ system/
 upgrade.txt
 catalog/
 admin/language/en-gb/
+admin/controller/event/
+admin/controller/module/laybuy_layout.php
+admin/controller/module/sagepay_direct_cards.php
+admin/controller/module/sagepay_server_cards.php
+admin/controller/startup/
+admin/controller/theme/
+admin/view/template/module/laybuy_layout.tpl
+admin/view/template/module/sagepay_direct_cards.tpl
+admin/view/template/module/sagepay_server_cards.tpl
+admin/view/template/theme/
