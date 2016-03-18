@@ -125,7 +125,8 @@ class ControllerModulePluggTo extends Controller {
 
   public function getSpecialPriceProductToPluggTo($product_id) {
     $specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
-    return end($specialPrice)['special'];
+    $special = $specialPrice['special'];
+    return end($special);
   }
 
   public function getPhotosToSaveInOpenCart($product_id, $image_main) {
