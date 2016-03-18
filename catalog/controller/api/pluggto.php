@@ -627,7 +627,7 @@ class ControllerApiPluggto extends Controller {
 
 	public function getSpecialPriceProductToPluggTo($product_id) {
 		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
-		$special = reset($specialPrice)
+		$special = reset($specialPrice);
 		return reset($special['special']);
 	}
 
