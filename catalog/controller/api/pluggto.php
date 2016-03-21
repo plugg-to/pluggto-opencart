@@ -136,7 +136,7 @@ class ControllerApiPluggto extends Controller {
 		            $return = $this->exportAllProductsToPluggTo($product);
 					
 					$response[$product['product_id']]['status']  = $return;
-					$response[$product['product_id']]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
+					$response[$product['product_id']]['message'] = $return === true ? "Product '{$product['product_id']}' imported successfully" : "Produts Could not be imported";
 
 					$this->model_pluggto_pluggto->processedQueueProduct($product['product_id'], "opencart");
 				} catch (Exception $e) {
@@ -194,6 +194,8 @@ class ControllerApiPluggto extends Controller {
 		$i = 0;
 		$this->load->model('checkout/order');
 
+		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
+
 		foreach ($orders as $id_pluggto => $order) {
 			try {
 				$data = array(
@@ -249,9 +251,9 @@ class ControllerApiPluggto extends Controller {
 							'sort_order' => 9,
 						),
 					),
-					'currency_id' 		 => $this->model_pluggto_pluggto->getCurrencyMain()['currency_id'],
-					'currency_code' 	 => $this->model_pluggto_pluggto->getCurrencyMain()['currency_code'],
-					'currency_value' 	 => $this->model_pluggto_pluggto->getCurrencyMain()['currency_value'],
+					'currency_id' 		 => $currency['currency_id'],
+					'currency_code' 	 => $currency['currency_code'],
+					'currency_value' 	 => $currency['currency_value'],
 					'products' 			 => $this->getProductsToSaveOpenCart($order)
 				);
 
@@ -284,7 +286,7 @@ class ControllerApiPluggto extends Controller {
 
 		$response = array();
 		foreach ($order->Order->items as $key => $item) {
-			$response[] = [
+			$response[] = array(
 				'product_id' => $this->model_pluggto_pluggto->getIDItemBySKU($item->id),
 				'name'       => $item->name,
 				'model'	     => $item->name,
@@ -295,7 +297,7 @@ class ControllerApiPluggto extends Controller {
 				'reward'	 => 0,	
 				'option'     => array(),
 				'download'   => array()
-			];
+			);
 		}
 
 		return $response;
@@ -429,7 +431,7 @@ class ControllerApiPluggto extends Controller {
 				'quantity' => $item['quantity'],
 				'total' => $item['total'],
 				'external' => $item['product_id'],
-				'variation' => []
+				'variation' => array()
 			);
 		}
 
@@ -441,7 +443,7 @@ class ControllerApiPluggto extends Controller {
 	    $data = array();
 
     	if (empty($product['sku']))
-			$this->model_pluggto_pluggto->createLog(print_r(['message' => 'not exist sku', 'sku' => $product['sku']], 1), 'exportAllProductsToPluggTo');
+			$this->model_pluggto_pluggto->createLog(print_r(array('message' => 'not exist sku', 'sku' => $product['sku']), 1), 'exportAllProductsToPluggTo');
 
 		$data = array(
 			'name'       => $product['name'],
@@ -484,8 +486,8 @@ class ControllerApiPluggto extends Controller {
         );
         
         $products_opencart = $this->model_catalog_product->getProducts();
-        $productPrepare = [];
-        $data = [];
+        $productPrepare = array();
+        $data = array();
 
         $messageIndex = 0;
         foreach ($products_opencart as $product) {
@@ -656,7 +658,7 @@ class ControllerApiPluggto extends Controller {
 		$response = array();
 		foreach ($options as $i => $option) {
 		  foreach ($option['product_option_value'] as $item) {
-		    $response[] = [
+		    $response[] = array(
 		      'name'     => $item['name'],
 		      'external' => $option['product_option_id'],
 		      'quantity' => $item['quantity'],
@@ -666,13 +668,13 @@ class ControllerApiPluggto extends Controller {
 		      'ean' => '',
 		      'photos' => array(),
 		      'attributes' => array(),
-		      'dimesion' => [
+		      'dimesion' => array(
 		        'length' => $product['length'],
 		        'width'  => $product['width'],
 		        'height' => $product['height'],
 		        'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
-		      ]
-		    ];
+		      )
+		    );
 		  }
 		}
 
@@ -715,6 +717,42 @@ class ControllerApiPluggto extends Controller {
 		}
 
 		return $response;
+	}
+
+	public function getAllItemsQueue() {
+		$response = $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_queue WHERE process = 0");
+
+		if (isset($this->request->server['HTTP_ORIGIN'])) {
+			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
+		
+			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+		
+			$this->response->addHeader('Access-Control-Max-Age: 1000');
+		
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');		
+		}
+
+		$this->response->addHeader('Content-Type: application/json');
+		
+		$this->response->setOutput(json_encode($response));
+	}
+
+	public function getAllLogs() {		
+		$response = $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_log ORDER BY id DESC LIMIT 100");
+
+		if (isset($this->request->server['HTTP_ORIGIN'])) {
+			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
+		
+			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+		
+			$this->response->addHeader('Access-Control-Max-Age: 1000');
+		
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');		
+		}
+
+		$this->response->addHeader('Content-Type: application/json');
+		
+		$this->response->setOutput(json_encode($response));
 	}
 
 }
