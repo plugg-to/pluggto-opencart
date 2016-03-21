@@ -257,18 +257,19 @@ class ControllerApiPluggto extends Controller {
 					'products' 			 => $this->getProductsToSaveOpenCart($order)
 				);
 
-				$existOrderID = $this->model_pluggto_pluggto->checkOrderByIDPluggTo($id_pluggto);
-
+				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
+				
 				if ($existOrderID) {
-					$response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
+					// $response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
 					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
 				} else {
 					$response_id = $this->model_checkout_order->addOrder($data);
 					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
 				}
 				
+				$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
+				
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => true, 'message' => 'OK')));
-
 			} catch (Exception $e) {
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => $e->getMessage())));
 			}
