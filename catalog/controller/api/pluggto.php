@@ -1,7 +1,7 @@
 <?php
 
 ini_set('memory_limit', '-1');
-error_reporting(-1);
+error_reporting(0);
 
 class ControllerApiPluggto extends Controller {
 
@@ -140,7 +140,6 @@ class ControllerApiPluggto extends Controller {
 
 					$this->model_pluggto_pluggto->processedQueueProduct($product['product_id'], "opencart");
 				} catch (Exception $e) {
-					echo $e->getMessage();exit;
 					continue;
 				}
 			}
@@ -455,7 +454,7 @@ class ControllerApiPluggto extends Controller {
 			'price'      => $product['price'],
 			'quantity'   => $product['quantity'],
 			'external'   => $product['product_id'],
-			'description'=> htmlspecialchars_decode($product['description']),
+			'description'=> $product['description'],
 			'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
 			'ean'        => $product['ean'],
 			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
@@ -471,10 +470,10 @@ class ControllerApiPluggto extends Controller {
 			'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
 			'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
 			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
-			'special_price' => $this->getSpecialPriceProductToPluggTo($product['product_id']),
+			'special_price' => isset($product['special']) ? $product['special'] : 0,
 			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
-
+		
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
@@ -499,6 +498,7 @@ class ControllerApiPluggto extends Controller {
             $data = array(
                 'name'       => isset($product['name']) ? $product['name'] : '',
                 'sku'        => isset($product['sku']) ? $product['sku'] : '',
+                'model'      => isset($product['sku']) ? $product['sku'] : '',
                 'price'      => isset($product['price']) ? $product['price'] : '',
                 'quantity'   => isset($product['quantity']) ? $product['quantity'] : '',
                 'external'   => isset($product['product_id']) ? $product['product_id'] : '',
@@ -552,7 +552,7 @@ class ControllerApiPluggto extends Controller {
             $messageIndex++;
         }
 
-		$this->model_pluggto_pluggto->createLog(print_r($json, 1), 'saveProductsInPluggto');
+		$this->model_pluggto_pluggto->createLog(json_encode($json), 'saveProductsInPluggto');
         
         return json_encode($json);
     }
@@ -632,25 +632,18 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
-	public function getSpecialPriceProductToPluggTo($product_id) {
-		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
-		$special = reset($specialPrice);
-
-		return (isset($special['special']) && !empty($special['special'])) ? $special['special'] : array();
-	}
-
 	public function getPhotosToSaveInOpenCart($product_id, $image_main) {
 		$images = $this->model_catalog_product->getProductImages($product_id);
-
 		
+		$response = array();
 		foreach ($images as $i => $image) {
 			$response[] = array(
-			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'remove' => true
 		    );
 			
 			$response[] = array(
-			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'title' => 'Imagem principal do produto',
 			    'order' => 0
 			);
