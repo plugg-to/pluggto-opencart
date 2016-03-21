@@ -127,7 +127,7 @@ class ControllerApiPluggto extends Controller {
         $response = array(
             'action' => "import products from pluggto",
         );
-echo '<pre>';print_r($response);
+
 		if (!empty($productsQueue))
 		{
 			foreach ($productsQueue as $product) {
@@ -136,15 +136,13 @@ echo '<pre>';print_r($response);
 		            $return = $this->exportAllProductsToPluggTo($product);
 					
 					$response[$product['product_id']]['status']  = $return;
-					$response[$product['product_id']]['message'] = $return === true ? "Product '{$product['product_id']}' imported successfully" : "Produts Could not be imported";
+					$response[$product['product_id']]['message'] = $return !== null ? "Product '{$product['product_id']}' imported successfully" : "Produts Could not be imported";
 
 					$this->model_pluggto_pluggto->processedQueueProduct($product['product_id'], "opencart");
-					echo '<pre>';print_r($response);exit;
 				} catch (Exception $e) {
 					echo $e->getMessage();exit;
-					// continue;
+					continue;
 				}
-				exit;
 			}
 		}
 
@@ -158,7 +156,7 @@ echo '<pre>';print_r($response);
 		            $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
 					
 					$response[$product->Product->id]['status']  = $return;
-					$response[$product->Product->id]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
+					$response[$product->Product->id]['message'] = $return !== 'Problem SKU' ? "Product '$productId' imported successfully" : "Produts Could not be imported";
 
 					$this->model_pluggto_pluggto->processedQueueProduct($product->Product->id, "pluggto");
 				} catch (Exception $e) {
@@ -445,8 +443,10 @@ echo '<pre>';print_r($response);
 	    $productPrepare = array();
 	    $data = array();
 
-    	if (empty($product['sku']))
+    	if (empty($product['sku'])) {
 			$this->model_pluggto_pluggto->createLog(print_r(array('message' => 'not exist sku', 'sku' => $product['sku']), 1), 'exportAllProductsToPluggTo');
+			return 'Problem SKU';
+    	}
 
 		$data = array(
 			'name'       => $product['name'],
@@ -456,28 +456,30 @@ echo '<pre>';print_r($response);
 			'quantity'   => $product['quantity'],
 			'external'   => $product['product_id'],
 			'description'=> $product['description'],
-			'brand'      => isset($product['brand']) ? $product['brand'] : '',
+			'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
 			'ean'        => $product['ean'],
 			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
 			'isbn'       => $product['isbn'],
 			'available'  => $product['status'],
 			'dimension'  => array(
-				'length' => $product['length'],
-				'width'  => $product['width'],
-				'height' => $product['height']
+				'length' => (float) $product['length'],
+				'width'  => (float) $product['width'],
+				'height' => (float) $product['height'],
+				'weight' => (float) $product['weight']
 			),
 			'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
 			'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
 			'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
 			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
-			'special_price' => $this->getSpecialPriceProductToPluggTo($product['product_id'])
+			'special_price' => $this->getSpecialPriceProductToPluggTo($product['product_id']),
+			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 
-	    return true;
+	    return $response;
 	}
 
 	public function saveProductsInPluggto(){
@@ -633,23 +635,26 @@ echo '<pre>';print_r($response);
 	public function getSpecialPriceProductToPluggTo($product_id) {
 		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
 		$special = reset($specialPrice);
-		return reset($special['special']);
+
+		return (isset($special['special']) && !empty($special['special'])) ? $special['special'] : array();
 	}
 
 	public function getPhotosToSaveInOpenCart($product_id, $image_main) {
 		$images = $this->model_catalog_product->getProductImages($product_id);
 
-		$response = array(
-		  array(
-		    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-		    'remove' => true
-		  ),
-		  array(
-		    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-		    'title' => 'Imagem principal do produto',
-		    'order' => 0
-		  )
-		);
+		
+		foreach ($images as $i => $image) {
+			$response[] = array(
+			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'remove' => true
+		    );
+			
+			$response[] = array(
+			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'title' => 'Imagem principal do produto',
+			    'order' => 0
+			);
+		}
 
 		return $response;
 	}
@@ -719,6 +724,30 @@ echo '<pre>';print_r($response);
 			);
 		}
 
+		return $response;
+	}
+
+	public function getCategoriesToPluggTo($product_id) {
+		$this->load->model('catalog/product');
+		$this->load->model('catalog/category');
+		
+		$categories = $this->model_catalog_product->getCategories($product_id);
+
+		$response = array();
+		foreach ($categories as $category) {
+			$categoryData = $this->model_catalog_category->getCategory($category['category_id']);
+			$firstParent  = (isset($categoryData['parent_id']) && !empty($categoryData['parent_id'])) ? $this->model_catalog_category->getCategory($categoryData['parent_id']) : null;
+			$secondParent = (isset($firstParent['parent_id']) && !empty($firstParent['parent_id'])) ? $this->model_catalog_category->getCategory($firstParent['parent_id']) : null;
+			$thirdParent  = (isset($secondParent['parent_id']) && !empty($secondParent['parent_id'])) ? $this->model_catalog_category->getCategory($secondParent['parent_id']) : null;
+
+			$response[] = array(
+				'name' => ((isset($categoryData['name'])) ? $categoryData['name'] : '') 
+						. ((isset($firstParent['name']))  ? ' > ' . $firstParent['name'] : '')
+				 		. ((isset($secondParent['name'])) ? ' > ' . $secondParent['name'] : '')
+				  		. ((isset($thirdParent['name']))  ? ' > ' . $thirdParent['name'] : '')
+			);
+		}
+		
 		return $response;
 	}
 

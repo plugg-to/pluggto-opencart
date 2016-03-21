@@ -705,7 +705,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function sendToPluggTo($product, $sku) {
-    $url = "http://api.plugg.to/skus/" . $sku;
+    $url = "http://api.plugg.to/skus/" . trim($sku);
     
     $method = "put";
     
