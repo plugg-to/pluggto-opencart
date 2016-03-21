@@ -127,7 +127,7 @@ class ControllerApiPluggto extends Controller {
         $response = array(
             'action' => "import products from pluggto",
         );
-
+echo '<pre>';print_r($response);
 		if (!empty($productsQueue))
 		{
 			foreach ($productsQueue as $product) {
@@ -139,9 +139,12 @@ class ControllerApiPluggto extends Controller {
 					$response[$product['product_id']]['message'] = $return === true ? "Product '{$product['product_id']}' imported successfully" : "Produts Could not be imported";
 
 					$this->model_pluggto_pluggto->processedQueueProduct($product['product_id'], "opencart");
+					echo '<pre>';print_r($response);exit;
 				} catch (Exception $e) {
-					continue;
+					echo $e->getMessage();exit;
+					// continue;
 				}
+				exit;
 			}
 		}
 
