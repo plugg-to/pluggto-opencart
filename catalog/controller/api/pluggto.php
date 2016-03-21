@@ -1,7 +1,7 @@
 <?php
 
 ini_set('memory_limit', '-1');
-error_reporting(0);
+error_reporting(-1);
 
 class ControllerApiPluggto extends Controller {
 
@@ -738,7 +738,7 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function getAllLogs() {		
-		$response = $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_log ORDER BY id DESC LIMIT 100");
+		$response = $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_log ORDER BY id DESC LIMIT 100");
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
