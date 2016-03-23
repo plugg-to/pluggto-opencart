@@ -455,7 +455,7 @@ class ControllerApiPluggto extends Controller {
 			'price'      => $product['price'],
 			'quantity'   => $product['quantity'],
 			'external'   => $product['product_id'],
-			'description'=> htmlspecialchars($product['description'], ENT_QUOTES),
+			'description'=> html_entity_decode($product['description']),
 			'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
 			'ean'        => $product['ean'],
 			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
@@ -474,7 +474,7 @@ class ControllerApiPluggto extends Controller {
 			'special_price' => isset($product['special']) ? $product['special'] : 0,
 			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
-		
+
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');

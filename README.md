@@ -1,17 +1,16 @@
-Para instalar você deve copiar os diretorios desta pasta e colar no seu opencart, após isso no seu opencart vá em Modules > Pluggto > Instalar
+# Plugin OpenCart Plugg.To
 
-E pronto o modulo foi instalado.
+Changelog
 
-O produto do opencart vai ser enviado para pluggto automaticamente ou via botão.
+ - 1.0.0 (Beta)
+ 	- Export all products to plugg.to
+ 	- Import all products to opencart
+ 	- Export all orders to plugg.to
+ 	- Import all orders to plugg.to
+ 	- Settings to linkage fields of orders and shipping
 
-Para ser enviado automaticamente o cron deve ser rodado.
-
-Variações devem conter nomes iguais nas duas plataformas para poderem ser associadas
-
-Dúvidas acesse
-
-plugg.to
-
-Ou 
-
-jr.design_2010@hotmail.com
+ - 1.0.1 (Beta)
+ 	- Fix to import images products
+ 	- Fix export with skus
+ 	- Fix create new orders
+ 	- Fix multiple upload images products
