@@ -60,7 +60,11 @@
 
           <li>
             <a href="<?php echo $load_queue ?>">Notificações</a> <!-- Aqui -->
-          </li>          
+          </li>    
+
+          <li>
+            <a href="<?php echo $force_sync_products ?>">Produtos</a> <!-- Aqui -->
+          </li>      
 
       </ul>
       <!-- Tab panes -->

@@ -299,6 +299,7 @@ class ControllerModulePluggTo extends Controller {
     $data['link_basic_fields'] = $this->url->link('module/pluggto/settingsBasicFields', 'token=' . $this->session->data['token'], 'SSL');
     $data['load_queue'] = $this->url->link('module/pluggto/loadqueue', 'token=' . $this->session->data['token'], 'SSL');
     $data['link_log_queue'] = $this->url->link('module/pluggto/linkLogQueue', 'token=' . $this->session->data['token'], 'SSL');
+    $data['force_sync_products'] = $this->url->link('module/pluggto/listAllProductsToForceSync', 'token=' . $this->session->data['token'], 'SSL');
 
     $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
@@ -377,6 +378,50 @@ class ControllerModulePluggTo extends Controller {
     $data['status_opencart'] = $this->model_pluggto_pluggto->getStatusOpenCart();
     
     $this->response->setOutput($this->load->view('module/pluggto_fields.tpl', $data)); // aqui
+  }
+
+  public function listAllProductsToForceSync(){
+    $this->template = 'module/pluggto.tpl';
+    $this->language->load('module/pluggto');
+
+    $this->document->setTitle($this->language->get('heading_title'));
+
+    $this->load->model('pluggto/pluggto');
+    $this->load->model('catalog/product');
+
+    $data['heading_title'] = $this->language->get('heading_title');
+
+    $data['breadcrumbs'] = array();
+    $data['breadcrumbs'][] = array(
+      'text'      => $this->language->get('text_home'),
+      'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+    );
+
+    $data['breadcrumbs'][] = array(
+      'text'      => $this->language->get('text_module'),
+      'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
+    );
+
+    $data['breadcrumbs'][] = array(
+      'text'      => $this->language->get('heading_title'),
+      'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
+    );
+
+    $data['action_basic_fields']   = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
+    $data['cancel']                = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+
+    $data['token'] = $this->session->data['token'];
+
+    $data['alerts']                = $this->session->data['alerts'];
+    $this->session->data['alerts'] = '';
+
+    $data['header']      = $this->load->controller('common/header');
+    $data['column_left'] = $this->load->controller('common/column_left');
+    $data['footer']      = $this->load->controller('common/footer');
+
+    $data['products']    = $this->model_catalog_product->getProducts();
+
+    $this->response->setOutput($this->load->view('module/pluggto_products_sync.tpl', $data)); // aqui
   }
 
   public function linkLogQueue(){

@@ -558,6 +558,56 @@ class ControllerApiPluggto extends Controller {
         return json_encode($json);
     }
 
+    public function forceSyncProduct()
+    {
+		$this->load->model('catalog/product');
+        $this->load->model('pluggto/pluggto');
+
+    	$product_id = $this->request->get['product_id'];
+
+        $product = $this->model_catalog_product->getProduct($product_id);
+       
+		$data = array(
+			'name'       => $product['name'],
+			'sku'        => $product['sku'],
+			'grant_type' => "authorization_code",
+			'price'      => $product['price'],
+			'quantity'   => $product['quantity'],
+			'external'   => $product['product_id'],
+			'description'=> html_entity_decode($product['description']),
+			'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
+			'ean'        => $product['ean'],
+			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
+			'isbn'       => $product['isbn'],
+			'available'  => $product['status'],
+			'dimension'  => array(
+				'length' => (float) $product['length'],
+				'width'  => (float) $product['width'],
+				'height' => (float) $product['height'],
+				'weight' => (float) $product['weight']
+			),
+			'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
+			'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
+			'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
+			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
+			'special_price' => isset($product['special']) ? $product['special'] : 0,
+			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
+		);
+
+		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
+
+		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
+
+		if (!isset($response->Product) && empty($response->Product))
+		{
+			echo 'Algo deu errado, tente novamente';
+			exit;
+		}
+
+		echo 'O produto foi enviado para plugg.to';
+		exit;
+    }
+
     public function importAllProductsToOpenCart(){        
         $this->load->model('pluggto/pluggto');
 
