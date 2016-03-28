@@ -57,7 +57,7 @@
                                 <td><?php echo $product['product_id']; ?></td>
                                 <td><?php echo $product['name']; ?></td>
                                 <td><?php echo $product['sku']; ?></td>
-                                <td><?php echo $product['price']; ?></td>
+                                <td>R$ <?php echo number_format($product['price'], 2, ',', '.'); ?></td>
                                 <td><?php echo $product['quantity']; ?></td>
                                 <td>
                                   <a href="/index.php?route=api/pluggto/forceSyncProduct&product_id=<?php echo $product['product_id']; ?>&token=<?php echo $token; ?>" class="btn btn-info" target="_blank" alt="Forçar sicronização"><i class="fa fa-check-square-o"></i></a>
