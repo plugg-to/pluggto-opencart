@@ -687,6 +687,21 @@ class ControllerApiPluggto extends Controller {
 		$images = $this->model_catalog_product->getProductImages($product_id);
 		
 		$response = array();
+
+		if (isset($image_main) && !empty($image_main))
+		{
+			$response[] = array(
+			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'remove' => true
+		    );
+			
+			$response[] = array(
+			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'title' => 'Imagem principal do produto',
+			    'order' => 0
+			);
+		}
+
 		foreach ($images as $i => $image) {
 			$response[] = array(
 			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
