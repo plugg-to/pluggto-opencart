@@ -193,7 +193,7 @@ class ControllerApiPluggto extends Controller {
 	public function saveOrdersInOpenCart($orders) {
 		$i = 0;
 		$this->load->model('checkout/order');
-
+		
 		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
 
 		foreach ($orders as $id_pluggto => $order) {
@@ -288,9 +288,9 @@ class ControllerApiPluggto extends Controller {
 		$response = array();
 		foreach ($order->Order->items as $key => $item) {
 			$response[] = array(
-				'product_id' => $this->model_pluggto_pluggto->getIDItemBySKU($item->id),
+				'product_id' => $this->model_pluggto_pluggto->getIDItemBySKU($item->sku),
 				'name'       => $item->name,
-				'model'	     => $item->name,
+				'model'	     => $item->sku,
 				'quantity'   => $item->quantity,
 				'price'		 => $item->price,
 				'total'		 => $item->total,
@@ -300,7 +300,7 @@ class ControllerApiPluggto extends Controller {
 				'download'   => array()
 			);
 		}
-
+		
 		return $response;
 	}
 

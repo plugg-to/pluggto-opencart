@@ -201,7 +201,7 @@ class ModelPluggtoPluggto extends Model{
     $response = $this->db->query($sql);
     
     if (!empty($response->row)) {
-      return $response->row->product_id;
+      return $response->row['product_id'];
     }
 
     return false;
