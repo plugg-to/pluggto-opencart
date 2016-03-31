@@ -3,6 +3,10 @@
 Changelog
 
  - 1.0.1 (Beta)
+ 	- Fix did customers without custom fields
+ 	- Fix create new customers when need
+
+ - 1.0.1 (Beta)
  	- Fix export image main to plugg.to
  
  - 1.0.1 (Beta)

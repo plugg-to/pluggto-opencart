@@ -192,12 +192,39 @@ class ControllerApiPluggto extends Controller {
 
 	public function saveOrdersInOpenCart($orders) {
 		$i = 0;
+
+		$this->load->model('account/customer');
+
 		$this->load->model('checkout/order');
 		
 		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
 
 		foreach ($orders as $id_pluggto => $order) {
 			try {
+				$customer    = $this->model_pluggto_pluggto->getCustomerByEmail($order->Order->receiver_email);
+				$customer_id =  $customer['customer_id'];
+
+				$customer = array(
+					'customer_group_id'  => 1,
+					'firstname' 		 => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
+					'lastname' 			 => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
+					'email' 			 => (isset($order->Order->receiver_email) ? $order->Order->receiver_email : null),
+					'telephone' 		 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
+					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
+					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
+					'custom_field'		 => [
+						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
+					]
+				);
+
+				if (empty($customer_id)) {
+					$customer_id = $this->model_account_customer->addCustomer($customer);
+				}
+
+				if (!empty($customer_id)) {
+					$this->model_account_customer->editCustomer($customer);
+				}
+
 				$data = array(
 					'invoice_prefix' 	 => (isset($order->Order->id) ? $order->Order->id : null),
 					'store_id'			 => (isset($order->Order->id) ? $order->Order->id : null),
@@ -256,7 +283,7 @@ class ControllerApiPluggto extends Controller {
 					'currency_value' 	 => $currency['currency_value'],
 					'products' 			 => $this->getProductsToSaveOpenCart($order)
 				);
-
+				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				if ($existOrderID) {

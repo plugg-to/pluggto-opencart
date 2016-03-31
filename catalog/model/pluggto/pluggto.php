@@ -1028,4 +1028,11 @@ class ModelPluggtoPluggto extends Model{
     $this->cache->delete('product');
   }
 
+  public function getCustomerByEmail($email) {
+    $query = $this->db->query("SELECT customer_id, firstname, lastname FROM `" . DB_PREFIX . "customer` WHERE email = '" . $this->db->escape($email) . "' AND email != ''");
+
+    return $query->row;
+  }
+
+
 }
