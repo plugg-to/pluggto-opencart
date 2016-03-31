@@ -222,7 +222,7 @@ class ControllerApiPluggto extends Controller {
 				}
 
 				if (!empty($customer_id)) {
-					$this->model_account_customer->editCustomer($customer);
+					$this->model_pluggto_pluggto->editCustomer($customer, $customer_id);
 				}
 
 				$data = array(
@@ -230,7 +230,7 @@ class ControllerApiPluggto extends Controller {
 					'store_id'			 => (isset($order->Order->id) ? $order->Order->id : null),
 					'store_name' 		 => $this->config->get('config_name'),
 					'store_url' 		 => HTTP_SERVER,
-					'customer_id' 		 => 0,
+					'customer_id' 		 => $customer_id,
 					'customer_group_id'  => 1,
 					'firstname' 		 => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
 					'lastname' 			 => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
