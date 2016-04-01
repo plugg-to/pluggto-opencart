@@ -213,7 +213,7 @@ class ControllerApiPluggto extends Controller {
 					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
 					'custom_field'		 => [
-						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
+						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
 					]
 				);
 
@@ -224,6 +224,24 @@ class ControllerApiPluggto extends Controller {
 				if (!empty($customer_id)) {
 					$this->model_pluggto_pluggto->editCustomer($customer, $customer_id);
 				}
+
+				$address = array(
+					'firstname'    => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
+					'lastname'     => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
+					'company'      => '',
+					'address_1'    => (isset($order->Order->payer_address) ? $order->Order->payer_address : null),
+					'address_2'    => '',
+					'postcode'     => (isset($order->Order->payer_zipcode) ? $order->Order->payer_zipcode : null),
+					'city'         => (isset($order->Order->payer_city) ? $order->Order->payer_city : null),
+					'zone_id'      => $this->getPaymentZoneIDByCity((isset($order->Order->payer_city) ? $order->Order->payer_city : null)),
+					'country_id'   => 30,
+					'custom_field' => [
+						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
+						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null)
+					]
+				);
+
+				$this->model_pluggto_pluggto->addAddress($address, $customer_id);
 
 				$data = array(
 					'invoice_prefix' 	 => (isset($order->Order->id) ? $order->Order->id : null),
@@ -283,7 +301,7 @@ class ControllerApiPluggto extends Controller {
 					'currency_value' 	 => $currency['currency_value'],
 					'products' 			 => $this->getProductsToSaveOpenCart($order)
 				);
-				
+				echo '<pre>';print_r($data);
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				if ($existOrderID) {
@@ -296,9 +314,9 @@ class ControllerApiPluggto extends Controller {
 				
 				$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 				
-				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => true, 'message' => 'OK')));
+				// $this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => true, 'message' => 'OK')));
 			} catch (Exception $e) {
-				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => $e->getMessage())));
+				// $this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => $e->getMessage())));
 			}
 
 			$i++;
@@ -585,8 +603,7 @@ class ControllerApiPluggto extends Controller {
         return json_encode($json);
     }
 
-    public function forceSyncProduct()
-    {
+    public function forceSyncProduct(){
 		$this->load->model('catalog/product');
         $this->load->model('pluggto/pluggto');
 
@@ -635,7 +652,7 @@ class ControllerApiPluggto extends Controller {
 		exit;
     }
 
-    public function importAllProductsToOpenCart(){        
+    public function importAllProductsToOpenCart(){
         $this->load->model('pluggto/pluggto');
 
         $response = array(
@@ -837,7 +854,7 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
-	public function getAllItemsQueue() {
+	public function getAllItemsQueue(){
 		$response = $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_queue WHERE process = 0");
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
@@ -855,7 +872,7 @@ class ControllerApiPluggto extends Controller {
 		$this->response->setOutput(json_encode($response));
 	}
 
-	public function getAllLogs() {		
+	public function getAllLogs(){
 		$response = $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_log ORDER BY id DESC LIMIT 100");
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
