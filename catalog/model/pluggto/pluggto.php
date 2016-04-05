@@ -2,62 +2,81 @@
 
 class ModelPluggtoPluggto extends Model{
  
-  public function getOrders() {
-    $order_query = $this->db->query("SELECT *, (SELECT os.name FROM `" . DB_PREFIX . "order_status` os WHERE os.order_status_id = o.order_status_id AND os.language_id = o.language_id) AS order_status FROM `" . DB_PREFIX . "order` o");
+  public function getOrders($data = array()) {
+    $sql = "SELECT o.*, CONCAT(o.firstname, ' ', o.lastname) AS customer, (SELECT os.name FROM " . DB_PREFIX . "order_status os WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int)$this->config->get('config_language_id') . "') AS order_status, o.shipping_code, o.total, o.currency_code, o.currency_value, o.date_added, o.date_modified FROM `" . DB_PREFIX . "order` o";
 
-    if ($order_query->num_rows) {
-      $country_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "country` WHERE country_id = '" . (int)$order_query->row['payment_country_id'] . "'");
+    if (isset($data['filter_order_status'])) {
+      $implode = array();
 
-      if ($country_query->num_rows) {
-        $payment_iso_code_2 = $country_query->row['iso_code_2'];
-        $payment_iso_code_3 = $country_query->row['iso_code_3'];
-      } else {
-        $payment_iso_code_2 = '';
-        $payment_iso_code_3 = '';
+      $order_statuses = explode(',', $data['filter_order_status']);
+
+      foreach ($order_statuses as $order_status_id) {
+        $implode[] = "o.order_status_id = '" . (int)$order_status_id . "'";
       }
 
-      $zone_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "zone` WHERE zone_id = '" . (int)$order_query->row['payment_zone_id'] . "'");
-
-      if ($zone_query->num_rows) {
-        $payment_zone_code = $zone_query->row['code'];
-      } else {
-        $payment_zone_code = '';
+      if ($implode) {
+        $sql .= " WHERE (" . implode(" OR ", $implode) . ")";
       }
-
-      $country_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "country` WHERE country_id = '" . (int)$order_query->row['shipping_country_id'] . "'");
-
-      if ($country_query->num_rows) {
-        $shipping_iso_code_2 = $country_query->row['iso_code_2'];
-        $shipping_iso_code_3 = $country_query->row['iso_code_3'];
-      } else {
-        $shipping_iso_code_2 = '';
-        $shipping_iso_code_3 = '';
-      }
-
-      $zone_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "zone` WHERE zone_id = '" . (int)$order_query->row['shipping_zone_id'] . "'");
-
-      if ($zone_query->num_rows) {
-        $shipping_zone_code = $zone_query->row['code'];
-      } else {
-        $shipping_zone_code = '';
-      }
-
-      $this->load->model('localisation/language');
-
-      $language_info = $this->model_localisation_language->getLanguage($order_query->row['language_id']);
-
-      if ($language_info) {
-        $language_code = $language_info['code'];
-        $language_directory = $language_info['directory'];
-      } else {
-        $language_code = '';
-        $language_directory = '';
-      }
-      
-      return $order_query;  
     } else {
-      return false;
+      $sql .= " WHERE o.order_status_id > '0'";
     }
+
+    if (!empty($data['filter_order_id'])) {
+      $sql .= " AND o.order_id = '" . (int)$data['filter_order_id'] . "'";
+    }
+
+    if (!empty($data['filter_customer'])) {
+      $sql .= " AND CONCAT(o.firstname, ' ', o.lastname) LIKE '%" . $this->db->escape($data['filter_customer']) . "%'";
+    }
+
+    if (!empty($data['filter_date_added'])) {
+      $sql .= " AND DATE(o.date_added) = DATE('" . $this->db->escape($data['filter_date_added']) . "')";
+    }
+
+    if (!empty($data['filter_date_modified'])) {
+      $sql .= " AND DATE(o.date_modified) = DATE('" . $this->db->escape($data['filter_date_modified']) . "')";
+    }
+
+    if (!empty($data['filter_total'])) {
+      $sql .= " AND o.total = '" . (float)$data['filter_total'] . "'";
+    }
+
+    $sort_data = array(
+      'o.order_id',
+      'customer',
+      'status',
+      'o.date_added',
+      'o.date_modified',
+      'o.total'
+    );
+
+    if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+      $sql .= " ORDER BY " . $data['sort'];
+    } else {
+      $sql .= " ORDER BY o.order_id";
+    }
+
+    if (isset($data['order']) && ($data['order'] == 'DESC')) {
+      $sql .= " DESC";
+    } else {
+      $sql .= " ASC";
+    }
+
+    if (isset($data['start']) || isset($data['limit'])) {
+      if ($data['start'] < 0) {
+        $data['start'] = 0;
+      }
+
+      if ($data['limit'] < 1) {
+        $data['limit'] = 20;
+      }
+
+      $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+    }
+
+    $query = $this->db->query($sql);
+
+    return $query->rows;
   }
 
   public function orderExistInPluggTo($order_id) {
@@ -65,6 +84,16 @@ class ModelPluggtoPluggto extends Model{
     
     if ($order_query->row) {
       return $order_query->row['order_id_opencart'];
+    }
+
+    return false;
+  }
+
+  public function getRelactionOrder($order_id_opencart) {
+    $order_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order_relation_pluggto_and_opencart` WHERE order_id_opencart = '" . $order_id_opencart . "' ");    
+    
+    if ($order_query->row) {
+      return $order_query->row;
     }
 
     return false;
@@ -82,10 +111,10 @@ class ModelPluggtoPluggto extends Model{
     return $this->db->query($sql);
   }
 
-  public function getOrderTotals($order_id) {
-    $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_total WHERE order_id = '" . (int)$order_id . "' ORDER BY sort_order");
+  public function getOrderTotalByCode($order_id, $code) {
+    $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_total WHERE order_id = '" . (int)$order_id . "' AND code = '" . $code . "' ORDER BY sort_order");
     
-    return $query->rows;
+    return $query->row['value'];
   }
 
   public function getShippingMethodToPluggByOpenCart($input){
@@ -234,7 +263,6 @@ class ModelPluggtoPluggto extends Model{
     $method = "put";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
-    $params = $params;
     $data = $this->sendRequest($method, $url, $params);
     return $data;
   }
