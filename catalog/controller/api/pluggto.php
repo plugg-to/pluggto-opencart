@@ -425,17 +425,19 @@ class ControllerApiPluggto extends Controller {
 			
      		$response = $this->model_pluggto_pluggto->getRelactionOrder($order['order_id']);
 
-     		if (empty($response))
-     		{
-     			$responsePluggTo = $this->model_pluggto_pluggto->createOrder($params);
+     		$return[$response['order_id_pluggto']] = 'Não editado, pedido criado direto no PluggTo';
 
-     			if (!empty($responsePluggTo->Order->id))
-     			{
-     				$this->model_pluggto_pluggto->createRelationOrder($responsePluggTo->Order->id, $order['order_id']);
-     			}
+     		// if (empty($response))
+     		// {
+     		// 	$responsePluggTo = $this->model_pluggto_pluggto->createOrder($params);
 
-     			$return[$responsePluggTo->Order->id] = print_r($responsePluggTo, 1);
-     		}
+     		// 	if (!empty($responsePluggTo->Order->id))
+     		// 	{
+     		// 		$this->model_pluggto_pluggto->createRelationOrder($responsePluggTo->Order->id, $order['order_id']);
+     		// 	}
+
+     		// 	$return[$responsePluggTo->Order->id] = print_r($responsePluggTo, 1);
+     		// }
 
      		if (!empty($response))
      		{
