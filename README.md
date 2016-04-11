@@ -3,6 +3,11 @@
 Changelog
 
  - 1.0.1 (Beta)
+ 	- Fix API orders
+ 	- Fix delivery type status
+ 	- Fix add function to log
+
+ - 1.0.1 (Beta)
  	- Fix did customers without custom fields
  	- Fix create new customers when need
 
