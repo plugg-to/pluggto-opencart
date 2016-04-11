@@ -93,6 +93,11 @@ class ModelPluggtoPluggto extends Model{
 
       $this->db->query($sql);
 
+      $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_queue`
+               MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
+
+      $this->db->query($sql);
+
       $this->db->query("ALTER TABLE `" . DB_PREFIX . "oc_pluggto_products_queue` ADD PRIMARY KEY (`id`);");
       
       $this->db->query("ALTER TABLE `" . DB_PREFIX . "oc_pluggto_products_queue` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
