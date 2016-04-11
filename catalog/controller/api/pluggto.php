@@ -447,6 +447,8 @@ class ControllerApiPluggto extends Controller {
      		}
     	}
 
+        $this->model_pluggto_pluggto->createLog(print_r($return, 1), 'saveOrdersInPluggTo');
+        
     	return $return;
 	}
 
