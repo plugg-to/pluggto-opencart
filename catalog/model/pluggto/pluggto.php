@@ -118,7 +118,15 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getShippingMethodToPluggByOpenCart($input){
-    return $input;
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . $input . '"';
+    $response = $this->db->query($sql);
+
+    if (empty($response->row))
+    {
+      return 'standard';
+    }
+
+    return $response->row['field_pluggto'];
   }
 
   public function getStatusToPluggToByStatusOpenCart($status_opencart) {
