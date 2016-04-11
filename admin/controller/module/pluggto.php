@@ -268,68 +268,73 @@ class ControllerModulePluggTo extends Controller {
     }
 
     $settingsProductsSynchronization = $this->model_pluggto_pluggto->getSettingsProductsSynchronization();
-    $data['settingsProductsSynchronization'] = $settingsProductsSynchronization;
+    $this->data['settingsProductsSynchronization'] = $settingsProductsSynchronization;
 
-    $data['heading_title'] = $this->language->get('heading_title');
+    $this->data['heading_title'] = $this->language->get('heading_title');
 
-    $data['credentials'] = $credentials;
+    $this->data['credentials'] = $credentials;
 
-    $data['breadcrumbs'] = array();
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'] = array();
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
       'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
       'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
       'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
     );
     
-    $data['action_products'] = $this->url->link('module/pluggto/saveSettingsProductsSynchronization', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_import_all_products_to_opencart'] = $this->url->link('module/pluggto/importAllProductsToOpenCart', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_off_all_products_pluggto'] = $this->url->link('module/pluggto/offAllProductsWithPluggTo', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_verify_stock_and_price_products'] = $this->url->link('module/pluggto/verifyStockAndPriceProducts', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_export_all_products_to_pluggto'] = $this->url->link('module/pluggto/exportAllProductsToPluggTo', 'token=' . $this->session->data['token'], 'SSL');
-    $data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_basic_fields'] = $this->url->link('module/pluggto/settingsBasicFields', 'token=' . $this->session->data['token'], 'SSL');
-    $data['load_queue'] = $this->url->link('module/pluggto/loadqueue', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_log_queue'] = $this->url->link('module/pluggto/linkLogQueue', 'token=' . $this->session->data['token'], 'SSL');
-    $data['force_sync_products'] = $this->url->link('module/pluggto/listAllProductsToForceSync', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['action_products'] = $this->url->link('module/pluggto/saveSettingsProductsSynchronization', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['link_import_all_products_to_opencart'] = $this->url->link('module/pluggto/importAllProductsToOpenCart', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['link_off_all_products_pluggto'] = $this->url->link('module/pluggto/offAllProductsWithPluggTo', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['link_verify_stock_and_price_products'] = $this->url->link('module/pluggto/verifyStockAndPriceProducts', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['link_export_all_products_to_pluggto'] = $this->url->link('module/pluggto/exportAllProductsToPluggTo', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['link_basic_fields'] = $this->url->link('module/pluggto/settingsBasicFields', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['load_queue'] = $this->url->link('module/pluggto/loadqueue', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['link_log_queue'] = $this->url->link('module/pluggto/linkLogQueue', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['force_sync_products'] = $this->url->link('module/pluggto/listAllProductsToForceSync', 'token=' . $this->session->data['token'], 'SSL');
 
-    $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 
     if (isset($this->request->post['store_admin'])) {
-      $data['store_admin'] = $this->request->post['store_admin'];
+      $this->data['store_admin'] = $this->request->post['store_admin'];
     } else {
-      $data['store_admin'] = $this->config->get('store_admin');
+      $this->data['store_admin'] = $this->config->get('store_admin');
     }
 
     if (isset($this->request->post['store_status'])) {
-      $data['store_status'] = $this->request->post['store_status'];
+      $this->data['store_status'] = $this->request->post['store_status'];
     } else {
-      $data['store_status'] = $this->config->get('store_status');
+      $this->data['store_status'] = $this->config->get('store_status');
     }
 
-    $data['alerts'] = $this->session->data['alerts'];
+    $this->data['alerts'] = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
 
-    $data['button_pull'] = $this->url->link('module/pluggto/pullModule', 'token=' . $this->session->data['token'], 'SSL');;
-    $data['button_cancel'] = $this->language->get('button_cancel');
+    $this->data['button_pull'] = $this->url->link('module/pluggto/pullModule', 'token=' . $this->session->data['token'], 'SSL');;
+    $this->data['button_cancel'] = $this->language->get('button_cancel');
 
-    $data['button_add_module'] = $this->language->get('button_add_module');
-    $data['button_remove'] = $this->language->get('button_remove');
+    $this->data['button_add_module'] = $this->language->get('button_add_module');
+    $this->data['button_remove'] = $this->language->get('button_remove');
 
-    $data['header'] = $this->load->controller('common/header');
-    $data['column_left'] = $this->load->controller('common/column_left');
-    $data['footer'] = $this->load->controller('common/footer');
+  	$this->children = array(
+  		'common/header',
+  		'common/footer'
+  	);
 
-    $this->response->setOutput($this->load->view('module/pluggto.tpl', $data));
+  	$this->load->model('design/layout');
+
+  	$this->data['layouts'] = $this->model_design_layout->getLayouts();
+      
+  	$this->response->setOutput($this->render());
   }
 
   public function settingsBasicFields() {
@@ -340,44 +345,55 @@ class ControllerModulePluggTo extends Controller {
 
     $this->load->model('pluggto/pluggto');
 
-    $data['heading_title'] = $this->language->get('heading_title');
+    $this->data['heading_title'] = $this->language->get('heading_title');
 
-    $data['breadcrumbs'] = array();
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'] = array();
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
       'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
       'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
       'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['action_basic_fields']   = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel']                = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['action_basic_fields']   = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['cancel']                = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
 
-    $data['alerts']                = $this->session->data['alerts'];
+    $this->data['alerts']                = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
 
-    $data['button_save']   = $this->language->get('button_save');
-    $data['button_cancel'] = $this->language->get('button_cancel');
+    $this->data['button_save']   = $this->language->get('button_save');
+    $this->data['button_cancel'] = $this->language->get('button_cancel');
 
-    $data['header']      = $this->load->controller('common/header');
-    $data['column_left'] = $this->load->controller('common/column_left');
-    $data['footer']      = $this->load->controller('common/footer');
+    $this->data['types_shippings'] = $this->typesShippings;
 
-    $data['types_shippings'] = $this->typesShippings;
+    $this->data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
 
-    $data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
-
-    $data['status_opencart'] = $this->model_pluggto_pluggto->getStatusOpenCart();
+    $this->data['status_opencart'] = $this->model_pluggto_pluggto->getStatusOpenCart();
     
-    $this->response->setOutput($this->load->view('module/pluggto_fields.tpl', $data)); // aqui
+    $this->children = array(
+      'common/header',
+      'common/footer'
+    );
+
+    $this->load->model('design/layout');
+
+    $this->data['layouts'] = $this->model_design_layout->getLayouts();
+
+    if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/pluggto_fields.tpl')) { //if file exists in your current template folder
+       $this->template = $this->config->get('config_template') . '/template/module/pluggto_fields.tpl'; //get it
+    } else {
+       $this->template = '/module/pluggto_fields.tpl'; //or get the file from the default folder
+    }
+      
+    $this->response->setOutput($this->render());
   }
 
   public function listAllProductsToForceSync(){
@@ -389,39 +405,50 @@ class ControllerModulePluggTo extends Controller {
     $this->load->model('pluggto/pluggto');
     $this->load->model('catalog/product');
 
-    $data['heading_title'] = $this->language->get('heading_title');
+    $this->data['heading_title'] = $this->language->get('heading_title');
 
-    $data['breadcrumbs'] = array();
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'] = array();
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
       'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
       'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
       'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['action_basic_fields']   = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel']                = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['action_basic_fields']   = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['cancel']                = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
 
-    $data['token'] = $this->session->data['token'];
+    $this->data['token'] = $this->session->data['token'];
 
-    $data['alerts']                = $this->session->data['alerts'];
+    $this->data['alerts']                = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
 
-    $data['header']      = $this->load->controller('common/header');
-    $data['column_left'] = $this->load->controller('common/column_left');
-    $data['footer']      = $this->load->controller('common/footer');
+    $this->data['products']    = $this->model_catalog_product->getProducts();
+    
+    $this->children = array(
+      'common/header',
+      'common/footer'
+    );
 
-    $data['products']    = $this->model_catalog_product->getProducts();
+    $this->load->model('design/layout');
 
-    $this->response->setOutput($this->load->view('module/pluggto_products_sync.tpl', $data)); // aqui
+    $this->data['layouts'] = $this->model_design_layout->getLayouts();
+
+    if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/pluggto_products_sync.tpl')) { //if file exists in your current template folder
+       $this->template = $this->config->get('config_template') . '/template/module/pluggto_products_sync.tpl'; //get it
+    } else {
+       $this->template = '/module/pluggto_products_sync.tpl'; //or get the file from the default folder
+    }
+    
+    $this->response->setOutput($this->render());
   }
 
   public function linkLogQueue(){
@@ -432,40 +459,50 @@ class ControllerModulePluggTo extends Controller {
 
     $this->load->model('pluggto/pluggto');
 
-    $data['heading_title'] = $this->language->get('heading_title');
+    $this->data['heading_title'] = $this->language->get('heading_title');
 
-    $data['breadcrumbs'] = array();
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'] = array();
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
       'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
       'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
       'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['cancel'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
 
-    $data['alerts'] = $this->session->data['alerts'];
+    $this->data['alerts'] = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
 
-    $data['button_save'] = $this->language->get('button_save');
-    $data['button_cancel'] = $this->language->get('button_cancel');
+    $this->data['button_save'] = $this->language->get('button_save');
+    $this->data['button_cancel'] = $this->language->get('button_cancel');
 
-    $data['header'] = $this->load->controller('common/header');
-    $data['column_left'] = $this->load->controller('common/column_left');
-    $data['footer'] = $this->load->controller('common/footer');
+    $this->data['queues'] = $this->model_pluggto_pluggto->getAllItemsInQueues();
+    
+    $this->children = array(
+      'common/header',
+      'common/footer'
+    );
 
-    $data['queues'] = $this->model_pluggto_pluggto->getAllItemsInQueues();
+    $this->load->model('design/layout');
 
-    $this->response->setOutput($this->load->view('module/pluggto_queue.tpl', $data));
+    $this->data['layouts'] = $this->model_design_layout->getLayouts();
+    if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/pluggto_queue.tpl')) { //if file exists in your current template folder
+       $this->template = $this->config->get('config_template') . '/template/module/pluggto_queue.tpl'; //get it
+    } else {
+       $this->template = '/module/pluggto_queue.tpl'; //or get the file from the default folder
+    }
+    
+    $this->response->setOutput($this->render());
   }
 
   protected function validate() {
@@ -485,33 +522,45 @@ class ControllerModulePluggTo extends Controller {
 
     $this->session->data['alerts'] = '';
 
-    $data['breadcrumbs'] = array();
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'] = array();
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
       'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
       'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['breadcrumbs'][] = array(
+    $this->data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
       'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
     );
 
-    $data['header']        = $this->load->controller('common/header');
-    $data['heading_title'] = $this->language->get('heading_title');
-    $data['button_save']   = $this->language->get('button_save');
-    $data['button_cancel'] = $this->language->get('button_cancel');
-    $data['column_left']   = $this->load->controller('common/column_left');
-    $data['alerts']        = $this->session->data['alerts'];
-    $data['cancel']        = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
-    $data['footer']        = $this->load->controller('common/footer');
-    $data['queue']         = $this->model_pluggto_pluggto->getNotifications();
+    $this->data['heading_title'] = $this->language->get('heading_title');
+    $this->data['button_save']   = $this->language->get('button_save');
+    $this->data['button_cancel'] = $this->language->get('button_cancel');
+    $this->data['alerts']        = $this->session->data['alerts'];
+    $this->data['cancel']        = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['queue']         = $this->model_pluggto_pluggto->getNotifications();
     
-    $this->response->setOutput($this->load->view('module/pluggto_load_queue.tpl', $data));
+    if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/pluggto_load_queue.tpl')) { //if file exists in your current template folder
+       $this->template = $this->config->get('config_template') . '/template/module/pluggto_load_queue.tpl'; //get it
+    } else {
+       $this->template = '/module/pluggto_load_queue.tpl'; //or get the file from the default folder
+    }
+
+    $this->children = array(
+      'common/header',
+      'common/footer'
+    );
+
+    $this->load->model('design/layout');
+
+    $this->data['layouts'] = $this->model_design_layout->getLayouts();
+
+    $this->response->setOutput($this->render());
   }
 
 }
