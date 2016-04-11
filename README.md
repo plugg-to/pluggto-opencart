@@ -25,5 +25,5 @@ Changelog
  	- Import all products to opencart
  	- Export all orders to plugg.to
  	- Import all orders to plugg.to
- 	- Settings to linkage fields of orders and shipping
+ 	- Settings to linkage fields of orders and shipping.
 
