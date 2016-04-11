@@ -1,10 +1,15 @@
 <?php echo $header; ?>
 
-<?php echo $column_left; ?>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.0/css/font-awesome.min.css">
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 
 <div id="content">
-  <div class="page-header">
-
+    <div class="page-header" style="margin-top: -40px;">
     <div class="alert alert-primary">
       <b><?php echo $alerts ?></b>
     </div>
@@ -1265,3 +1270,6 @@
   </div>
  </div>
 </div>
+
+
+<?php echo $footer; ?>
