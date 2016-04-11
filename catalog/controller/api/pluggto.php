@@ -403,7 +403,7 @@ class ControllerApiPluggto extends Controller {
     			'receiver_phone_area' => '',
     			'receiver_phone'      => $order['telephone'],
     			'receiver_email'      => $order['email'],
-    			// 'delivery_type'       => $this->model_pluggto_pluggto->getShippingMethodToPluggByOpenCart($order['shipping_method']),
+    			'delivery_type'       => $this->model_pluggto_pluggto->getShippingMethodToPluggByOpenCart($order['shipping_method']),
     			'payer_name'          => $order['shipping_firstname'],
     			'payer_lastname'      => $order['shipping_lastname'],
     			'payer_address'       => $order['shipping_address_1'],
