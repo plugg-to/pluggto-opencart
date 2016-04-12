@@ -313,8 +313,6 @@ class ControllerApiPluggto extends Controller {
 				);
 
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
-
-				echo '<pre>';print_r($existOrderID);exit;
 				
 				if ($existOrderID) {
 					// $response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
