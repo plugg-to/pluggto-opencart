@@ -233,10 +233,10 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getIDItemBySKU($sku){
-    $sql = 'SELECT product_id FROM ' . DB_PREFIX . 'product WHERE sku = "' . $sku . '"';
+    $sql = 'SELECT product_id FROM ' . DB_PREFIX . 'product WHERE sku = "' . $sku . '" ORDER BY product_id DESC LIMIT 1';
     
     $response = $this->db->query($sql);
-    
+
     if (!empty($response->row)) {
       return $response->row['product_id'];
     }
@@ -1071,7 +1071,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function editCustomer($data, $customer_id) {
-    $this->db->query("UPDATE " . DB_PREFIX . "customer SET firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']) ? json_encode($data['custom_field']) : '') . "' WHERE customer_id = '" . (int)$customer_id . "'");
+    $this->db->query("UPDATE " . DB_PREFIX . "customer SET firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "' WHERE customer_id = '" . (int)$customer_id . "'");
   }
 
   public function addAddress($data, $customer_id){

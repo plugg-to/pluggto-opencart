@@ -326,7 +326,7 @@ class ControllerApiPluggto extends Controller {
 				}
 
 				$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
-				echo 'oi';exit;
+				
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => true, 'message' => 'OK')));
 			} catch (Exception $e) {
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => $e->getMessage())));
