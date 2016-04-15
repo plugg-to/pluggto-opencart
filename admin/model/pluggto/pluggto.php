@@ -83,7 +83,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_queue` (
-              `id` int(11) NOT NULL,
+                `id` int(11) NOT NULL,
                 `product_id` int(11) NOT NULL,
                 `product_id_pluggto` varchar(255) NOT NULL,
                 `process` int(11) NOT NULL,
@@ -93,14 +93,11 @@ class ModelPluggtoPluggto extends Model{
 
       $this->db->query($sql);
 
-      $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_queue`
-               MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto` ADD COLUMN `only_actives` TINYINT(1) NULL AFTER `client_secret`");
 
-      $this->db->query($sql);
-
-      $this->db->query("ALTER TABLE `" . DB_PREFIX . "oc_pluggto_products_queue` ADD PRIMARY KEY (`id`);");
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_products_queue` ADD PRIMARY KEY (`id`);");
       
-      $this->db->query("ALTER TABLE `" . DB_PREFIX . "oc_pluggto_products_queue` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_products_queue` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
       
     } catch (Exception $e) {
       
