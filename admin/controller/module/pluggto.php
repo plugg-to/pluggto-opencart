@@ -42,16 +42,17 @@ class ControllerModulePluggTo extends Controller {
 
     $data = array(
       'refresh_only_stock' => $this->request->post['refresh_only_stock'],
-      'active' => $this->request->post['active']
+      'active' => $this->request->post['active'],
+      'only_actives' => $this->request->post['only_actives']
     );
-        
+    
     $this->session->data['alerts'] = 'Configurações salvas com sucesso!';
     
     $response = $this->model_pluggto_pluggto->saveSettingsProductsSynchronization($data);
     if (!$response)    
       $this->session->data['alerts'] = 'Ocorreu algum erro ao salvar as configurações de sicronização';
 
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   /**
@@ -63,7 +64,7 @@ class ControllerModulePluggTo extends Controller {
     $this->model_pluggto_pluggto->offAllProductsWithPluggTo();
 
     $this->session->data['alerts'] = 'Todos os produtos foram desvinculados!';
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   /**
@@ -75,7 +76,7 @@ class ControllerModulePluggTo extends Controller {
     $this->model_pluggto_pluggto->saveImportationQueue();
 
     $this->session->data['alerts'] = 'Importação agendada com sucesso!';
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   public function saveProducts($result)
@@ -120,7 +121,7 @@ class ControllerModulePluggTo extends Controller {
     }
 
     $this->session->data['alerts'] = 'Verificação feita com sucesso!';
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   public function exportAllProductsToPluggTo() {
@@ -129,7 +130,7 @@ class ControllerModulePluggTo extends Controller {
     $this->model_pluggto_pluggto->saveExportationQueue();
 
     $this->session->data['alerts'] = 'Exportação agendada com sucesso!';
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   public function getSpecialPriceProductToPluggTo($product_id) {
@@ -235,7 +236,7 @@ class ControllerModulePluggTo extends Controller {
 
     $this->session->data['alerts'] = 'Atrelamento salvo com sucesso!';
 
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   public function index() {

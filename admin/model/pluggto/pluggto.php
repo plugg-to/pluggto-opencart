@@ -49,7 +49,7 @@ class ModelPluggtoPluggto extends Model{
 
       $this->db->query($sql);
 
-      $sql = "CREATE TABLE `" . DB_PREFIX . "pluggto_notifications` (
+      $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_notifications` (
               `id` int(11) NOT NULL AUTO_INCREMENT,
               `resource_id` varchar(100) NOT NULL,
               `type` varchar(20) DEFAULT NULL,
@@ -72,16 +72,6 @@ class ModelPluggtoPluggto extends Model{
 
       $this->db->query($sql);
 
-      $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
-              ADD PRIMARY KEY (`id`);";
-
-      $this->db->query($sql);
-
-      $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
-               MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
-      
-      $this->db->query($sql);
-
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_queue` (
                 `id` int(11) NOT NULL,
                 `product_id` int(11) NOT NULL,
@@ -93,11 +83,16 @@ class ModelPluggtoPluggto extends Model{
 
       $this->db->query($sql);
 
-      $this->db->query("ALTER TABLE `" . DB_PREFIX . "settings_products_synchronization` ADD COLUMN `only_actives` TINYINT(1) NULL AFTER `client_secret`");
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "settings_products_synchronization` ADD COLUMN `only_actives` TINYINT(1)");
 
       $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_products_queue` ADD PRIMARY KEY (`id`);");
       
       $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_products_queue` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
+
+      $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
+              ADD PRIMARY KEY (`id`);";
+
+      $this->db->query($sql);
       
     } catch (Exception $e) {
       
@@ -458,7 +453,8 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function saveSettingsProductsSynchronization($data) {
-    $sql = "INSERT INTO " . DB_PREFIX . "settings_products_synchronization (`active`, `refresh_only_stock`) VALUES (" . $data['active'] . ", " . $data['refresh_only_stock'] . ")";
+    $this->db->query("TRUNCATE TABLE " . DB_PREFIX . "settings_products_synchronization");
+    $sql = "INSERT INTO " . DB_PREFIX . "settings_products_synchronization (`active`, `refresh_only_stock`, `only_actives`) VALUES (" . $data['active'] . ", " . $data['refresh_only_stock'] . ", " . $data['only_actives'] . ")";
     return $this->db->query($sql);
   }
 
@@ -537,7 +533,9 @@ class ModelPluggtoPluggto extends Model{
   public function saveExportationQueue(){
     $this->load->model('catalog/product');
 
-    $products = $this->model_catalog_product->getProducts();
+    $configs = $this->getSettingsProductsSynchronization();
+
+    $products = $this->model_catalog_product->getProducts(array('filter_status' => $configs->row['only_actives']));
     
     $this->insertAllIDsOpenCart($products);
   }
