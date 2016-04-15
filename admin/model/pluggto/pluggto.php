@@ -93,7 +93,7 @@ class ModelPluggtoPluggto extends Model{
 
       $this->db->query($sql);
 
-      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto` ADD COLUMN `only_actives` TINYINT(1) NULL AFTER `client_secret`");
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "settings_products_synchronization` ADD COLUMN `only_actives` TINYINT(1) NULL AFTER `client_secret`");
 
       $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_products_queue` ADD PRIMARY KEY (`id`);");
       

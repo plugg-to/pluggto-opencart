@@ -156,6 +156,18 @@
                           </div>
                         </div>
                         <div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Importar/Exportar somente produtos ativos:</label>
+                          <div class="col-sm-10">
+                            <select name="settings_products_synchronization" class="form-control">
+                              <option value="1" <?php echo ($settingsProductsSynchronization->row['settings_products_synchronization'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                              <option value="0" <?php echo ($settingsProductsSynchronization->row['settings_products_synchronization'] == 0) ? 'selected' : ''; ?> >Não</option>
+                            </select>
+                            <br>
+                            <small>Caso opção seja Sim, apenas estoque será gravado no OpenCart, demais atributos (Foto,Preço,Sku...) só será enviado do OpenCart para o Plugg.To</small><br>
+                            <small><strong>OBS: Nao e possivel importar os produtos casos a opcao sim esteja ativa.</strong></small>
+                          </div>
+                        </div>
+                        <div class="form-group">
                           <label class="col-sm-2 control-label" for="input-name">Verificar divergencia de Estoque e Preço</label>
                           <div class="col-sm-10">
                             <a href="<?php echo $link_verify_stock_and_price_products; ?>" id="estoque-preco" class="btn btn-info">Verificar divergencia de Estoque e Preço</a>
