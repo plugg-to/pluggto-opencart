@@ -53,7 +53,7 @@ class ControllerApiPluggto extends Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));
 	}
-
+	
 	public function cronProducts(){
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
@@ -67,13 +67,17 @@ class ControllerApiPluggto extends Controller {
 
 		$this->response->addHeader('Content-Type: application/json');
 		
+		$this->load->model('pluggto/pluggto');
 		$this->load->model('catalog/product');
 
 		$products = $this->model_catalog_product->getProducts();
 		
 		$return = [];
 		foreach ($products as $i => $product) {
-			$return[$i] = json_encode($this->exportAllProductsToPluggTo($product));
+			$result = $this->model_pluggto_pluggto->getProductBySKU($product['sku']);
+
+			if (isset($result->Product->id))
+				$return[$i] = json_encode($this->exportAllProductsToPluggTo($product));
 		}
 
 		$this->response->setOutput(json_encode($return));	
