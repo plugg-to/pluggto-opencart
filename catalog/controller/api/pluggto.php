@@ -67,7 +67,16 @@ class ControllerApiPluggto extends Controller {
 
 		$this->response->addHeader('Content-Type: application/json');
 		
-		$this->response->setOutput($this->exportAllProductsToPluggTo());	
+		$this->load->model('catalog/product');
+
+		$products = $this->model_catalog_product->getProducts();
+		
+		$return = [];
+		foreach ($products as $i => $product) {
+			$return[$i] = json_encode($this->exportAllProductsToPluggTo($product));
+		}
+
+		$this->response->setOutput(json_encode($return));	
 	}
 
 	public function cronUpdateProducts(){
