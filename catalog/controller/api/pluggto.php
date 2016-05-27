@@ -72,7 +72,7 @@ class ControllerApiPluggto extends Controller {
 
 		$products = $this->model_catalog_product->getProducts();
 		
-		$return = [];
+		$return = array();
 		foreach ($products as $i => $product) {
 			$result = $this->model_pluggto_pluggto->getProductBySKU($product['sku']);
 
@@ -312,18 +312,18 @@ class ControllerApiPluggto extends Controller {
 					'currency_code' 	 => $currency['currency_code'],
 					'currency_value' 	 => $currency['currency_value'],
 					'products' 			 => $this->getProductsToSaveOpenCart($order),
-					'custom_field'		 => [
+					'custom_field'		 => array(
 						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
-					],
+					),
 					'order_status_id' => $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history),
-					'shipping_custom_field' => [
+					'shipping_custom_field' => array(
 						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),					
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
-					],
-					'payment_custom_field' => [
+					),
+					'payment_custom_field' => array(
 						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),					
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
-					]
+					)
 				);
 
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
