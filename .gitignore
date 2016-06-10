@@ -1,5 +1,7 @@
 .htaccess.txt
 README.md
+agestante/
+demontie/
 admin/config.php
 admin/controller/analytics/
 admin/controller/captcha/
@@ -224,3 +226,4 @@ admin/view/template/module/laybuy_layout.tpl
 admin/view/template/module/sagepay_direct_cards.tpl
 admin/view/template/module/sagepay_server_cards.tpl
 admin/view/template/theme/
+1.5.5.1/

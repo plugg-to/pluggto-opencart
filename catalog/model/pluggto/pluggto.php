@@ -388,7 +388,16 @@ class ModelPluggtoPluggto extends Model{
   }
  
   public function getProduct($product_id){
-      $url = "http://api.plugg.to/products/".$product_id;
+      $url = "http://api.plugg.to/products/" . $product_id;
+      $method = "get";
+      $accesstoken = $this->getAccesstoken();
+      $params = array("access_token" => $accesstoken);
+      $data = $this->sendRequest($method, $url, $params);    
+      return $data;
+  }
+
+  public function getProductBySKU($sku) {
+      $url = "http://api.plugg.to/skus/" . $sku;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
