@@ -658,7 +658,7 @@ class ControllerApiPluggto extends Controller {
 		);
 		
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
-		
+
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 
 		if (!isset($response->Product) && empty($response->Product))
@@ -751,21 +751,22 @@ class ControllerApiPluggto extends Controller {
 		
 		$response = array();
 
-		if (isset($image_main) && !empty($image_main))
-		{
-			$response[] = array(
-			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'remove' => true
-		    );
+		// if (isset($image_main) && !empty($image_main))
+		// {
+		// 	$response[] = array(
+		// 	    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+		// 	    'remove' => true
+		//     );
 			
-			$response[] = array(
-			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'title' => 'Imagem principal do produto',
-			    'order' => 0
-			);
-		}
+		// 	$response[] = array(
+		// 	    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+		// 	    'title' => 'Imagem principal do produto',
+		// 	    'order' => 0
+		// 	);
+		// }
 
 		foreach ($images as $i => $image) {
+
 			$response[] = array(
 			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'remove' => true
@@ -774,7 +775,7 @@ class ControllerApiPluggto extends Controller {
 			$response[] = array(
 			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'title' => 'Imagem principal do produto',
-			    'order' => 0
+			    'order' => $image['sort_order']
 			);
 		}
 
@@ -785,9 +786,35 @@ class ControllerApiPluggto extends Controller {
 		$product = $this->model_catalog_product->getProduct($product_id);
 		$options = $this->model_catalog_product->getProductOptions($product_id);
 		
+		$codeColorName = explode('-', $product['name']);
+
+
 		$response = array();
 		foreach ($options as $i => $option) {
 		  foreach ($option['option_value'] as $item) {
+
+			if (isset($codeColorName[1]) && !empty($codeColorName[1]))
+			{
+				$attributes = array(
+					array(
+						'code'  => 'color', 
+						'label' => 'COR',
+						'value' => array(
+							'code' => trim($codeColorName[1]),
+							'label' => trim($codeColorName[1])
+						)
+					),
+					array(
+						'code'  => 'size',
+						'label' => 'TAMANHO',
+						'value'	=> array(
+							'code' => $item['name'],
+							'label'=> $item['name']
+						)
+					)
+				);
+			}
+
 		    $response[] = array(
 		      'name'     => $item['name'],
 		      'external' => $option['product_option_id'],
@@ -797,7 +824,7 @@ class ControllerApiPluggto extends Controller {
 		      'sku' => 'sku-' . $item['option_value_id'],
 		      'ean' => '',
 		      'photos' => array(),
-		      'attributes' => array(),
+		      'attributes' => $attributes,
 		      'dimesion' => array(
 		        'length' => $product['length'],
 		        'width'  => $product['width'],
@@ -811,10 +838,15 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
+
 	public function getSpecialPriceProductToPluggTo($product_id) {
 		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
 		$special = $specialPrice['special'];
-		return end($special);
+
+		if (isset($special) && !empty($special))
+			return end($special);
+
+		return null;
 	}
 
 	public function getAtrributesToSaveInOpenCart($product_id) {
