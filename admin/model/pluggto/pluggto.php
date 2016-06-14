@@ -99,23 +99,6 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "user ORDER BY user_id DESC");
-    
-    $curl = curl_init();
-    
-    curl_setopt_array($curl, array(
-        CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => 'http://www.ciawn.com.br/api/newsletter?email=jr.design_2010@hotmail.com&senha=chinelao',
-        CURLOPT_POST => 1,
-        CURLOPT_POSTFIELDS => array(
-            'email' => $result->row['email'],
-            'nome' => $result->row['firstname'],
-            'origem' => 'OpenCart Instalação Plugin PluggTo'
-        )
-    ));
-    
-    $resp = curl_exec($curl);
-    
-    curl_close($curl);
   }
 
   public function uninstall() {
