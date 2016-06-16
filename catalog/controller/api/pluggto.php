@@ -821,7 +821,7 @@ class ControllerApiPluggto extends Controller {
 		      'quantity' => $item['quantity'],
 		      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
 		      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
-		      'sku' => 'sku-' . $item['option_value_id'],
+		      'sku' => $product_id . '-' . $item['name'],
 		      'ean' => '',
 		      'photos' => array(),
 		      'attributes' => $attributes,
