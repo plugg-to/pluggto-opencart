@@ -785,19 +785,44 @@ class ControllerApiPluggto extends Controller {
 		$product = $this->model_catalog_product->getProduct($product_id);
 		$options = $this->model_catalog_product->getProductOptions($product_id);
 		
+		$codeColorName = explode('-', $product['name']);
+
 		$response = array();
 		foreach ($options as $i => $option) {
 		  foreach ($option['option_value'] as $item) {
+
+			if (isset($codeColorName[1]) && !empty($codeColorName[1]))
+			{
+				$attributes = array(
+					array(
+						'code'  => 'color', 
+						'label' => 'COR',
+						'value' => array(
+							'code' => trim($codeColorName[1]),
+							'label' => trim($codeColorName[1])
+						)
+					),
+					array(
+						'code'  => 'size',
+						'label' => 'TAMANHO',
+						'value'	=> array(
+							'code' => $item['name'],
+							'label'=> $item['name']
+						)
+					)
+				);
+			}
+
 		    $response[] = array(
 		      'name'     => $item['name'],
 		      'external' => $option['product_option_id'],
 		      'quantity' => $item['quantity'],
 		      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
 		      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
-		      'sku' => 'sku-' . $item['option_value_id'],
+		      'sku' => $product['sku'] . '-' . $item['name'],
 		      'ean' => '',
 		      'photos' => array(),
-		      'attributes' => array(),
+		      'attributes' => $attributes,
 		      'dimesion' => array(
 		        'length' => $product['length'],
 		        'width'  => $product['width'],
@@ -810,6 +835,7 @@ class ControllerApiPluggto extends Controller {
 
 		return $response;
 	}
+
 
 	public function getSpecialPriceProductToPluggTo($product_id) {
 		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
