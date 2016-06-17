@@ -783,10 +783,35 @@ class ControllerApiPluggto extends Controller {
 	public function getVariationsToSaveInOpenCart($product_id) {
 		$product = $this->model_catalog_product->getProduct($product_id);
 		$options = $this->model_catalog_product->getProductOptions($product_id);
-	
+		
+		$codeColorName = explode('-', $product['name']);
+
 		$response = array();
 		foreach ($options as $i => $option) {
-		  foreach ($option['product_option_value'] as $item) {
+		  foreach ($option['option_value'] as $item) {
+
+			if (isset($codeColorName[1]) && !empty($codeColorName[1]))
+			{
+				$attributes = array(
+					array(
+						'code'  => 'color', 
+						'label' => 'COR',
+						'value' => array(
+							'code' => trim($codeColorName[1]),
+							'label' => trim($codeColorName[1])
+						)
+					),
+					array(
+						'code'  => 'size',
+						'label' => 'TAMANHO',
+						'value'	=> array(
+							'code' => $item['name'],
+							'label'=> $item['name']
+						)
+					)
+				);
+			}
+
 		    $response[] = array(
 		      'name'     => $item['name'],
 		      'external' => $option['product_option_id'],
@@ -796,7 +821,7 @@ class ControllerApiPluggto extends Controller {
 		      'sku' => $product['sku'] . '-' . $item['name'],
 		      'ean' => '',
 		      'photos' => array(),
-		      'attributes' => array(),
+		      'attributes' => $attributes,
 		      'dimesion' => array(
 		        'length' => $product['length'],
 		        'width'  => $product['width'],
@@ -809,7 +834,7 @@ class ControllerApiPluggto extends Controller {
 
 		return $response;
 	}
-
+	
 	public function getAtrributesToSaveInOpenCart($product_id) {
 		$this->load->model('catalog/product');
 
