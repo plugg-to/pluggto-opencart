@@ -658,7 +658,7 @@ class ControllerApiPluggto extends Controller {
 		);
 		
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
-		
+
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 
 		if (!isset($response->Product) && empty($response->Product))
@@ -751,21 +751,22 @@ class ControllerApiPluggto extends Controller {
 		
 		$response = array();
 
-		if (isset($image_main) && !empty($image_main))
-		{
-			$response[] = array(
-			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'remove' => true
-		    );
+		// if (isset($image_main) && !empty($image_main))
+		// {
+		// 	$response[] = array(
+		// 	    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+		// 	    'remove' => true
+		//     );
 			
-			$response[] = array(
-			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'title' => 'Imagem principal do produto',
-			    'order' => 0
-			);
-		}
+		// 	$response[] = array(
+		// 	    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+		// 	    'title' => 'Imagem principal do produto',
+		// 	    'order' => 0
+		// 	);
+		// }
 
 		foreach ($images as $i => $image) {
+
 			$response[] = array(
 			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'remove' => true
@@ -774,7 +775,7 @@ class ControllerApiPluggto extends Controller {
 			$response[] = array(
 			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'title' => 'Imagem principal do produto',
-			    'order' => 0
+			    'order' => $image['sort_order']
 			);
 		}
 
@@ -836,11 +837,14 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
-
 	public function getSpecialPriceProductToPluggTo($product_id) {
 		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
 		$special = $specialPrice['special'];
-		return end($special);
+
+		if (isset($special) && !empty($special))
+			return end($special);
+
+		return null;
 	}
 
 	public function getAtrributesToSaveInOpenCart($product_id) {
