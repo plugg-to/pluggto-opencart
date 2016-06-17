@@ -511,6 +511,8 @@ class ControllerApiPluggto extends Controller {
 			return 'Problem SKU' . $product['name'];
     	}
 
+		$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
+		
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
@@ -629,6 +631,8 @@ class ControllerApiPluggto extends Controller {
 
         $product = $this->model_catalog_product->getProduct($product_id);
        
+		$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
+
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],

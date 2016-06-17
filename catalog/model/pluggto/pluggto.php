@@ -363,13 +363,36 @@ class ModelPluggtoPluggto extends Model{
           'Content-Length: ' . strlen($data_string))
       );
 
+    }elseif (strtolower ( $method ) == "delete") {
+      
+      curl_setopt($ch, CURLOPT_URL, $url);
+
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+          'Content-Type: application/json',
+          'Content-Length: ' . strlen($data_string)
+        )
+      );
+
     }
+    
 
     $result = curl_exec($ch);
 
     return json_decode($result);
   }
 
+  public function removeProduct($sku){
+      $url = "http://api.plugg.to/skus/".$sku;
+      $method = "delete";
+      $accesstoken = $this->getAccesstoken();
+      $params = array("access_token" => $accesstoken);
+      $data = $this->sendRequest($method, $url . '?access_token=' . $accesstoken, $params);    
+      return $data;
+  }
+  
   public function createNotification($fields){
     return $this->saveNotification($fields);
   }
