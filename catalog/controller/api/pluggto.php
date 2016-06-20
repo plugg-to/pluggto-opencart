@@ -326,8 +326,6 @@ class ControllerApiPluggto extends Controller {
 				);
 
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
-
-				echo '<pre>';print_r($existOrderID);exit;
 				
 				if ($existOrderID) {
 					// $response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
@@ -804,7 +802,7 @@ class ControllerApiPluggto extends Controller {
 			);
 
 		    $response[] = array(
-		      'name'     => $item['name'],
+		      'name'     => $product['name'] . ' - ' . $item['name'],
 		      'external' => $option['product_option_id'],
 		      'quantity' => $item['quantity'],
 		      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
