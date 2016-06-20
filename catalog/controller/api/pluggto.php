@@ -806,7 +806,7 @@ class ControllerApiPluggto extends Controller {
 			);
 
 		    $response[] = array(
-		      'name'     => $item['name'],
+		      'name'     => $product['name'] . ' - ' . $item['name'],
 		      'external' => $option['product_option_id'],
 		      'quantity' => $item['quantity'],
 		      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
