@@ -17,7 +17,7 @@
       </div>
 
       <div class="container-fluid">
-        
+
         <div class="pull-right">
           <a href="https://bitbucket.org/pluggto/opencart/downloads" target="_blank" data-toggle="tooltip" title="Atualizar código do modulo." class="btn btn-warning">
             <i class="fa fa-refresh"></i> Atualizar Modulo
@@ -38,7 +38,7 @@
     </div>
 
     <div class="col-md-12 text-center" style="margin-bottom: 10px;">
-      <img src="http://plugg.to/wp-content/uploads/2015/10/PluggTo-Header-Logo-Verde.png" alt="" /> 
+      <img src="http://plugg.to/wp-content/uploads/2015/10/PluggTo-Header-Logo-Verde.png" alt="" />
 
       <div class="alert alert-info" style="margin-top: 30px;">
         <p>Modulo de integração com a plataforma plugg.to mais informações acesse <a href="http://plugg.to">plugg.to</a> </p>
@@ -56,27 +56,31 @@
             <li class="nav active">
               <a onclick="showKeys();" data-toggle="tab">Chaves de Integração</a>
             </li>
-            
+
             <li class="nav">
               <a onclick="showConfigs();" data-toggle="tab">Configurações iniciais</a>
             </li>
-            
+
             <li>
               <a href="<?php echo $link_basic_fields ?>">Configurações de Campos</a> <!-- Aqui -->
             </li>
 
             <li>
               <a href="<?php echo $load_queue ?>">Notificações</a> <!-- Aqui -->
-            </li>    
+            </li>
 
             <li>
               <a href="<?php echo $force_sync_products ?>">Produtos</a> <!-- Aqui -->
-            </li>      
+            </li>
+
+            <li>
+              <a href="<?php echo $linkPluggTransparent ?>">PluggTo</a>
+            </li>
 
         </ul>
         <!-- Tab panes -->
         <div class="tab-content">
-            
+
             <div class="tab-pane in active" id="keys">
               <div class="row" style="width: 99%;">
                 <div class="col-md-12" style="margin-left: 20px;  margin-top: 20px;">
@@ -123,7 +127,7 @@
               </div>
             </div>
 
-            <div class="tab-pane" id="config">            
+            <div class="tab-pane" id="config">
               <div class="row" style="width: 99%;">
                 <div class="col-md-12" style="margin-left: 20px;  margin-top: 20px;">
                   <div class="panel panel-default">
@@ -138,8 +142,8 @@
                           <label class="col-sm-2 control-label" for="input-name">Ativo:</label>
                           <div class="col-sm-10">
                             <select name="active" class="form-control">
-                              <option value="1" <?php echo ($settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                              <option value="0" <?php echo ($settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
+                              <option value="1" <?php echo (isset($settingsProductsSynchronization->row['active']) && $settingsProductsSynchronization->row['active'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                              <option value="0" <?php echo (isset($settingsProductsSynchronization->row['active']) && $settingsProductsSynchronization->row['active'] == 0) ? 'selected' : ''; ?> >Não</option>
                             </select>
                           </div>
                         </div>
@@ -147,8 +151,8 @@
                           <label class="col-sm-2 control-label" for="input-name">Atualizar no OpenCart apenas estoque:</label>
                           <div class="col-sm-10">
                             <select name="refresh_only_stock" class="form-control">
-                              <option value="1" <?php echo ($settingsProductsSynchronization->row['refresh_only_stock'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                              <option value="0" <?php echo ($settingsProductsSynchronization->row['refresh_only_stock'] == 0) ? 'selected' : ''; ?> >Não</option>
+                              <option value="1" <?php echo (isset($settingsProductsSynchronization->row['refresh_only_stock']) && $settingsProductsSynchronization->row['refresh_only_stock'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                              <option value="0" <?php echo (isset($settingsProductsSynchronization->row['refresh_only_stock']) && $settingsProductsSynchronization->row['refresh_only_stock'] == 0) ? 'selected' : ''; ?> >Não</option>
                             </select>
                             <br>
                             <small>Caso opção seja Sim, apenas estoque será gravado no OpenCart, demais atributos (Foto,Preço,Sku...) só será enviado do OpenCart para o Plugg.To</small><br>
@@ -159,8 +163,8 @@
                           <label class="col-sm-2 control-label" for="input-name">Importar/Exportar somente produtos ativos:</label>
                           <div class="col-sm-10">
                             <select name="only_actives" class="form-control">
-                              <option value="1" <?php echo ($settingsProductsSynchronization->row['only_actives'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                              <option value="0" <?php echo ($settingsProductsSynchronization->row['only_actives'] == 0) ? 'selected' : ''; ?> >Não</option>
+                              <option value="1" <?php echo (isset($settingsProductsSynchronization->row['only_actives']) && $settingsProductsSynchronization->row['only_actives'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                              <option value="0" <?php echo (isset($settingsProductsSynchronization->row['only_actives']) && $settingsProductsSynchronization->row['only_actives'] == 0) ? 'selected' : ''; ?> >Não</option>
                             </select>
                             <br>
                             <small>Somente produtos habilitados no OpenCart serão enviados para o plugg.to</small><br>
@@ -173,15 +177,15 @@
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-2 control-label" for="input-name">Importação de todos os produtos para OpenCart</label>
+                          <label class="col-sm-2 control-label" for="input-name">Agendar importação dos produtos para OpenCart</label>
                           <div class="col-sm-10">
-                            <a href="<?php echo $link_import_all_products_to_opencart; ?>" id="import-products" class="btn btn-warning">Importação de todos os produtos para OpenCart</a>
+                            <a href="<?php echo $link_import_all_products_to_opencart; ?>" id="import-products" class="btn btn-warning">Agendar importação dos produtos para OpenCart</a>
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-2 control-label" for="input-name">Exportação de todos os produtos para o PluggTo</label>
+                          <label class="col-sm-2 control-label" for="input-name">Agendar exportação dos produtos para o PluggTo</label>
                           <div class="col-sm-10">
-                            <a href="<?php echo $link_export_all_products_to_pluggto; ?>" id="export-products" class="btn btn-danger">Exportação de todos os produtos para o PluggTo</a>
+                            <a href="<?php echo $link_export_all_products_to_pluggto; ?>" id="export-products" class="btn btn-danger">Agendar exportação dos produtos para o PluggTo</a>
                           </div>
                         </div>
   <!--                       <div class="form-group">
@@ -201,7 +205,7 @@
               </div>
             </div>
 
-            <div class="tab-pane fade" id="C">            
+            <div class="tab-pane fade" id="C">
               <div class="row" style="width: 99%;">
                 <form action="<?php echo $action_basic_fields; ?>" method="post" enctype="multipart/form-data" id="form-banner" class="form-horizontal">
                   <div class="col-md-12" style="margin-left: 20px;">
@@ -1425,7 +1429,7 @@ function showConfigs()
 function showKeys()
 {
   $('#keys').show();
-  $('#config').hide(); 
+  $('#config').hide();
 }
 
   function validateDataInPluggTo()

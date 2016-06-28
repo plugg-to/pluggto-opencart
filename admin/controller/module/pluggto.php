@@ -45,11 +45,11 @@ class ControllerModulePluggTo extends Controller {
       'active' => $this->request->post['active'],
       'only_actives' => $this->request->post['only_actives']
     );
-    
+
     $this->session->data['alerts'] = 'Configurações salvas com sucesso!';
-    
+
     $response = $this->model_pluggto_pluggto->saveSettingsProductsSynchronization($data);
-    if (!$response)    
+    if (!$response)
       $this->session->data['alerts'] = 'Ocorreu algum erro ao salvar as configurações de sicronização';
 
     $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
@@ -110,7 +110,7 @@ class ControllerModulePluggTo extends Controller {
 
         $response = $this->model_pluggto_pluggto->updateStockPluggTo($data, $product['pluggto_product_id']);
       }
-      
+
       if (isset($pluggto_product_response) && $pluggto_product_response->Product->price != $opencart_product_response['price']){
         $data = array(
           'price' => $opencart_product_response['price']
@@ -160,7 +160,7 @@ class ControllerModulePluggTo extends Controller {
   public function getVariationsToSaveInOpenCart($product_id) {
     $product = $this->model_catalog_product->getProduct($product_id);
     $options = $this->model_catalog_product->getProductOptions($product_id);
-  
+
     $response = array();
     foreach ($options as $i => $option) {
       foreach ($option['product_option_value'] as $item) {
@@ -239,6 +239,27 @@ class ControllerModulePluggTo extends Controller {
     $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
+  public function pluggTransparent()  {
+    file_get_contents('https://core.plugg.to/transparent_layout/true');
+
+    $this->children = array(
+      'common/header',
+      'common/footer'
+    );
+
+    $this->load->model('design/layout');
+
+    $this->data['layouts'] = $this->model_design_layout->getLayouts();
+
+    if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/pluggto_transparent.tpl')) { //if file exists in your current template folder
+       $this->template = $this->config->get('config_template') . '/template/module/pluggto_transparent.tpl'; //get it
+    } else {
+       $this->template = '/module/pluggto_transparent.tpl'; //or get the file from the default folder
+    }
+
+    $this->response->setOutput($this->render());
+  }
+
   public function index() {
     $this->template = 'module/pluggto.tpl';
     $this->language->load('module/pluggto');
@@ -290,7 +311,7 @@ class ControllerModulePluggTo extends Controller {
       'text'      => $this->language->get('heading_title'),
       'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
     );
-    
+
     $this->data['action_products'] = $this->url->link('module/pluggto/saveSettingsProductsSynchronization', 'token=' . $this->session->data['token'], 'SSL');
     $this->data['link_import_all_products_to_opencart'] = $this->url->link('module/pluggto/importAllProductsToOpenCart', 'token=' . $this->session->data['token'], 'SSL');
     $this->data['link_off_all_products_pluggto'] = $this->url->link('module/pluggto/offAllProductsWithPluggTo', 'token=' . $this->session->data['token'], 'SSL');
@@ -301,6 +322,7 @@ class ControllerModulePluggTo extends Controller {
     $this->data['load_queue'] = $this->url->link('module/pluggto/loadqueue', 'token=' . $this->session->data['token'], 'SSL');
     $this->data['link_log_queue'] = $this->url->link('module/pluggto/linkLogQueue', 'token=' . $this->session->data['token'], 'SSL');
     $this->data['force_sync_products'] = $this->url->link('module/pluggto/listAllProductsToForceSync', 'token=' . $this->session->data['token'], 'SSL');
+    $this->data['linkPluggTransparent'] = $this->url->link('module/pluggto/pluggTransparent', 'token=' . $this->session->data['token'], 'SSL');
 
     $this->data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $this->data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
@@ -334,7 +356,7 @@ class ControllerModulePluggTo extends Controller {
   	$this->load->model('design/layout');
 
   	$this->data['layouts'] = $this->model_design_layout->getLayouts();
-      
+
   	$this->response->setOutput($this->render());
   }
 
@@ -378,7 +400,7 @@ class ControllerModulePluggTo extends Controller {
     $this->data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
 
     $this->data['status_opencart'] = $this->model_pluggto_pluggto->getStatusOpenCart();
-    
+
     $this->children = array(
       'common/header',
       'common/footer'
@@ -393,7 +415,7 @@ class ControllerModulePluggTo extends Controller {
     } else {
        $this->template = '/module/pluggto_fields.tpl'; //or get the file from the default folder
     }
-      
+
     $this->response->setOutput($this->render());
   }
 
@@ -433,7 +455,7 @@ class ControllerModulePluggTo extends Controller {
     $this->session->data['alerts'] = '';
 
     $this->data['products']    = $this->model_catalog_product->getProducts();
-    
+
     $this->children = array(
       'common/header',
       'common/footer'
@@ -448,7 +470,7 @@ class ControllerModulePluggTo extends Controller {
     } else {
        $this->template = '/module/pluggto_products_sync.tpl'; //or get the file from the default folder
     }
-    
+
     $this->response->setOutput($this->render());
   }
 
@@ -488,7 +510,7 @@ class ControllerModulePluggTo extends Controller {
     $this->data['button_cancel'] = $this->language->get('button_cancel');
 
     $this->data['queues'] = $this->model_pluggto_pluggto->getAllItemsInQueues();
-    
+
     $this->children = array(
       'common/header',
       'common/footer'
@@ -502,7 +524,7 @@ class ControllerModulePluggTo extends Controller {
     } else {
        $this->template = '/module/pluggto_queue.tpl'; //or get the file from the default folder
     }
-    
+
     $this->response->setOutput($this->render());
   }
 
@@ -545,7 +567,7 @@ class ControllerModulePluggTo extends Controller {
     $this->data['alerts']        = $this->session->data['alerts'];
     $this->data['cancel']        = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $this->data['queue']         = $this->model_pluggto_pluggto->getNotifications();
-    
+
     if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/pluggto_load_queue.tpl')) { //if file exists in your current template folder
        $this->template = $this->config->get('config_template') . '/template/module/pluggto_load_queue.tpl'; //get it
     } else {

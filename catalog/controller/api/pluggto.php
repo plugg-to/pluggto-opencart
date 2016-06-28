@@ -11,16 +11,16 @@ class ControllerApiPluggto extends Controller {
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
-		
+
 			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
-		
+
 			$this->response->addHeader('Access-Control-Max-Age: 1000');
-		
-			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');		
+
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 		}
 
 		$this->response->addHeader('Content-Type: application/json');
-			
+
 		$this->response->setOutput(json_encode('$json'));
 	}
 
@@ -28,7 +28,7 @@ class ControllerApiPluggto extends Controller {
 		$this->load->model('pluggto/pluggto');
 
 		$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
-        
+
         $response = array(
             'orders_created_or_updated_opencart' => $num_orders_opencart,
         );
@@ -43,7 +43,7 @@ class ControllerApiPluggto extends Controller {
 		$this->load->model('pluggto/pluggto');
 
 		$num_orders_pluggto = $this->saveOrdersInPluggTo($this->model_pluggto_pluggto->getOrders(array('start' => 0, 'limit' => 999999999)));
-	        
+
         $response = array(
             'orders_created_or_updated_pluggto' => $num_orders_pluggto,
         );
@@ -57,21 +57,21 @@ class ControllerApiPluggto extends Controller {
 	public function cronProducts(){
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
-		
+
 			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
-		
+
 			$this->response->addHeader('Access-Control-Max-Age: 1000');
-		
-			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');		
+
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 		}
 
 		$this->response->addHeader('Content-Type: application/json');
-		
+
 		$this->load->model('pluggto/pluggto');
 		$this->load->model('catalog/product');
 
 		$products = $this->model_catalog_product->getProducts();
-		
+
 		$return = array();
 		foreach ($products as $i => $product) {
 			$result = $this->model_pluggto_pluggto->getProductBySKU($product['sku']);
@@ -80,7 +80,7 @@ class ControllerApiPluggto extends Controller {
 				$return[$i] = json_encode($this->exportAllProductsToPluggTo($product));
 		}
 
-		$this->response->setOutput(json_encode($return));	
+		$this->response->setOutput(json_encode($return));
 	}
 
 	public function cronUpdateProducts(){
@@ -89,25 +89,25 @@ class ControllerApiPluggto extends Controller {
 		$productsQuery = $this->model_pluggto_pluggto->getProductsNotification();
 
 		$message = array();
-		foreach ($productsQuery as $key => $value) {			
+		foreach ($productsQuery as $key => $value) {
 			if ($value['type'] != 'products') {
 				continue;
 			}
 
 			$product = $this->model_pluggto_pluggto->getProduct($value['resource_id']);
-			
+
 			$product = isset($product->result[0]) ? $product->result[0] : (isset($product->Product) ? $product : null);
-			
-			if (isset($product)) {				
+
+			if (isset($product)) {
 				try {
-					$response = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);						
-					
+					$response = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+
 					$message[$key]['resource_id'] = $product->Product->id;
 					$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
 				} catch (Exception $e) {
 					$message[$key]['resource_id'] = $product->Product->id;
 					$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
-				}					
+				}
 			}
 		}
 
@@ -119,14 +119,14 @@ class ControllerApiPluggto extends Controller {
 			$this->response->addHeader('Access-Control-Max-Age: 1000');
 			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 		}
-		
+
 		$response = array(
 			'code'    => 200,
 			'message' => $message
 		);
 
         $this->model_pluggto_pluggto->createLog(print_r($response, 1), 'cronUpdateProducts');
-		
+
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($response));
 	}
@@ -147,7 +147,7 @@ class ControllerApiPluggto extends Controller {
 				try {
 			        $product = $this->model_catalog_product->getProduct($product['product_id']);
 		            $return = $this->exportAllProductsToPluggTo($product);
-					
+
 					$response[$product['product_id']]['status']  = $return;
 					$response[$product['product_id']]['message'] = $return !== null ? "Product '{$product['product_id']}' imported successfully" : "Produts Could not be imported";
 
@@ -159,14 +159,14 @@ class ControllerApiPluggto extends Controller {
 		}
 
 		$productsQueue = $this->model_pluggto_pluggto->getQueuesProducts('pluggto');
-		
+
 		if (!empty($productsQueue))
 		{
 			foreach ($productsQueue as $product) {
 				try {
 			        $product = $this->model_pluggto_pluggto->getProduct($product['product_id_pluggto']);
 		            $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
-					
+
 					$response[$product->Product->id]['status']  = $return;
 					$response[$product->Product->id]['message'] = $return !== 'Problem SKU' ? "Product '$productId' imported successfully" : "Produts Could not be imported";
 
@@ -188,7 +188,7 @@ class ControllerApiPluggto extends Controller {
 		$response = array();
 
 		$notifications = $this->model_pluggto_pluggto->getNotifications(100, 'orders');
-		
+
 		foreach ($notifications as $notification) {
 			$order = $this->model_pluggto_pluggto->getOrderPluggTo($notification['resource_id']);
 
@@ -199,7 +199,7 @@ class ControllerApiPluggto extends Controller {
 
 			$response[$notification['resource_id']] = $order;
 		}
-		
+
 		return $response;
 	}
 
@@ -209,7 +209,7 @@ class ControllerApiPluggto extends Controller {
 		$this->load->model('account/customer');
 
 		$this->load->model('checkout/order');
-		
+
 		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
 
 		foreach ($orders as $id_pluggto => $order) {
@@ -253,7 +253,7 @@ class ControllerApiPluggto extends Controller {
 					// 	8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null)
 					// ]
 				);
-				
+
 				$data = array(
 					'invoice_prefix' 	 => (isset($order->Order->id) ? $order->Order->id : null),
 					'store_id'			 => (isset($order->Order->id) ? $order->Order->id : null),
@@ -317,17 +317,17 @@ class ControllerApiPluggto extends Controller {
 					),
 					'order_status_id' => $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history),
 					'shipping_custom_field' => array(
-						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),					
+						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					),
 					'payment_custom_field' => array(
-						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),					
+						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
 
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
-				
+
 				if ($existOrderID) {
 					$response_id = $existOrderID;
 					// $response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
@@ -339,7 +339,7 @@ class ControllerApiPluggto extends Controller {
 				}
 
 				$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
-				
+
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => true, 'message' => 'OK')));
 			} catch (Exception $e) {
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => $e->getMessage())));
@@ -366,12 +366,12 @@ class ControllerApiPluggto extends Controller {
 				'price'		 => $item->price,
 				'total'		 => $item->total,
 				'tax'		 => 0,
-				'reward'	 => 0,	
+				'reward'	 => 0,
 				'option'     => array(),
 				'download'   => array()
 			);
 		}
-		
+
 		return $response;
 	}
 
@@ -396,7 +396,7 @@ class ControllerApiPluggto extends Controller {
 	public function saveOrdersInPluggTo($orders) {
 		$this->load->model('checkout/order');
     	$this->load->model('pluggto/pluggto');
-    	
+
     	$cont = 0;
     	$return = array();
     	foreach ($orders as $order) {
@@ -436,7 +436,7 @@ class ControllerApiPluggto extends Controller {
     			'items'				  => $this->getItemsToOrderPluggTo($order),
     			'shipments'           => $this->getDataShipmentsByOrder($order),
      		);
-			
+
      		$response = $this->model_pluggto_pluggto->getRelactionOrder($order['order_id']);
 
      		$return[$response['order_id_pluggto']] = 'Não editado, pedido criado direto no PluggTo';
@@ -456,13 +456,13 @@ class ControllerApiPluggto extends Controller {
      		if (!empty($response))
      		{
      			$responsePluggTo = $this->model_pluggto_pluggto->editOrder($params, $response['order_id_pluggto']);
-     			
+
      			$return[$response['order_id_pluggto']] = print_r($responsePluggTo, 1);
      		}
     	}
 
         $this->model_pluggto_pluggto->createLog(print_r($return, 1), 'saveOrdersInPluggTo');
-        
+
     	return $return;
 	}
 
@@ -474,7 +474,7 @@ class ControllerApiPluggto extends Controller {
 				'shipping_method'  => $order['shipping_method']
 			)
 		);
-		
+
 		return $response;
 	}
 
@@ -484,11 +484,11 @@ class ControllerApiPluggto extends Controller {
 		$this->load->model('catalog/product');
 
 		$items = $this->model_account_order->getOrderProducts($order['order_id']);
-		
+
 		$response = array();
 		foreach ($items as $item) {
 			$product = $this->model_catalog_product->getProduct($item['product_id']);
-			
+
 			$response[] = array(
 				'sku' => $product['sku'],
 				'price' => $item['price'],
@@ -555,7 +555,7 @@ class ControllerApiPluggto extends Controller {
         $json = array(
             'action' => "export products to pluggto",
         );
-        
+
         $products_opencart = $this->model_catalog_product->getProducts();
         $productPrepare = array();
         $data = array();
@@ -585,12 +585,12 @@ class ControllerApiPluggto extends Controller {
                 'variations' => $this->model_pluggto_pluggto->getVariationsToSaveInOpenCart($product['product_id']),
                 'attributes' => $this->model_pluggto_pluggto->getAtrributesToSaveInOpenCart($product['product_id']),
             );
-			
+
             $existProduct = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product['product_id']);
 
             if ($existProduct->num_rows > 0) {
                 $response = $this->model_pluggto_pluggto->updateTo($data, $existProduct->row['pluggto_product_id']);
-                
+
                 if (isset($response->Product)) {
                     $productId = $response->Product->id;
 
@@ -598,16 +598,16 @@ class ControllerApiPluggto extends Controller {
                     $json[$messageIndex]['message'] = "Product '$productId' updated successfully";
                 } else {
                     $productId = $existProduct->row['pluggto_product_id'];
-                    
+
                     $json[$messageIndex]['status']  = false;
                     $json[$messageIndex]['message'] = "Could not update product $productId ";
-                }                
+                }
 
                 continue;
             }
 
             $response = $this->model_pluggto_pluggto->createTo($data);
-            
+
             if (isset($response->Product->id)) {
                 $json[$messageIndex]['status']  = $this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
                 $json[$messageIndex]['message'] = "Products created successfully";
@@ -620,7 +620,7 @@ class ControllerApiPluggto extends Controller {
         }
 
 		$this->model_pluggto_pluggto->createLog(json_encode($json), 'saveProductsInPluggto');
-        
+
         return json_encode($json);
     }
 
@@ -631,9 +631,9 @@ class ControllerApiPluggto extends Controller {
     	$product_id = $this->request->get['product_id'];
 
         $product = $this->model_catalog_product->getProduct($product_id);
-       
+
 		$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
-		
+
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
@@ -660,7 +660,7 @@ class ControllerApiPluggto extends Controller {
 			'special_price' => isset($product['special']) ? $product['special'] : 0,
 			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
-		
+
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
@@ -681,13 +681,13 @@ class ControllerApiPluggto extends Controller {
         $response = array(
             'action' => "import products from pluggto",
         );
-        
+
         $result = $this->model_pluggto_pluggto->getProducts(1);
         foreach ($result->result as $i => $product) {
            $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
-		
+
            $productId = $product->Product->id;
-           
+
            $response[$i]['status']  = $return;
            $response[$i]['message'] = $return === true ? "Product '$productId' imported successfully" : "Produts Could not be imported";
         }
@@ -699,7 +699,7 @@ class ControllerApiPluggto extends Controller {
 
 	public function getNotification(){
 		$this->load->model('pluggto/pluggto');
-		
+
 		$inputJSON = file_get_contents('php://input');
 		$data      = json_decode($inputJSON, true); //convert JSON into array
 
@@ -752,7 +752,7 @@ class ControllerApiPluggto extends Controller {
 
 	public function getPhotosToSaveInOpenCart($product_id, $image_main) {
 		$images = $this->model_catalog_product->getProductImages($product_id);
-		
+
 		$response = array();
 
 		// if (isset($image_main) && !empty($image_main))
@@ -761,7 +761,7 @@ class ControllerApiPluggto extends Controller {
 		// 	    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
 		// 	    'remove' => true
 		//     );
-			
+
 		// 	$response[] = array(
 		// 	    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
 		// 	    'title' => 'Imagem principal do produto',
@@ -775,7 +775,7 @@ class ControllerApiPluggto extends Controller {
 			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'remove' => true
 		    );
-			
+
 			$response[] = array(
 			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'title' => 'Imagem principal do produto',
@@ -785,11 +785,11 @@ class ControllerApiPluggto extends Controller {
 
 		return $response;
 	}
-	
+
 	public function getVariationsToSaveInOpenCart($product_id) {
 		$product = $this->model_catalog_product->getProduct($product_id);
 		$options = $this->model_catalog_product->getProductOptions($product_id);
-		
+
 		$response = array();
 		foreach ($options as $i => $option) {
 		  foreach ($option['product_option_value'] as $item) {
@@ -824,10 +824,10 @@ class ControllerApiPluggto extends Controller {
 		    );
 		  }
 		}
-		
+
 		return $response;
 	}
-	
+
 
 	public function getSpecialPriceProductToPluggTo($product_id) {
 		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
@@ -880,7 +880,7 @@ class ControllerApiPluggto extends Controller {
 	public function getCategoriesToPluggTo($product_id) {
 		$this->load->model('catalog/product');
 		$this->load->model('catalog/category');
-		
+
 		$categories = $this->model_catalog_product->getCategories($product_id);
 
 		$response = array();
@@ -891,13 +891,13 @@ class ControllerApiPluggto extends Controller {
 			$thirdParent  = (isset($secondParent['parent_id']) && !empty($secondParent['parent_id'])) ? $this->model_catalog_category->getCategory($secondParent['parent_id']) : null;
 
 			$response[] = array(
-				'name' => ((isset($categoryData['name'])) ? $categoryData['name'] : '') 
+				'name' => ((isset($categoryData['name'])) ? $categoryData['name'] : '')
 						. ((isset($firstParent['name']))  ? ' > ' . $firstParent['name'] : '')
 				 		. ((isset($secondParent['name'])) ? ' > ' . $secondParent['name'] : '')
 				  		. ((isset($thirdParent['name']))  ? ' > ' . $thirdParent['name'] : '')
 			);
 		}
-		
+
 		return $response;
 	}
 
@@ -906,16 +906,16 @@ class ControllerApiPluggto extends Controller {
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
-		
+
 			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
-		
+
 			$this->response->addHeader('Access-Control-Max-Age: 1000');
-		
-			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');		
+
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 		}
 
 		$this->response->addHeader('Content-Type: application/json');
-		
+
 		$this->response->setOutput(json_encode($response));
 	}
 
@@ -924,16 +924,16 @@ class ControllerApiPluggto extends Controller {
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
-		
+
 			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
-		
+
 			$this->response->addHeader('Access-Control-Max-Age: 1000');
-		
-			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');		
+
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 		}
 
 		$this->response->addHeader('Content-Type: application/json');
-		
+
 		$this->response->setOutput(json_encode($response));
 	}
 
@@ -942,7 +942,7 @@ class ControllerApiPluggto extends Controller {
 
 		$order_id = $this->db->getLastId();
 
-		foreach ($data['products'] as $product) { 
+		foreach ($data['products'] as $product) {
 			$this->db->query("INSERT INTO " . DB_PREFIX . "order_product SET order_id = '" . (int)$order_id . "', product_id = '" . (int)$product['product_id'] . "', name = '" . $this->db->escape($product['name']) . "', model = '" . $this->db->escape($product['model']) . "', quantity = '" . (int)$product['quantity'] . "', price = '" . (float)$product['price'] . "', total = '" . (float)$product['total'] . "', tax = '" . (float)$product['tax'] . "', reward = '" . (int)$product['reward'] . "'");
 
 			$order_product_id = $this->db->getLastId();
@@ -953,7 +953,7 @@ class ControllerApiPluggto extends Controller {
 
 			foreach ($product['download'] as $download) {
 				$this->db->query("INSERT INTO " . DB_PREFIX . "order_download SET order_id = '" . (int)$order_id . "', order_product_id = '" . (int)$order_product_id . "', name = '" . $this->db->escape($download['name']) . "', filename = '" . $this->db->escape($download['filename']) . "', mask = '" . $this->db->escape($download['mask']) . "', remaining = '" . (int)($download['remaining'] * $product['quantity']) . "'");
-			}	
+			}
 		}
 
 		foreach ($data['vouchers'] as $voucher) {
@@ -962,13 +962,33 @@ class ControllerApiPluggto extends Controller {
 
 		foreach ($data['totals'] as $total) {
 			$this->db->query("INSERT INTO " . DB_PREFIX . "order_total SET order_id = '" . (int)$order_id . "', code = '" . $this->db->escape($total['code']) . "', title = '" . $this->db->escape($total['title']) . "', text = '" . $this->db->escape($total['text']) . "', `value` = '" . (float)$total['value'] . "', sort_order = '" . (int)$total['sort_order'] . "'");
-		}	
+		}
 
 		return $order_id;
 	}
 
 	public function addOrderHistory($order_id, $order_status_id){
 		return $this->db->query("UPDATE `" . DB_PREFIX . "order` SET order_status_id = '" . $order_status_id . "' WHERE order_id = '" . $order_id . "'");
+	}
+
+	public function getProductsActives() {
+		$this->load->model('catalog/product');
+
+    		$response = $this->model_catalog_product->getProducts(array('filter_status' => 1));
+
+		if (isset($this->request->server['HTTP_ORIGIN'])) {
+			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
+
+			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+
+			$this->response->addHeader('Access-Control-Max-Age: 1000');
+
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		}
+
+		$this->response->addHeader('Content-Type: application/json');
+
+		$this->response->setOutput(json_encode($response));
 	}
 
 }

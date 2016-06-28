@@ -1,7 +1,7 @@
 <?php
 
 class ModelPluggtoPluggto extends Model{
- 
+
   public function getOrders($data = array()) {
     $sql = "SELECT o.*, CONCAT(o.firstname, ' ', o.lastname) AS customer, (SELECT os.name FROM " . DB_PREFIX . "order_status os WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int)$this->config->get('config_language_id') . "') AS order_status, o.shipping_code, o.total, o.currency_code, o.currency_value, o.date_added, o.date_modified FROM `" . DB_PREFIX . "order` o";
 
@@ -80,8 +80,8 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function orderExistInPluggTo($order_id) {
-    $order_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order_relation_pluggto_and_opencart` WHERE order_id_pluggto = '" . $order_id . "' ");    
-    
+    $order_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order_relation_pluggto_and_opencart` WHERE order_id_pluggto = '" . $order_id . "' ");
+
     if ($order_query->row) {
       return $order_query->row['order_id_opencart'];
     }
@@ -90,8 +90,8 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getRelactionOrder($order_id_opencart) {
-    $order_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order_relation_pluggto_and_opencart` WHERE order_id_opencart = '" . $order_id_opencart . "' ");    
-    
+    $order_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order_relation_pluggto_and_opencart` WHERE order_id_opencart = '" . $order_id_opencart . "' ");
+
     if ($order_query->row) {
       return $order_query->row;
     }
@@ -113,7 +113,7 @@ class ModelPluggtoPluggto extends Model{
 
   public function getOrderTotalByCode($order_id, $code) {
     $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_total WHERE order_id = '" . (int)$order_id . "' AND code = '" . $code . "' ORDER BY sort_order");
-    
+
     return $query->row['value'];
   }
 
@@ -158,7 +158,7 @@ class ModelPluggtoPluggto extends Model{
         'currency_value' => $response->row['value']
       );
     }
-    
+
     $sql = 'SELECT * FROM ' . DB_PREFIX . 'currency WHERE code = "USD"';
     $response = $this->db->query($sql);
 
@@ -192,35 +192,35 @@ class ModelPluggtoPluggto extends Model{
     switch (end($status_history)->status) {
       case 'pending':
         return 1;
-      break; 
-      case 'paid': 
+      break;
+      case 'paid':
         return 5;
       break;
-      case 'approved': 
+      case 'approved':
         return 2;
       break;
-      case 'waiting_invoice': 
+      case 'waiting_invoice':
         return 2;
       break;
-      case 'invoiced': 
+      case 'invoiced':
         return 2;
       break;
-      case 'invoice_error': 
+      case 'invoice_error':
         return 8;
       break;
-      case 'shipping_informed': 
+      case 'shipping_informed':
         return 5;
       break;
-      case 'shipped': 
+      case 'shipped':
         return 5;
       break;
-      case 'shipping_error': 
+      case 'shipping_error':
         return 10;
       break;
-      case 'delivered': 
+      case 'delivered':
         return 5;
-      break;  
-      case 'canceled': 
+      break;
+      case 'canceled':
         return 9;
       break;
       case 'under_review':
@@ -234,7 +234,7 @@ class ModelPluggtoPluggto extends Model{
 
   public function getIDItemBySKU($sku){
     $sql = 'SELECT product_id FROM ' . DB_PREFIX . 'product WHERE sku = "' . $sku . '" ORDER BY product_id DESC LIMIT 1';
-    
+
     $response = $this->db->query($sql);
 
     if (!empty($response->row)) {
@@ -246,9 +246,9 @@ class ModelPluggtoPluggto extends Model{
 
   public function checkOrderByIDPluggTo($pluggto_id) {
     $sql = 'SELECT order_id FROM ' . DB_PREFIX . 'order WHERE invoice_prefix = "INV-' . date('Y') . "-" . base64_encode($pluggto_id) . '"';
-    
+
     $response = $this->db->query($sql);
-    
+
     if (!empty($response->row)) {
       return $response->row->order_id;
     }
@@ -281,7 +281,7 @@ class ModelPluggtoPluggto extends Model{
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
     $data = $this->sendRequest($method, $url, array());
-    return $data;    
+    return $data;
   }
 
   public function getOrderPluggTo($id) {
@@ -290,7 +290,7 @@ class ModelPluggtoPluggto extends Model{
     $accesstoken = $this->getAccesstoken();
     $url = $url."/" . $id . "?access_token=".$accesstoken;
     $data = $this->sendRequest($method, $url, array());
-    return $data;        
+    return $data;
   }
 
   public function getCredentials() {
@@ -364,7 +364,7 @@ class ModelPluggtoPluggto extends Model{
       );
 
     }elseif (strtolower ( $method ) == "delete") {
-      
+
       curl_setopt($ch, CURLOPT_URL, $url);
 
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -388,7 +388,7 @@ class ModelPluggtoPluggto extends Model{
       $method = "delete";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
-      $data = $this->sendRequest($method, $url . '?access_token=' . $accesstoken, $params);    
+      $data = $this->sendRequest($method, $url . '?access_token=' . $accesstoken, $params);
       return $data;
   }
 
@@ -397,24 +397,24 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function createLog($data, $function){
-    // return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_log (data, function, date) VALUES ('" . $data . "', '" . $function . "', '" . date('Y-m-d') . "')");
+    return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_log (data, function, date) VALUES ('" . $data . "', '" . $function . "', '" . date('Y-m-d') . "')");
   }
 
   public function saveNotification($field){
-      $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action, date_created, date_modified, status) 
-                      VALUES 
-                            ('".$field['resource_id']."', '".$field['type']."', '".$field['action']."', '".$field['date_created']."', 
+      $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action, date_created, date_modified, status)
+                      VALUES
+                            ('".$field['resource_id']."', '".$field['type']."', '".$field['action']."', '".$field['date_created']."',
                              '".$field['date_modified']."', '".$field['status']."')";
-      
+
       return $this->db->query($sql);
   }
- 
+
   public function getProduct($product_id){
       $url = "http://api.plugg.to/products/".$product_id;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
-      $data = $this->sendRequest($method, $url, $params);    
+      $data = $this->sendRequest($method, $url, $params);
       return $data;
   }
 
@@ -423,7 +423,7 @@ class ModelPluggtoPluggto extends Model{
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
-      $data = $this->sendRequest($method, $url, $params);    
+      $data = $this->sendRequest($method, $url, $params);
       return $data;
   }
 
@@ -433,7 +433,7 @@ class ModelPluggtoPluggto extends Model{
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
       $data = $this->sendRequest($method, $url, $params);
-    
+
       return $data;
   }
 
@@ -451,7 +451,7 @@ class ModelPluggtoPluggto extends Model{
 
   public function getNotifications($limit = 100, $type = 'products'){
     $query = "SELECT * FROM " . DB_PREFIX . "pluggto_notifications WHERE status = 1 AND type = '" . $type . "' LIMIT " . $limit;
-    
+
     return $this->db->query($query)->rows;
   }
 
@@ -469,7 +469,7 @@ class ModelPluggtoPluggto extends Model{
 
   public function prepareToSaveInOpenCart($product) {
     $synchronizationSettings = $this->getSettingsProductsSynchronization();
-    
+
     if (!$synchronizationSettings->row['refresh_only_stock']) {
       $data = array(
         'sku'    => $product->Product->sku,
@@ -496,11 +496,11 @@ class ModelPluggtoPluggto extends Model{
     }
 
     $data['quantity'] = $product->Product->quantity;
-    
+
     $this->load->model('catalog/product');
 
     $query = "SELECT product_id FROM ".DB_PREFIX."product WHERE sku = '" . $product->Product->sku . "'";
-    
+
     $sku = $this->db->query($query);
 
     if (!isset($sku->row['product_id']))
@@ -515,13 +515,13 @@ class ModelPluggtoPluggto extends Model{
 
   public function getManufacturerID($brand) {
     $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $brand . "'");
-    
-    return $result->row['manufacturer_id'];    
+
+    return $result->row['manufacturer_id'];
   }
 
   public function getProductSpecialPriceToOpenCart($product){
     $response   = array();
-    
+
     $response[] = array(
       'customer_group_id' => 1,
       'priority' => 1,
@@ -536,16 +536,16 @@ class ModelPluggtoPluggto extends Model{
 
   public function uploadImagesToOpenCart($photos, $main=true){
     $this->load->model('tool/image');
-    
+
     $response = array();
     foreach ($photos as $i => $photo) {
-    
+
       $type = substr($photo->url, -4);
 
       $filename = $photo->id;
-      
+
       $photo = file_get_contents(str_replace('https', 'http', $photo->url));
-      
+
       if (!$photo)
         return null;
 
@@ -558,15 +558,15 @@ class ModelPluggtoPluggto extends Model{
         unlink(DIR_IMAGE . 'catalog/' . $filename . '-100x100' . $type);
         unlink(DIR_IMAGE . 'catalog/' . $filename);
       }
-      
-      $file = fopen(DIR_IMAGE . 'cache/catalog/' . $filename . $type, 'w+');        
-      fputs($file, $photo);
-      fclose($file);        
 
-      $file2 = fopen(DIR_IMAGE . 'catalog/' . $filename . $type, 'w+');        
+      $file = fopen(DIR_IMAGE . 'cache/catalog/' . $filename . $type, 'w+');
+      fputs($file, $photo);
+      fclose($file);
+
+      $file2 = fopen(DIR_IMAGE . 'catalog/' . $filename . $type, 'w+');
       fputs($file2, $photo);
-      fclose($file2);        
-      
+      fclose($file2);
+
       $sizes = array(
         array(
           'width' => 40,
@@ -629,7 +629,7 @@ class ModelPluggtoPluggto extends Model{
 
   public function getOptionValueIDByName($name){
     $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
-    
+
     return $result->row['option_value_id'];
   }
 
@@ -647,18 +647,18 @@ class ModelPluggtoPluggto extends Model{
         'meta_keyword'     => '',
       );
     }
-    
+
     return $response;
   }
 
   public function getSettingsProductsSynchronization(){
         $sql = "SELECT * FROM " . DB_PREFIX . "settings_products_synchronization ORDER BY id DESC LIMIT 1";
-        return $this->db->query($sql);    
+        return $this->db->query($sql);
   }
 
   public function formatObjectCategoryToList($categoriesObject){
       $response = array();
-      
+
       foreach ($categoriesObject as $i => $category) {
         $auxiliar[] = $category->name;
       }
@@ -692,11 +692,11 @@ class ModelPluggtoPluggto extends Model{
       foreach ($categoriesOpenCart as $i => $category) {
         $response[$category['category_id']] = $category['name'];
       }
-      
+
       return $response;
   }
 
-  public function existProductInOpenCart($id) 
+  public function existProductInOpenCart($id)
   {
       $sql = "SELECT * FROM `" . DB_PREFIX . "pluggto_products_relation_opencart_products` WHERE `pluggto_product_id` = '" . $id . "' AND `active` = 1";
       $response = $this->db->query($sql);
@@ -707,9 +707,9 @@ class ModelPluggtoPluggto extends Model{
       return $response->row['opencart_product_id'];
   }
 
-  public function createPluggToProductRelactionOpenCartPluggTo($pluggto_product_id, $opencart_product_id) 
+  public function createPluggToProductRelactionOpenCartPluggTo($pluggto_product_id, $opencart_product_id)
   {
-       return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
+       return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");
   }
 
   public function updateStatusNotification($id, $response=array())
@@ -736,7 +736,7 @@ class ModelPluggtoPluggto extends Model{
        return $this->db->query($query);
   }
 
-  public function createOrderIdOpenCart($length = 50) 
+  public function createOrderIdOpenCart($length = 50)
   {
       $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
       $string = '';
@@ -748,12 +748,12 @@ class ModelPluggtoPluggto extends Model{
       return $string;
   }
 
-  public function getAllPluggToProductRelactionsOpenCart() 
+  public function getAllPluggToProductRelactionsOpenCart()
   {
       return $this->db->query("SELECT * FROM  " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1");
   }
 
-  public function updateStockPluggTo($product, $id) 
+  public function updateStockPluggTo($product, $id)
   {
       $url = "http://api.plugg.to/products/" . $id . "/stock";
       $method = "put";
@@ -766,34 +766,34 @@ class ModelPluggtoPluggto extends Model{
 
   public function updateTo($product, $id) {
       $url = "http://api.plugg.to/products/".$id;
-      
+
       $method = "put";
-      
+
       $accesstoken = $this->getAccesstoken();
-      
+
       $url = $url . "?access_token=" . $accesstoken;
-      
+
       $params = $product;
-      
+
       $data = $this->sendRequest($method, $url, $params);
-      
+
       return $data;
   }
 
   public function sendToPluggTo($product, $sku) {
     $url = "http://api.plugg.to/skus/" . trim($sku);
-    
+
     $method = "put";
-    
+
     $accesstoken = $this->getAccesstoken();
-    
+
     $url = $url . "?access_token=" . $accesstoken;
-    
+
     $params = $product;
-    
+
     $data = $this->sendRequest($method, $url, $params);
-    
-    return $data;    
+
+    return $data;
   }
 
   public function getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id_opencart) {
@@ -849,7 +849,7 @@ class ModelPluggtoPluggto extends Model{
         }
       }
     }
-    
+
     if (isset($data['product_option'])) {
       foreach ($data['product_option'] as $product_option) {
         if ($product_option['type'] == 'select' || $product_option['type'] == 'radio' || $product_option['type'] == 'checkbox' || $product_option['type'] == 'image') {
@@ -1108,7 +1108,7 @@ class ModelPluggtoPluggto extends Model{
 
   public function addAddress($data, $customer_id){
     $address = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "address WHERE customer_id = '" . (int)$customer_id . "' AND postcode = '" . $this->db->escape($data['postcode']) . "'");
-    
+
     if (!empty($address->row['address_id']))
     {
       $this->db->query("UPDATE " . DB_PREFIX . "address SET firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', city = '" . $this->db->escape($data['city']) . "', zone_id = '" . (int)$data['zone_id'] . "', country_id = '" . (int)$data['country_id'] . "', custom_field = '" . $this->db->escape(isset($data['custom_field']) ? json_encode($data['custom_field']) : '') . "' WHERE address_id  = '" . (int)$address->row['address_id'] . "'");
