@@ -72,7 +72,7 @@ class ControllerApiPluggto extends Controller {
 
 		$products = $this->model_catalog_product->getProducts();
 		
-		$return = [];
+		$return = array();
 		foreach ($products as $i => $product) {
 			$result = $this->model_pluggto_pluggto->getProductBySKU($product['sku']);
 
@@ -225,9 +225,9 @@ class ControllerApiPluggto extends Controller {
 					'telephone' 		 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
-					'custom_field'		 => [
+					'custom_field'		 => array(
 						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
-					]
+					)
 				);
 
 				if (empty($customer_id)) {
@@ -248,10 +248,10 @@ class ControllerApiPluggto extends Controller {
 					'city'         => (isset($order->Order->payer_city) ? $order->Order->payer_city : null),
 					'zone_id'      => $this->getPaymentZoneIDByCity((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
 					'country_id'   => 30,
-					'custom_field' => [
+					'custom_field' => array(
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
 						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null)
-					]
+					)
 				);
 
 				$data = array(
@@ -312,17 +312,17 @@ class ControllerApiPluggto extends Controller {
 					'currency_code' 	 => $currency['currency_code'],
 					'currency_value' 	 => $currency['currency_value'],
 					'products' 			 => $this->getProductsToSaveOpenCart($order),
-					'custom_field'		 => [
+					'custom_field'		 => array(
 						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
-					],
-					'shipping_custom_field' => [
+					),
+					'shipping_custom_field' => array(
 						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),					
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
-					],
-					'payment_custom_field' => [
+					),
+					'payment_custom_field' => array(
 						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),					
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
-					]
+					)
 				);
 
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
