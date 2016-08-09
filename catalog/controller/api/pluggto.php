@@ -55,6 +55,8 @@ class ControllerApiPluggto extends Controller {
 	}
 	
 	public function cronProducts(){
+		exit('Function deprecated from version 2.0.0 of plugin Plugg.To opencart');
+
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
 		
@@ -84,6 +86,8 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronUpdateProducts(){
+		exit('Function deprecated from version 2.0.0 of plugin Plugg.To opencart');
+		
 		$this->load->model('pluggto/pluggto');
 
 		$productsQuery = $this->model_pluggto_pluggto->getProductsNotification();
@@ -747,35 +751,37 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
+
 	public function getPhotosToSaveInOpenCart($product_id, $image_main) {
 		$images = $this->model_catalog_product->getProductImages($product_id);
-		
+
 		$response = array();
 
-		if (isset($image_main) && !empty($image_main))
-		{
-			$response[] = array(
-			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'remove' => true
-		    );
-			
-			$response[] = array(
-			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'title' => 'Imagem principal do produto',
-			    'order' => 0
-			);
-		}
+		// if (isset($image_main) && !empty($image_main))
+		// {
+		// 	$response[] = array(
+		// 	    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+		// 	    'remove' => true
+		//     );
+
+		// 	$response[] = array(
+		// 	    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+		// 	    'title' => 'Imagem principal do produto',
+		// 	    'order' => 0
+		// 	);
+		// }
 
 		foreach ($images as $i => $image) {
+
 			$response[] = array(
 			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'remove' => true
 		    );
-			
+
 			$response[] = array(
 			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
 			    'title' => 'Imagem principal do produto',
-			    'order' => 0
+			    'order' => $image['sort_order']
 			);
 		}
 
@@ -785,45 +791,116 @@ class ControllerApiPluggto extends Controller {
 	public function getVariationsToSaveInOpenCart($product_id) {
 		$product = $this->model_catalog_product->getProduct($product_id);
 		$options = $this->model_catalog_product->getProductOptions($product_id);
-		
+
+		$defaultColor = $this->model_pluggto_pluggto->getDefaultFieldColor();
+
+		$defaultSize = $this->model_pluggto_pluggto->getDefaultFieldSize();
+
 		$response = array();
-		foreach ($options as $i => $option) {
-		  foreach ($option['product_option_value'] as $item) {
+		foreach ($options as $i => $option) { 
+			if (!$option['required'])
+				continue;
 
-			$attributes = array(
-				array(
-					'code'  => 'size',
-					'label' => $option['name'],
-					'value'	=> array(
-						'code' => $item['name'],
-						'label'=> $item['name']
-					)
-				)
-			);
+			if ($option['name'] == $defaultSize) {
 
-		    $response[] = array(
-		      'name'     => $product['name'] . ' - ' . $item['name'],
-		      'external' => $option['product_option_id'],
-		      'quantity' => $item['quantity'],
-		      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
-		      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
-		      'sku' => $product['sku'] . '-' . $item['name'],
-		      'ean' => '',
-		      'photos' => array(),
-		      'attributes' => $attributes,
-		      'dimesion' => array(
-		        'length' => $product['length'],
-		        'width'  => $product['width'],
-		        'height' => $product['height'],
-		        'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
-		      )
-		    );
-		  }
+				if (isset($option['product_option_value'])) {
+				  foreach ($option['product_option_value'] as $item) {
+
+					$attributes = array(
+						array(
+							'code'  => 'size',
+							'label' => 'SIZE',
+							'value'	=> array(
+								'code' => $item['name'],
+								'label'=> $item['name']
+							)
+						)
+					);
+
+				    $response[] = array(
+				      'name'     => $product['name'] . ' - ' . $item['name'],
+				      'external' => $option['product_option_id'],
+				      'quantity' => $item['quantity'],
+				      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+				      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+				      'sku' => $product['sku'] . '-' . $item['name'],
+				      'ean' => '',
+				      'photos' => array(),
+				      'attributes' => $attributes,
+				      'dimesion' => array(
+				        'length' => $product['length'],
+				        'width'  => $product['width'],
+				        'height' => $product['height'],
+				        'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
+				      )
+				    );
+				  }
+				}
+
+				if (isset($option['option_value'])) {
+				  foreach ($option['option_value'] as $item) {
+
+					$attributes = array(
+						array(
+							'code'  => 'size',
+							'label' => 'SIZE',
+							'value'	=> array(
+								'code' => $item['name'],
+								'label'=> $item['name']
+							)
+						)
+					);
+
+				    $response[] = array(
+				      'name'     => $product['name'] . ' - ' . $item['name'],
+				      'external' => $option['product_option_id'],
+				      'quantity' => $item['quantity'],
+				      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+				      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+				      'sku' => $product['sku'] . '-' . $item['name'],
+				      'ean' => '',
+				      'photos' => array(),
+				      'attributes' => $attributes,
+				      'dimesion' => array(
+				        'length' => $product['length'],
+				        'width'  => $product['width'],
+				        'height' => $product['height'],
+				        'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
+				      )
+				    );
+				  }
+				}
+
+			}
+
+			if ($option['name'] == $defaultColor) {
+				foreach ($response as $i => $resp) {
+					$response[$i]['attributes'][] = array(
+						'code'  => 'color',
+						'label' => 'COLOR',
+						'value'	=> array(
+							'code' => $option['option_value'][0]['name'],
+							'label'=> $option['option_value'][0]['name']
+						)
+					);
+				}
+			}
 		}
 
 		return $response;
 	}
-	
+
+
+	public function getSpecialPriceProductToPluggTo($product_id) {
+		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
+		$special = isset($specialPrice['special']) ? $specialPrice['special'] : 0.00;
+
+		if (isset($special) && !empty($special))
+			return end($special);
+
+		return null;
+	}
+
 	public function getAtrributesToSaveInOpenCart($product_id) {
 		$this->load->model('catalog/product');
 
@@ -920,6 +997,20 @@ class ControllerApiPluggto extends Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		
 		$this->response->setOutput(json_encode($response));
+	}
+
+	public function getDefaultFieldColor()
+	{
+		$sql = $this->db->query("SELECT field_pluggto FROM " . DB_PREFIX . "pluggto_linkage_fields WHERE field_opencart = 'color'");
+
+		return $sql->row['field_pluggto'];
+	}
+
+	public function getDefaultFieldSize()
+	{
+		$sql = $this->db->query("SELECT field_pluggto FROM " . DB_PREFIX . "pluggto_linkage_fields WHERE field_opencart = 'size'");
+
+		return $sql->row['field_pluggto'];
 	}
 
 }

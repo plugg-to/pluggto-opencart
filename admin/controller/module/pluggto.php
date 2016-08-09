@@ -41,8 +41,9 @@ class ControllerModulePluggTo extends Controller {
     $this->load->model('pluggto/pluggto');
 
     $data = array(
-      'refresh_only_stock' => $this->request->post['refresh_only_stock'],
-      'active' => $this->request->post['active']
+      'refresh_only_stock' => 1,
+     'active' => $this->request->post['active'],
+     'only_actives' => $this->request->post['only_actives']
     );
         
     $this->session->data['alerts'] = 'Configurações salvas com sucesso!';
@@ -300,6 +301,7 @@ class ControllerModulePluggTo extends Controller {
     $data['load_queue'] = $this->url->link('module/pluggto/loadqueue', 'token=' . $this->session->data['token'], 'SSL');
     $data['link_log_queue'] = $this->url->link('module/pluggto/linkLogQueue', 'token=' . $this->session->data['token'], 'SSL');
     $data['force_sync_products'] = $this->url->link('module/pluggto/listAllProductsToForceSync', 'token=' . $this->session->data['token'], 'SSL');
+    $data['linkPluggTransparent'] = $this->url->link('module/pluggto/pluggTransparent', 'token=' . $this->session->data['token'], 'SSL');
 
     $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
@@ -331,6 +333,24 @@ class ControllerModulePluggTo extends Controller {
 
     $this->response->setOutput($this->load->view('module/pluggto.tpl', $data));
   }
+
+  public function pluggTransparent()  {
+
+    $this->load->model('pluggto/pluggto');
+    $this->load->model('design/layout');
+
+    $data['layouts'] = $this->model_design_layout->getLayouts();
+    
+    $data['url'] = 'https://core.plugg.to/users/autologin/'. $this->model_pluggto_pluggto->getAccesstoken() . '/mercadolivre';
+    
+    $data['header'] = $this->load->controller('common/header');
+    $data['column_left'] = $this->load->controller('common/column_left');
+    $data['footer'] = $this->load->controller('common/footer');
+    $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
+
+    $this->response->setOutput($this->load->view('module/pluggto_transparent.tpl', $data));
+  }
+
 
   public function settingsBasicFields() {
     $this->template = 'module/pluggto.tpl';
