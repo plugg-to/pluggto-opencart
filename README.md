@@ -1,29 +1,10 @@
-# Plugin OpenCart Plugg.To
+# Opencart Plugin Plugg.to
 
-Changelog
+## Visão Geral
 
- - 1.0.1 (Beta)
- 	- Fix API orders
- 	- Fix delivery type status
- 	- Fix add function to log
-
- - 1.0.1 (Beta)
- 	- Fix did customers without custom fields
- 	- Fix create new customers when need
-
- - 1.0.1 (Beta)
- 	- Fix export image main to plugg.to
+ - Produtos serão enviados para o plugg.to;
+ - As vendas recebidas pelo plugg.to serão criadas também no opencart para manter a atualização do estoque;
+ - Produtos podem conter uma ou mais variações de tamanho e apenas uma variação de cor por produto;
+ - são importados apenas as variações obrigatorias
+ - Os crons devem estar configurados corretamente para que a sicronização de pedidos funcionem;
  
- - 1.0.1 (Beta)
- 	- Fix to import images products
- 	- Fix export with skus
- 	- Fix create new orders
- 	- Fix multiple upload images products
-
- - 1.0.1 (Beta)
- 	- Export all products to plugg.to
- 	- Import all products to opencart
- 	- Export all orders to plugg.to
- 	- Import all orders to plugg.to
- 	- Settings to linkage fields of orders and shipping
-
