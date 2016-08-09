@@ -42,7 +42,7 @@
 
       <div class="alert alert-info" style="margin-top: 30px;">
         <p>Modulo de integração com a plataforma plugg.to mais informações acesse <a href="http://plugg.to">plugg.to</a> </p>
-        <p>Version: <b>1.0.1</b> <i>BETA</i></p>
+        <p>Version: <b>2.0.0</b></p>
       </div>
     </div>
 
@@ -148,18 +148,6 @@
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-2 control-label" for="input-name">Atualizar no OpenCart apenas estoque:</label>
-                          <div class="col-sm-10">
-                            <select name="refresh_only_stock" class="form-control">
-                              <option value="1" <?php echo (isset($settingsProductsSynchronization->row['refresh_only_stock']) && $settingsProductsSynchronization->row['refresh_only_stock'] == 1) ? 'selected' : ''; ?> >Sim</option>
-                              <option value="0" <?php echo (isset($settingsProductsSynchronization->row['refresh_only_stock']) && $settingsProductsSynchronization->row['refresh_only_stock'] == 0) ? 'selected' : ''; ?> >Não</option>
-                            </select>
-                            <br>
-                            <small>Caso opção seja Sim, apenas estoque será gravado no OpenCart, demais atributos (Foto,Preço,Sku...) só será enviado do OpenCart para o Plugg.To</small><br>
-                            <small><strong>OBS: Nao e possivel importar os produtos casos a opcao sim esteja ativa.</strong></small>
-                          </div>
-                        </div>
-                        <div class="form-group">
                           <label class="col-sm-2 control-label" for="input-name">Importar/Exportar somente produtos ativos:</label>
                           <div class="col-sm-10">
                             <select name="only_actives" class="form-control">
@@ -177,23 +165,11 @@
                           </div>
                         </div>
                         <div class="form-group">
-                          <label class="col-sm-2 control-label" for="input-name">Agendar importação dos produtos para OpenCart</label>
-                          <div class="col-sm-10">
-                            <a href="<?php echo $link_import_all_products_to_opencart; ?>" id="import-products" class="btn btn-warning">Agendar importação dos produtos para OpenCart</a>
-                          </div>
-                        </div>
-                        <div class="form-group">
                           <label class="col-sm-2 control-label" for="input-name">Agendar exportação dos produtos para o PluggTo</label>
                           <div class="col-sm-10">
                             <a href="<?php echo $link_export_all_products_to_pluggto; ?>" id="export-products" class="btn btn-danger">Agendar exportação dos produtos para o PluggTo</a>
                           </div>
                         </div>
-  <!--                       <div class="form-group">
-                          <label class="col-sm-2 control-label" for="input-name">Desvincular todos produtos com o Plugg.To</label>
-                          <div class="col-sm-10">
-                            <a href="<?php echo $link_off_all_products_pluggto; ?>" id="off-all-products" class="btn btn-primary">Desvincular todos produtos com o Plugg.To</a>
-                          </div>
-                        </div> -->
                         </div>
                         <div class="form-group" style="float: right; padding-right: 15px;">
                           <button type="submit" class="btn btn-success">Salvar</button>

@@ -55,6 +55,8 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronProducts(){
+		exit('Function deprecated from version 2.0.0 of plugin Plugg.To opencart');
+
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
 
@@ -84,6 +86,8 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronUpdateProducts(){
+		exit('Function deprecated from version 2.0.0 of plugin Plugg.To opencart');
+
 		$this->load->model('pluggto/pluggto');
 
 		$productsQuery = $this->model_pluggto_pluggto->getProductsNotification();
@@ -100,7 +104,7 @@ class ControllerApiPluggto extends Controller {
 
 			if (isset($product)) {
 				try {
-					$response = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+					$response = $this->model_pluggto_pluggto->updateStockAndPrice($product);
 
 					$message[$key]['resource_id'] = $product->Product->id;
 					$message[$key]['saved']       = $this->model_pluggto_pluggto->updateStatusNotification($product->Product->id);
@@ -110,8 +114,6 @@ class ControllerApiPluggto extends Controller {
 				}
 			}
 		}
-
-		// $priceAndStock = $this->verifyStockAndPriceProducts();
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
@@ -632,8 +634,6 @@ class ControllerApiPluggto extends Controller {
 
         $product = $this->model_catalog_product->getProduct($product_id);
 
-		$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
-
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
@@ -790,39 +790,99 @@ class ControllerApiPluggto extends Controller {
 		$product = $this->model_catalog_product->getProduct($product_id);
 		$options = $this->model_catalog_product->getProductOptions($product_id);
 
+		$defaultColor = $this->model_pluggto_pluggto->getDefaultFieldColor();
+
+		$defaultSize = $this->model_pluggto_pluggto->getDefaultFieldSize();
+
 		$response = array();
-		foreach ($options as $i => $option) {
-		  foreach ($option['product_option_value'] as $item) {
+		foreach ($options as $i => $option) { 
+			if (!$option['required'])
+				continue;
 
-			$attributes = array(
-				array(
-					'code'  => 'size',
-					'label' => $option['name'],
-					'value'	=> array(
-						'code' => $item['name'],
-						'label'=> $item['name']
-					)
-				)
-			);
+			if ($option['name'] == $defaultSize) {
 
-		    $response[] = array(
-		      'name'     => $product['name'] . ' - ' . $item['name'],
-		      'external' => $option['product_option_id'],
-		      'quantity' => $item['quantity'],
-		      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
-		      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
-		      'sku' => $product['sku'] . '-' . $item['name'],
-		      'ean' => '',
-		      'photos' => array(),
-		      'attributes' => $attributes,
-		      'dimesion' => array(
-		        'length' => $product['length'],
-		        'width'  => $product['width'],
-		        'height' => $product['height'],
-		        'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
-		      )
-		    );
-		  }
+				if (isset($option['product_option_value'])) {
+				  foreach ($option['product_option_value'] as $item) {
+
+					$attributes = array(
+						array(
+							'code'  => 'size',
+							'label' => 'SIZE',
+							'value'	=> array(
+								'code' => $item['name'],
+								'label'=> $item['name']
+							)
+						)
+					);
+
+				    $response[] = array(
+				      'name'     => $product['name'] . ' - ' . $item['name'],
+				      'external' => $option['product_option_id'],
+				      'quantity' => $item['quantity'],
+				      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+				      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+				      'sku' => $product['sku'] . '-' . $item['name'],
+				      'ean' => '',
+				      'photos' => array(),
+				      'attributes' => $attributes,
+				      'dimesion' => array(
+				        'length' => $product['length'],
+				        'width'  => $product['width'],
+				        'height' => $product['height'],
+				        'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
+				      )
+				    );
+				  }
+				}
+
+				if (isset($option['option_value'])) {
+				  foreach ($option['option_value'] as $item) {
+
+					$attributes = array(
+						array(
+							'code'  => 'size',
+							'label' => 'SIZE',
+							'value'	=> array(
+								'code' => $item['name'],
+								'label'=> $item['name']
+							)
+						)
+					);
+
+				    $response[] = array(
+				      'name'     => $product['name'] . ' - ' . $item['name'],
+				      'external' => $option['product_option_id'],
+				      'quantity' => $item['quantity'],
+				      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+				      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+				      'sku' => $product['sku'] . '-' . $item['name'],
+				      'ean' => '',
+				      'photos' => array(),
+				      'attributes' => $attributes,
+				      'dimesion' => array(
+				        'length' => $product['length'],
+				        'width'  => $product['width'],
+				        'height' => $product['height'],
+				        'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
+				      )
+				    );
+				  }
+				}
+
+			}
+
+			if ($option['name'] == $defaultColor) {
+				foreach ($response as $i => $resp) {
+					$response[$i]['attributes'][] = array(
+						'code'  => 'color',
+						'label' => 'COLOR',
+						'value'	=> array(
+							'code' => $option['option_value'][0]['name'],
+							'label'=> $option['option_value'][0]['name']
+						)
+					);
+				}
+			}
 		}
 
 		return $response;
@@ -831,7 +891,7 @@ class ControllerApiPluggto extends Controller {
 
 	public function getSpecialPriceProductToPluggTo($product_id) {
 		$specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
-		$special = $specialPrice['special'];
+		$special = isset($specialPrice['special']) ? $specialPrice['special'] : 0.00;
 
 		if (isset($special) && !empty($special))
 			return end($special);

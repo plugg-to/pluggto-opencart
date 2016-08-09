@@ -467,51 +467,74 @@ class ModelPluggtoPluggto extends Model{
         return $result->rows;
   }
 
-  public function prepareToSaveInOpenCart($product) {
-    $synchronizationSettings = $this->getSettingsProductsSynchronization();
+  /* DEPRECATED */
+    public function prepareToSaveInOpenCart($product) {
+      $synchronizationSettings = $this->getSettingsProductsSynchronization();
 
-    if (!$synchronizationSettings->row['refresh_only_stock']) {
-      $data = array(
-        'sku'    => $product->Product->sku,
-        'model'  => $product->Product->sku,
-        'price'  => $product->Product->price,
-        'weight' => $product->Product->dimension->weight,
-        'length' => $product->Product->dimension->length,
-        'width'  => $product->Product->dimension->width,
-        'height' => $product->Product->dimension->height,
-        'manufacturer_id' => $this->getManufacturerID($product->Product->brand),
-        'manufacturer' => $product->Product->brand,
-        'subtract'=> 1,
-        'status' => 1,
-        'image'  => 'catalog/' . $this->uploadImagesToOpenCart($product->Product->photos, true),
-        'product_image' => $this->uploadImagesToOpenCart($product->Product->photos, false),
-        'product_description' => $this->getProductDescriptions($product),
-        'product_option' => $this->getProductOptionToOpenCart($product),
-        'product_special' => $this->getProductSpecialPriceToOpenCart($product),
-        'product_store' => array(
-          0
-        ),
-        'product_category' => $this->formatObjectCategoryToList($product->Product->categories)
-      );
-    }
+      if (!$synchronizationSettings->row['refresh_only_stock']) {
+        $data = array(
+          'sku'    => $product->Product->sku,
+          'model'  => $product->Product->sku,
+          'price'  => $product->Product->price,
+          'weight' => $product->Product->dimension->weight,
+          'length' => $product->Product->dimension->length,
+          'width'  => $product->Product->dimension->width,
+          'height' => $product->Product->dimension->height,
+          'manufacturer_id' => $this->getManufacturerID($product->Product->brand),
+          'manufacturer' => $product->Product->brand,
+          'subtract'=> 1,
+          'status' => 1,
+          'image'  => 'catalog/' . $this->uploadImagesToOpenCart($product->Product->photos, true),
+          'product_image' => $this->uploadImagesToOpenCart($product->Product->photos, false),
+          'product_description' => $this->getProductDescriptions($product),
+          'product_option' => $this->getProductOptionToOpenCart($product),
+          'product_special' => $this->getProductSpecialPriceToOpenCart($product),
+          'product_store' => array(
+            0
+          ),
+          'product_category' => $this->formatObjectCategoryToList($product->Product->categories)
+        );
+      }
 
-    $data['quantity'] = $product->Product->quantity;
+      $data['quantity'] = $product->Product->quantity;
 
-    $this->load->model('catalog/product');
+      $this->load->model('catalog/product');
 
-    $query = "SELECT product_id FROM ".DB_PREFIX."product WHERE sku = '" . $product->Product->sku . "'";
+      $query = "SELECT product_id FROM ".DB_PREFIX."product WHERE sku = '" . $product->Product->sku . "'";
 
-    $sku = $this->db->query($query);
+      $sku = $this->db->query($query);
 
-    if (!isset($sku->row['product_id']))
+      if (!isset($sku->row['product_id']))
+      {
+        return $this->addProduct($data);
+      }
+
+      $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$sku->row['product_id'] . "'");
+
+      return $this->editProduct($sku->row['product_id'], $data);
+    }  
+
+    public function updateStockAndPrice($product)
     {
-      return $this->addProduct($data);
+      if (empty($product->Product) || !isset($product->Product))
+        return false;
+
+      $queryProduct = $this->db->query("SELECT * FROM " . DB_PREFIX . "product WHERE sku = '" . $product->Product->sku . "'");
+
+      if (isset($queryProduct->row)) {
+        $queryUpdateProducts = $this->db->query("UPDATE " . DB_PREFIX . "product SET quantity = '" . $product->Product->quantity . "', 
+                                                                                  price = '" . $product->Product->price . "' 
+                                                                                  WHERE product_id = '" . $queryProduct->row['product_id'] . "'");
+      }
+
+      if (isset($product->Product->variations) && !empty($product->Product->variations)) {
+        echo '<pre>';print_r($product->Product->variations);exit;
+      }
+
+      return true;
     }
+  /* DEPRECATED */
 
-    $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$sku->row['product_id'] . "'");
-
-    return $this->editProduct($sku->row['product_id'], $data);
-  }
 
   public function getManufacturerID($brand) {
     $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "manufacturer WHERE name = '" . $brand . "'");
@@ -719,6 +742,8 @@ class ModelPluggtoPluggto extends Model{
 
       //   return $this->db->query($query);
       // }
+
+     $response = print_r($response, 1);
 
       $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 0, description = '$response' WHERE resource_id = '$id'";
 
@@ -1118,6 +1143,20 @@ class ModelPluggtoPluggto extends Model{
     $this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . $customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', city = '" . $this->db->escape($data['city']) . "', zone_id = '" . (int)$data['zone_id'] . "', country_id = '" . (int)$data['country_id'] . "', custom_field = '" . $this->db->escape(isset($data['custom_field']) ? json_encode($data['custom_field']) : '') . "'");
 
     $address_id = $this->db->getLastId();
+  }
+
+  public function getDefaultFieldColor()
+  {
+    $sql = $this->db->query("SELECT field_pluggto FROM " . DB_PREFIX . "pluggto_linkage_fields WHERE field_opencart = 'color'");
+
+    return $sql->row['field_pluggto'];
+  }
+
+  public function getDefaultFieldSize()
+  {
+    $sql = $this->db->query("SELECT field_pluggto FROM " . DB_PREFIX . "pluggto_linkage_fields WHERE field_opencart = 'size'");
+
+    return $sql->row['field_pluggto'];
   }
 
 }

@@ -41,7 +41,7 @@ class ControllerModulePluggTo extends Controller {
     $this->load->model('pluggto/pluggto');
 
     $data = array(
-      'refresh_only_stock' => $this->request->post['refresh_only_stock'],
+      'refresh_only_stock' => 1,
       'active' => $this->request->post['active'],
       'only_actives' => $this->request->post['only_actives']
     );
@@ -240,7 +240,10 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function pluggTransparent()  {
-    file_get_contents('https://core.plugg.to/transparent_layout/true');
+
+    $this->load->model('pluggto/pluggto');
+
+    $url = 'https://core.plugg.to/users/autologin/'. $this->model_pluggto_pluggto->getAccesstoken() . '/mercadolivre';
 
     $this->children = array(
       'common/header',
@@ -256,6 +259,8 @@ class ControllerModulePluggTo extends Controller {
     } else {
        $this->template = '/module/pluggto_transparent.tpl'; //or get the file from the default folder
     }
+
+    $this->data['url'] = $url;
 
     $this->response->setOutput($this->render());
   }
