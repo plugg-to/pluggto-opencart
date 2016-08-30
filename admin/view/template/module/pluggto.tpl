@@ -118,7 +118,7 @@
               </div>
             </div>
 
-            <div class="tab-pane" id="config">
+            <div class="tab-pane" id="config" style="visibility: visible;">
               <div class="row" style="width: 99%;">
                 <div class="col-md-12" style="margin-left: 20px;  margin-top: 20px;">
                   <div class="panel panel-default">
