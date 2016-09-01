@@ -632,7 +632,7 @@ class ControllerApiPluggto extends Controller {
 
     	$product_id = $this->request->get['product_id'];
 		
-		if (isset($this->request->get['error']) {
+		if (isset($this->request->get['error'])) {
 			$error = $this->request->get['error'];
 		
 			error_reporting($error);
