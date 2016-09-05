@@ -1,7 +1,7 @@
 <?php
 
 ini_set('memory_limit', '-1');
-error_reporting(-1);
+error_reporting(0);
 
 class ControllerApiPluggto extends Controller {
 
@@ -626,15 +626,20 @@ class ControllerApiPluggto extends Controller {
     }
 
     public function forceSyncProduct(){
+	
 		$this->load->model('catalog/product');
         $this->load->model('pluggto/pluggto');
 
     	$product_id = $this->request->get['product_id'];
+		
+		if (isset($this->request->get['error'])) {
+			$error = $this->request->get['error'];
+		
+			error_reporting($error);
+		}
 
         $product = $this->model_catalog_product->getProduct($product_id);
        
-		$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
-
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
@@ -787,8 +792,6 @@ class ControllerApiPluggto extends Controller {
 
 		return $response;
 	}
-
-
 	public function getVariationsToSaveInOpenCart($product_id) {
 		$product = $this->model_catalog_product->getProduct($product_id);
 		$options = $this->model_catalog_product->getProductOptions($product_id);
@@ -827,7 +830,7 @@ class ControllerApiPluggto extends Controller {
 		    );
 		  }
 		}
-
+		
 		return $response;
 	}
 
