@@ -152,21 +152,21 @@ class ModelPluggtoPluggto extends Model{
     $response = $this->db->query($sql);
 
     if (!empty($response->row)) {
-      return [
+      return array(
         'currency_code'  => $response->row['code'],
         'currency_id'    => $response->row['currency_id'],
         'currency_value' => $response->row['value']
-      ];
+      );
     }
     
     $sql = 'SELECT * FROM ' . DB_PREFIX . 'currency WHERE code = "USD"';
     $response = $this->db->query($sql);
 
-    return [
+    return array(
       'currency_code'  => $response->row['code'],
       'currency_id'    => $response->row['currency_id'],
       'currency_value' => $response->row['value']
-    ];
+    );
   }
 
   public function getStatusSaleByHistory($status_history) {
@@ -280,7 +280,7 @@ class ModelPluggtoPluggto extends Model{
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
-    $data = $this->sendRequest($method, $url, []);
+    $data = $this->sendRequest($method, $url, array());
     return $data;    
   }
 
@@ -289,7 +289,7 @@ class ModelPluggtoPluggto extends Model{
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $url = $url."/" . $id . "?access_token=".$accesstoken;
-    $data = $this->sendRequest($method, $url, []);
+    $data = $this->sendRequest($method, $url, array());
     return $data;        
   }
 
@@ -472,7 +472,7 @@ class ModelPluggtoPluggto extends Model{
     $synchronizationSettings = $this->getSettingsProductsSynchronization();
     
     if (!$synchronizationSettings->row['refresh_only_stock']) {
-      $data = [
+      $data = array(
         'sku'    => $product->Product->sku,
         'model'  => $product->Product->sku,
         'price'  => $product->Product->price,
@@ -489,11 +489,11 @@ class ModelPluggtoPluggto extends Model{
         'product_description' => $this->getProductDescriptions($product),
         'product_option' => $this->getProductOptionToOpenCart($product),
         'product_special' => $this->getProductSpecialPriceToOpenCart($product),
-        'product_store' => [
+        'product_store' => array(
           0
-        ],
+        ),
         'product_category' => $this->formatObjectCategoryToList($product->Product->categories)
-      ];
+      );
     }
 
     $data['quantity'] = $product->Product->quantity;
@@ -521,16 +521,16 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getProductSpecialPriceToOpenCart($product){
-    $response   = [];
+    $response   = array();
     
-    $response[] = [
+    $response[] = array(
       'customer_group_id' => 1,
       'priority' => 1,
       'special' => $product->Product->special_price,
       'price'   => $product->Product->special_price,
       'date_start' => null,
       'date_end' => null
-    ];
+    );
 
     return ($product->Product->special_price > 0) ? $response : null;
   }
@@ -538,7 +538,7 @@ class ModelPluggtoPluggto extends Model{
   public function uploadImagesToOpenCart($photos, $main=true){
     $this->load->model('tool/image');
     
-    $response = [];
+    $response = array();
     foreach ($photos as $i => $photo) {
     
       $type = substr($photo->url, -4);
@@ -568,16 +568,16 @@ class ModelPluggtoPluggto extends Model{
       fputs($file2, $photo);
       fclose($file2);        
       
-      $sizes = [
-        [
+      $sizes = array(
+        array(
           'width' => 40,
           'height' => 40,
-        ],
-        [
+        ),
+        array(
           'width' => 100,
           'height' => 100,
-        ]
-      ];
+        )
+      );
 
       $filename = $filename . $type;
       foreach ($sizes as $size) {
@@ -587,10 +587,10 @@ class ModelPluggtoPluggto extends Model{
       if ($main)
         return $filename;
 
-      $response[] = [
+      $response[] = array(
         'image' => 'catalog/' . $filename,
         'sort_order' => $i
-      ];
+      );
     }
 
     return $response;
@@ -598,20 +598,20 @@ class ModelPluggtoPluggto extends Model{
 
   public function getProductOptionToOpenCart($product){
     if (empty($product->Product->variations)){
-      return [];
+      return array();
     }
 
-    $response   = [];
-    $response[] = [
+    $response   = array();
+    $response[] = array(
       'name' => 'Size',
       'type' => 'select',
       'required' => 1,
       'option_id' => 11,
       'product_option_id' => null,
-    ];
+    );
 
     foreach ($product->Product->variations as $i => $variation) {
-      $response[0]['product_option_value'][] = [
+      $response[0]['product_option_value'][] = array(
           'option_value_id' => $this->getOptionValueIDByName($variation->name),
           'product_option_value_id' => $this->getOptionValueIDByName($variation->name),
           'quantity' => $variation->quantity,
@@ -622,7 +622,7 @@ class ModelPluggtoPluggto extends Model{
           'points_prefix' => '+',
           'weight' => null,
           'weight_prefix' => '+',
-      ];
+      );
     }
 
     return $response;
@@ -637,16 +637,16 @@ class ModelPluggtoPluggto extends Model{
   public function getProductDescriptions($product){
     $languages = $this->db->query("SELECT * FROM " . DB_PREFIX . "language");
 
-    $response = [];
+    $response = array();
     foreach ($languages->rows as $i => $language) {
-      $response[$language['language_id']] = [
+      $response[$language['language_id']] = array(
         'name'             => $product->Product->name,
         'description'      => $product->Product->short_description,
         'tag'              => '',
         'meta_title'       => '',
         'meta_description' => '',
         'meta_keyword'     => '',
-      ];
+      );
     }
     
     return $response;
@@ -658,7 +658,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function formatObjectCategoryToList($categoriesObject){
-      $response = [];
+      $response = array();
       
       foreach ($categoriesObject as $i => $category) {
         $auxiliar[] = $category->name;
@@ -673,13 +673,14 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function findCategoriesInOpenCart($namesOfCategories){
-      $response = [];
+      $response = array();
 
       $this->load->model('catalog/category');
       $categories = $this->prepareDataCategoryToArraySearch($this->model_catalog_category->getCategories());
 
       foreach ($namesOfCategories as $i => $names) {
-        $id_category = array_search(explode(' >', $names)[0], $categories);
+        $explode = explode(' >', $names);
+        $id_category = array_search($explode[0], $categories);
         $response[] = $id_category;
       }
 
@@ -687,7 +688,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function prepareDataCategoryToArraySearch($categoriesOpenCart){
-      $response = [];
+      $response = array();
 
       foreach ($categoriesOpenCart as $i => $category) {
         $response[$category['category_id']] = $category['name'];
@@ -712,7 +713,7 @@ class ModelPluggtoPluggto extends Model{
        return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
   }
 
-  public function updateStatusNotification($id, $response=[])
+  public function updateStatusNotification($id, $response=array())
   {
       // if (!$response['success']) {
       //   $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 1, description = '$response' WHERE resource_id = '$id'";
