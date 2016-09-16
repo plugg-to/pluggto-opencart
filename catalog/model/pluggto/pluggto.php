@@ -400,6 +400,33 @@ class ModelPluggtoPluggto extends Model{
     return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_log (data, function, date) VALUES ('" . $data . "', '" . $function . "', '" . date('Y-m-d') . "')");
   }
 
+  public function refreshStock($sku, $params) {
+    $url = "http://api.plugg.to/skus/" . $sku . "/stock";
+
+    $method = "put";
+    
+    $accesstoken = $this->getAccesstoken();
+    
+    $url = $url . "?access_token=" . $accesstoken;
+    
+    $data = $this->sendRequest($method, $url, $params);
+    
+    return $data;
+  }
+
+  public function getProductOptionValueId($optionId, $productId)
+  {
+    $query = "SELECT * FROM " . DB_PREFIX . "product_option_value WHERE option_id = " . $optionId . " AND product_id = " . $productId;
+
+    return $this->db->query($query);
+  }
+
+  public function getOptionIdByName($name) {
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
+
+    return $result->row['option_id'];    
+  }
+
   public function saveNotification($field){
       $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action, date_created, date_modified, status)
                       VALUES
