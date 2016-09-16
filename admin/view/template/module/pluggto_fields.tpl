@@ -925,29 +925,6 @@
                   <div class="panel panel-default">
                     <div class="panel-heading">
                       <h3 class="panel-title">
-                        <i class="fa fa-pencil"></i> Atrelamento de dados de Variação
-                      </h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                          <label class="col-sm-2 control-label" for="input-name">Variação de cor:</label>
-                          <div class="col-sm-10">
-                            <input type="text" name="fields[color]" value="<?php echo @$default_fields['color']; ?>">
-                          </div>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                          <label class="col-sm-2 control-label" for="input-name">Variação de tamanho:</label>
-                          <div class="col-sm-10">
-                            <input type="text" name="fields[size]" value="<?php echo @$default_fields['size']; ?>">
-                          </div>
-                        </div>
-                    </div>
-                  </div>
-                  <div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h3 class="panel-title">
                         <i class="fa fa-pencil"></i> Atrelamento de Status de Pagamento
                       </h3>
                     </div>
