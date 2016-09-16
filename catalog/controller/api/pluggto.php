@@ -1,7 +1,7 @@
 <?php
 
 ini_set('memory_limit', '-1');
-error_reporting(0);
+error_reporting(-1);
 
 class ControllerApiPluggto extends Controller {
 
@@ -681,6 +681,81 @@ class ControllerApiPluggto extends Controller {
 		exit;
     }
 
+    public function refreshStockAndPrice(){
+		$this->load->model('catalog/product');
+        $this->load->model('pluggto/pluggto');
+
+    	$product_id = $this->request->get['product_id'];
+
+        $productOnOpenCart = $this->model_catalog_product->getProduct($product_id);
+        
+		if (empty($productOnOpenCart['sku']))
+			$productOnOpenCart['sku'] = $productOnOpenCart['product_id'];
+
+		$productOnPluggTo = $this->model_pluggto_pluggto->getProductBySku($productOnOpenCart['sku']);
+
+		$response = [];
+		foreach ($productOnPluggTo->Product->variations as $i => $variation)
+		{
+			$nameExplode = explode(' - ', $variation->name);
+
+			$nameEnd = $nameExplode[1];
+
+			$optionId = $this->model_pluggto_pluggto->getOptionIdByName($nameEnd);
+
+			$variationOc = $this->model_pluggto_pluggto->getProductOptionValueId($optionId, $productOnOpenCart['product_id']);
+
+			if (!empty($variationOc->row))
+			{					
+				if ($variation->quantity != $variationOc->row['quantity'])
+				{
+					$newStock = [
+						'quantity' => $variationOc->row['quantity'],
+						'action'   => 'update'
+					];	
+
+					$response[] = $this->model_pluggto_pluggto->refreshStock($variation->sku, $newStock);
+				}
+
+				if ($productOnOpenCart['price'] != $productOnPluggTo->Product->price > 0)
+				{
+					$response[] = $this->refreshProductOnPluggTo($product_id);
+				}
+
+			}
+
+			continue;
+
+		}
+
+		echo json_encode(['message' => 'sucess', 'response' => $response]);
+
+		exit;
+    }
+
+	public function refreshProductOnPluggTo($product_id) {
+		$this->load->model('catalog/product');
+
+        $this->load->model('pluggto/pluggto');
+
+        $productOnOpenCart = $this->model_catalog_product->getProduct($product_id);
+
+		if (empty($product['sku']))
+		{
+			$product['sku'] = $product['product_id'];
+		}
+
+		$data = array(
+			'sku'        => $product['sku'],
+			'grant_type' => "authorization_code",
+			'price'      => $product['price'],
+		);
+
+		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
+
+		return $response;
+	}
+	
     public function importAllProductsToOpenCart(){
         $this->load->model('pluggto/pluggto');
 

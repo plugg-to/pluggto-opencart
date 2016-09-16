@@ -1121,4 +1121,31 @@ class ModelPluggtoPluggto extends Model{
     $address_id = $this->db->getLastId();
   }
 
+  public function refreshStock($sku, $params) {
+    $url = "http://api.plugg.to/skus/" . $sku . "/stock";
+
+    $method = "put";
+    
+    $accesstoken = $this->getAccesstoken();
+    
+    $url = $url . "?access_token=" . $accesstoken;
+    
+    $data = $this->sendRequest($method, $url, $params);
+    
+    return $data;
+  }
+
+  public function getProductOptionValueId($optionId, $productId)
+  {
+    $query = "SELECT * FROM " . DB_PREFIX . "product_option_value WHERE option_id = " . $optionId . " AND product_id = " . $productId;
+
+    return $this->db->query($query);
+  }
+
+  public function getOptionIdByName($name) {
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
+
+    return $result->row['option_id'];    
+  }
+
 }
