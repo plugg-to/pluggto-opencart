@@ -695,7 +695,7 @@ class ControllerApiPluggto extends Controller {
 
 		$productOnPluggTo = $this->model_pluggto_pluggto->getProductBySku($productOnOpenCart['sku']);
 
-		$response = [];
+		$response = array();
 		foreach ($productOnPluggTo->Product->variations as $i => $variation)
 		{
 			$nameExplode = explode(' - ', $variation->name);
@@ -710,10 +710,10 @@ class ControllerApiPluggto extends Controller {
 			{					
 				if ($variation->quantity != $variationOc->row['quantity'])
 				{
-					$newStock = [
+					$newStock = array(
 						'quantity' => $variationOc->row['quantity'],
 						'action'   => 'update'
-					];	
+					);	
 
 					$response[] = $this->model_pluggto_pluggto->refreshStock($variation->sku, $newStock);
 				}
@@ -729,7 +729,7 @@ class ControllerApiPluggto extends Controller {
 
 		}
 
-		echo json_encode(['message' => 'sucess', 'response' => $response]);
+		echo json_encode(array('message' => 'sucess', 'response' => $response));
 
 		exit;
     }
