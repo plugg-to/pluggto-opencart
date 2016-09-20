@@ -257,7 +257,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function createOrder($params) {
-    $url = "http://api.plugg.to/orders";
+    $url = "104.130.132.168/orders";
     $method = "post";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
@@ -267,7 +267,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function editOrder($params, $id) {
-    $url = "http://api.plugg.to/orders/" . $id;
+    $url = "104.130.132.168/orders/" . $id;
     $method = "put";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
@@ -276,7 +276,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getOrdersPluggTo() {
-    $url = "http://api.plugg.to/orders";
+    $url = "104.130.132.168/orders";
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
@@ -285,7 +285,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getOrderPluggTo($id) {
-    $url = "http://api.plugg.to/orders";
+    $url = "104.130.132.168/orders";
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $url = $url."/" . $id . "?access_token=".$accesstoken;
@@ -306,7 +306,7 @@ class ModelPluggtoPluggto extends Model{
     if (empty($credential)) {
      return false;
     }else {
-      $url = "http://api.plugg.to/oauth/token";
+      $url = "104.130.132.168/oauth/token";
       $params = array("grant_type"=>"password", "client_id" => $credential["client_id"], "client_secret" => $credential["client_secret"], "username" => $credential["api_user"], "password" => $credential["api_secret"]);
 
       $data = $this->sendRequest("post", $url, $params);
@@ -387,7 +387,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function removeProduct($sku){
-      $url = "http://api.plugg.to/skus/".$sku;
+      $url = "104.130.132.168/skus/".$sku;
       $method = "delete";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -413,7 +413,7 @@ class ModelPluggtoPluggto extends Model{
   }
  
   public function getProduct($product_id){
-      $url = "http://api.plugg.to/products/".$product_id;
+      $url = "104.130.132.168/products/".$product_id;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -422,7 +422,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getProductBySKU($sku) {
-      $url = "http://api.plugg.to/skus/" . $sku;
+      $url = "104.130.132.168/skus/" . $sku;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -431,7 +431,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getOrder($orderId){
-      $url = "http://api.plugg.to/orders/" . $orderId;
+      $url = "104.130.132.168/orders/" . $orderId;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -758,7 +758,7 @@ class ModelPluggtoPluggto extends Model{
 
   public function updateStockPluggTo($product, $id) 
   {
-      $url = "http://api.plugg.to/products/" . $id . "/stock";
+      $url = "104.130.132.168/products/" . $id . "/stock";
       $method = "put";
       $accesstoken = $this->getAccesstoken();
       $url = $url . "?access_token=" . $accesstoken;
@@ -768,7 +768,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function updateTo($product, $id) {
-      $url = "http://api.plugg.to/products/".$id;
+      $url = "104.130.132.168/products/".$id;
       
       $method = "put";
       
@@ -784,7 +784,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function sendToPluggTo($product, $sku) {
-    $url = "http://api.plugg.to/skus/" . trim($sku);
+    $url = "104.130.132.168/skus/" . trim($sku);
     
     $method = "put";
     
@@ -804,7 +804,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function createTo($product) {
-      $url = "http://api.plugg.to/products";
+      $url = "104.130.132.168/products";
       $method = "post";
       $accesstoken = $this->getAccesstoken();
       $url = $url."?access_token=".$accesstoken;
@@ -814,7 +814,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getProducts($page) {
-    $url = "http://api.plugg.to/products";
+    $url = "104.130.132.168/products";
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $params = array("access_token" => $accesstoken, "page" => $page);
@@ -1124,7 +1124,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function refreshStock($sku, $params) {
-    $url = "http://api.plugg.to/skus/" . $sku . "/stock";
+    $url = "104.130.132.168/skus/" . $sku . "/stock";
 
     $method = "put";
     
