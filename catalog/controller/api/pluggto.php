@@ -624,7 +624,7 @@ class ControllerApiPluggto extends Controller {
         
         return json_encode($json);
     }
-    
+
     public function forceSyncProduct(){
 	
 		$this->load->model('catalog/product');
@@ -673,6 +673,7 @@ class ControllerApiPluggto extends Controller {
 
 		if (!isset($response->Product) && empty($response->Product))
 		{
+			var_dump($response);
 			echo 'Algo deu errado, tente novamente';
 			exit;
 		}
