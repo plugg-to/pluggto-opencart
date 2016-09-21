@@ -316,7 +316,7 @@ class ControllerApiPluggto extends Controller {
 					'currency_code' 	 => $currency['currency_code'],
 					'currency_value' 	 => $currency['currency_value'],
 					'order_product'		 => $this->getProductsToSaveOpenCart($order),
-					'products' 			 => $this->getProductsToSaveOpenCart($order),
+					//'products' 			 => $this->getProductsToSaveOpenCart($order),
 					'custom_field'		 => array(
 						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
 					),
