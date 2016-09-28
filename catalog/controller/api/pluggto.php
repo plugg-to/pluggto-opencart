@@ -629,7 +629,7 @@ class ControllerApiPluggto extends Controller {
         return json_encode($json);
     }
 
-    public function refreshStockAndPrice(){
+    public function refreshStockAndPrice() {
 		$this->load->model('catalog/product');
         $this->load->model('pluggto/pluggto');
 
@@ -640,9 +640,9 @@ class ControllerApiPluggto extends Controller {
 		if (empty($productOnOpenCart['sku']))
 			$productOnOpenCart['sku'] = $productOnOpenCart['product_id'];
 
-		$productOnPluggTo = $this->model_pluggto_pluggto->getProductBySku($productOnOpenCart['sku']);
+		$productOnPluggTo = $this->model_pluggto_pluggto->getProductBySKU($productOnOpenCart['sku']);
 
-		$response = [];
+		$response = array();
 		foreach ($productOnPluggTo->Product->variations as $i => $variation)
 		{
 			$nameExplode = explode(' - ', $variation->name);
@@ -654,18 +654,18 @@ class ControllerApiPluggto extends Controller {
 			$variationOc = $this->model_pluggto_pluggto->getProductOptionValueId($optionId, $productOnOpenCart['product_id']);
 
 			if (!empty($variationOc->row))
-			{					
+			{			
 				if ($variation->quantity != $variationOc->row['quantity'])
 				{
-					$newStock = [
+					$newStock = array(
 						'quantity' => $variationOc->row['quantity'],
 						'action'   => 'update'
-					];	
+					);	
 
 					$response[] = $this->model_pluggto_pluggto->refreshStock($variation->sku, $newStock);
 				}
 
-				if ($productOnOpenCart['price'] != $productOnPluggTo->Product->price > 0)
+				if ($productOnOpenCart['price'] != $productOnPluggTo->Product->price)
 				{
 					$response[] = $this->refreshProductOnPluggTo($product_id);
 				}
@@ -676,7 +676,7 @@ class ControllerApiPluggto extends Controller {
 
 		}
 
-		echo json_encode(['message' => 'sucess', 'response' => $response]);
+		echo json_encode(array('message' => 'sucess', 'response' => $response));
 
 		exit;
     }
