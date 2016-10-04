@@ -726,8 +726,6 @@ class ControllerApiPluggto extends Controller {
 
 			}
 
-			continue;
-
 		}
 
 		echo json_encode(array('message' => 'sucess', 'response' => $response));
