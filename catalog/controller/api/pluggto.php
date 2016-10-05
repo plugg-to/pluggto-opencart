@@ -39,23 +39,6 @@ class ControllerApiPluggto extends Controller {
 		$this->response->setOutput(json_encode($response));
 	}
 
-	public function cronUpdateOrders() {
-		exit('Function deprecated from version 2.0.0 of plugin Plugg.To opencart');
-		
-		$this->load->model('pluggto/pluggto');
-
-		$num_orders_pluggto = $this->saveOrdersInPluggTo($this->model_pluggto_pluggto->getOrders(array('start' => 0, 'limit' => 999999999)));
-
-        $response = array(
-            'orders_created_or_updated_pluggto' => $num_orders_pluggto,
-        );
-
-        $this->model_pluggto_pluggto->createLog(print_r($response, 1), 'cronUpdateOrders');
-
-		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($response));
-	}
-
 	public function cronProducts(){
 		exit('Function deprecated from version 2.0.0 of plugin Plugg.To opencart');
 
@@ -443,7 +426,7 @@ class ControllerApiPluggto extends Controller {
      		);
 
      		$response = $this->model_pluggto_pluggto->getRelactionOrder($order['order_id']);
-
+     		echo '<pre>';print_r($response);exit;
      		$return[$response['order_id_pluggto']] = 'Não editado, pedido criado direto no PluggTo';
 
      		// if (empty($response))
@@ -1109,5 +1092,34 @@ class ControllerApiPluggto extends Controller {
 
 		$this->response->setOutput(json_encode($response));
 	}
+
+	public function getOrdersUpdatedLastHour() {
+		$this->load->model('pluggto/pluggto');
+
+		$this->load->model('pluggto/pluggto');
+
+		$orders = $this->model_pluggto_pluggto->getOrdersUpdatedLastHour();
+
+		$num_orders_pluggto = $this->saveOrdersInPluggTo($orders);
+
+        $response = array(
+            'orders_created_or_updated_pluggto' => $num_orders_pluggto,
+        );
+
+		if (isset($this->request->server['HTTP_ORIGIN'])) {
+			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
+
+			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+
+			$this->response->addHeader('Access-Control-Max-Age: 1000');
+
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		}
+
+		$this->response->addHeader('Content-Type: application/json');
+
+		$this->response->setOutput(json_encode($response));
+	}
+
 
 }
