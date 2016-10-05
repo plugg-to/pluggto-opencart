@@ -1072,7 +1072,28 @@ class ControllerApiPluggto extends Controller {
 	public function getProductsActives() {
 		$this->load->model('catalog/product');
 
-    		$response = $this->model_catalog_product->getProducts(array('filter_status' => 1));
+		$response = $this->model_catalog_product->getProducts(array('filter_status' => 1));
+
+		if (isset($this->request->server['HTTP_ORIGIN'])) {
+			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
+
+			$this->response->addHeader('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+
+			$this->response->addHeader('Access-Control-Max-Age: 1000');
+
+			$this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		}
+
+		$this->response->addHeader('Content-Type: application/json');
+
+		$this->response->setOutput(json_encode($response));
+	}
+
+	public function getProductsUpdatedLastHour() {
+		$this->load->model('catalog/product');
+		$this->load->model('pluggto/pluggto');
+
+		$response = $this->model_pluggto_pluggto->getProductsUpdatedLastHour();
 
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
