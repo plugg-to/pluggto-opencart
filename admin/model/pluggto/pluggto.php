@@ -24,7 +24,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
-              `id` int(11) NOT NULL,
+              `id` int(11) AUTO_INCREMENT PRIMARY KEY,
               `active` tinyint(4) NOT NULL,
               `refresh_only_stock` tinyint(4) NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";    
@@ -32,7 +32,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_linkage_fields` (
-              `id` int(11) NOT NULL,
+              `id` int(11) AUTO_INCREMENT PRIMARY KEY,
               `field_opencart` varchar(50) NOT NULL,
               `field_pluggto` varchar(50) NOT NULL,
               `active` tinyint(4) NOT NULL
@@ -41,7 +41,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_relation_opencart_products` (
-              `id` int(11) NOT NULL,
+              `id` int(11) AUTO_INCREMENT PRIMARY KEY,
               `pluggto_product_id` varchar(255) NOT NULL,
               `opencart_product_id` int(11) NOT NULL,
               `active` tinyint(4) NOT NULL
@@ -50,7 +50,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE `" . DB_PREFIX . "pluggto_notifications` (
-              `id` int(11) NOT NULL AUTO_INCREMENT,
+              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
               `resource_id` varchar(100) NOT NULL,
               `type` varchar(20) DEFAULT NULL,
               `action` varchar(50) DEFAULT NULL,
@@ -64,7 +64,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "order_relation_pluggto_and_opencart` (
-              `id` int(11) NOT NULL,
+              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
               `order_id_opencart` varchar(50) NOT NULL,
               `order_id_pluggto` varchar(50) NOT NULL,
               `active` tinyint(4) NOT NULL
@@ -72,18 +72,8 @@ class ModelPluggtoPluggto extends Model{
 
       $this->db->query($sql);
 
-      $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
-              ADD PRIMARY KEY (`id`);";
-
-      $this->db->query($sql);
-
-      $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
-               MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
-      
-      $this->db->query($sql);
-
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_queue` (
-              `id` int(11) NOT NULL,
+              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `product_id` int(11) NOT NULL,
                 `product_id_pluggto` varchar(255) NOT NULL,
                 `process` int(11) NOT NULL,
@@ -97,10 +87,6 @@ class ModelPluggtoPluggto extends Model{
                MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
 
       $this->db->query($sql);
-
-      $this->db->query("ALTER TABLE `" . DB_PREFIX . "oc_pluggto_products_queue` ADD PRIMARY KEY (`id`);");
-      
-      $this->db->query("ALTER TABLE `" . DB_PREFIX . "oc_pluggto_products_queue` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
       
     } catch (Exception $e) {
       
