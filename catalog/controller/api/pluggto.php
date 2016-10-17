@@ -226,7 +226,7 @@ class ControllerApiPluggto extends Controller {
 				else 
 					$email = $order->Order->receiver_email;
 
-				$customer    = $this->model_pluggto_pluggto->getCustomerByEmail($order->Order->receiver_email);
+				$customer    = $this->model_pluggto_pluggto->getCustomerByEmail($email);
 				$customer_id =  $customer['customer_id'];
 
 				$customer = array(
@@ -337,6 +337,7 @@ class ControllerApiPluggto extends Controller {
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
+				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				if ($existOrderID) {
