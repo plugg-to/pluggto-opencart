@@ -529,7 +529,7 @@ class ControllerModulePluggTo extends Controller {
     $data['alerts']        = $this->session->data['alerts'];
     $data['cancel']        = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
     $data['footer']        = $this->load->controller('common/footer');
-    $data['queue']         = $this->model_pluggto_pluggto->getNotifications();
+    $data['queue']         = $this->model_pluggto_pluggto->getNotifications(500, 'all');
     
     $this->response->setOutput($this->load->view('module/pluggto_load_queue.tpl', $data));
   }

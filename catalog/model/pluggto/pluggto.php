@@ -380,9 +380,6 @@ class ModelPluggtoPluggto extends Model{
     
     $result = curl_exec($ch);
 
-     echo 'Curl error: ' . curl_error($ch);
-
-    var_dump($result);
     return json_decode($result);
   }
 
@@ -1137,9 +1134,9 @@ class ModelPluggtoPluggto extends Model{
     return $data;
   }
 
-  public function getProductOptionValueId($optionId, $productId)
+  public function getProductOptionValueId($optionId, $productId, $optionValueId=null)
   {
-    $query = "SELECT * FROM " . DB_PREFIX . "product_option_value WHERE option_id = " . $optionId . " AND product_id = " . $productId;
+    $query = "SELECT * FROM " . DB_PREFIX . "product_option_value WHERE option_value_id = " . $optionValueId . " AND option_id = " . $optionId . " AND product_id = " . $productId;
 
     return $this->db->query($query);
   }
@@ -1148,6 +1145,12 @@ class ModelPluggtoPluggto extends Model{
     $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
 
     return $result->row['option_id'];    
+  }
+
+  public function getOptionValueIdByNameNew($name) {
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
+
+    return $result->row['option_value_id'];    
   }
 
   public function getProductsUpdatedLastHour() {

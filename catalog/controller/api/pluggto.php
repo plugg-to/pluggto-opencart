@@ -191,7 +191,7 @@ class ControllerApiPluggto extends Controller {
 
 		$response = array();
 
-		$notifications = $this->model_pluggto_pluggto->getNotifications(100, 'orders');
+		$notifications = $this->model_pluggto_pluggto->getNotifications(10, 'orders');
 		
 		foreach ($notifications as $notification) {
 			$order = $this->model_pluggto_pluggto->getOrderPluggTo($notification['resource_id']);
@@ -215,9 +215,17 @@ class ControllerApiPluggto extends Controller {
 		$this->load->model('checkout/order');
 		
 		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
-
+		
 		foreach ($orders as $id_pluggto => $order) {
 			try {
+
+				$email = null;
+
+				if (!isset($order->Order->receiver_email) && empty($order->Order->receiver_email))
+					$email = 'dafiti@plugg.to';
+				else 
+					$email = $order->Order->receiver_email;
+
 				$customer    = $this->model_pluggto_pluggto->getCustomerByEmail($order->Order->receiver_email);
 				$customer_id =  $customer['customer_id'];
 
@@ -225,7 +233,7 @@ class ControllerApiPluggto extends Controller {
 					'customer_group_id'  => 1,
 					'firstname' 		 => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
 					'lastname' 			 => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
-					'email' 			 => (isset($order->Order->receiver_email) ? $order->Order->receiver_email : null),
+					'email' 			 => $email,
 					'telephone' 		 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
@@ -267,7 +275,7 @@ class ControllerApiPluggto extends Controller {
 					'customer_group_id'  => 1,
 					'firstname' 		 => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
 					'lastname' 			 => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
-					'email' 			 => (isset($order->Order->receiver_email) ? $order->Order->receiver_email : null),
+					'email' 			 => $email,
 					'telephone' 		 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
@@ -316,6 +324,7 @@ class ControllerApiPluggto extends Controller {
 					'currency_code' 	 => $currency['currency_code'],
 					'currency_value' 	 => $currency['currency_value'],
 					'order_product'		 => $this->getProductsToSaveOpenCart($order),
+					'products'		 	 => $this->getProductsToSaveOpenCart($order),
 					'custom_field'		 => array(
 						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
 					),
@@ -328,11 +337,11 @@ class ControllerApiPluggto extends Controller {
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
-
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				if ($existOrderID) {
 					// $response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
+					
 					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
 				} else {
 					$response_id = $this->model_checkout_order->addOrder($data);
@@ -360,8 +369,13 @@ class ControllerApiPluggto extends Controller {
 
 		$response = array();
 		foreach ($order->Order->items as $key => $item) {
+			$nameExplode = explode('-', $item->sku);
+
+			$skuOriginal = $nameExplode[0];
+			$nameVar = $nameExplode[1];
+
 			$response[] = array(
-				'product_id' => $this->model_pluggto_pluggto->getIDItemBySKU($item->sku),
+				'product_id' => $this->model_pluggto_pluggto->getIDItemBySKU($skuOriginal),
 				'name'       => $item->name,
 				'model'	     => $item->sku,
 				'quantity'   => $item->quantity,
@@ -369,11 +383,36 @@ class ControllerApiPluggto extends Controller {
 				'total'		 => $item->total,
 				'tax'		 => 0,
 				'reward'	 => 0,	
-				'option'     => array(),
+				'option'     => $this->loadOptionsToSaveOpenCart($item),
 				'download'   => array()
 			);
 		}
 		
+		return $response;
+	}
+
+	public function loadOptionsToSaveOpenCart($item) {
+		$this->load->model('pluggto/pluggto');
+
+		$nameExplode = explode('-', $item->sku);
+
+		$skuOriginal = $nameExplode[0];
+		$nameVar = $nameExplode[1];
+
+		$product_id = $this->model_pluggto_pluggto->getIDItemBySKU($skuOriginal);
+		$optionId = $this->model_pluggto_pluggto->getOptionIdByName($nameVar);
+		$optionValueId = $this->model_pluggto_pluggto->getOptionValueIdByNameNew($nameVar);
+		$optionValueId = $this->model_pluggto_pluggto->getProductOptionValueId($optionId, $product_id, $optionValueId)->row['product_option_value_id'];
+
+		$response = array();
+
+		$response[] = array(
+			'product_option_value_id' => $optionValueId,
+			'product_option_id'		  => $optionId,
+			'value'					  => $nameVar,
+			'type'					  => 'radio'
+		);
+
 		return $response;
 	}
 
