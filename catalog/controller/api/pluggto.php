@@ -749,19 +749,14 @@ class ControllerApiPluggto extends Controller {
 
 			if (!empty($variationOc->row))
 			{			
-				if ($variation->quantity != $variationOc->row['quantity'])
-				{
-					$newStock = array(
-						'quantity' => $variationOc->row['quantity'],
-						'action'   => 'update'
-					);	
-
-					$response[] = $this->model_pluggto_pluggto->refreshStock($variation->sku, $newStock);
-				}
-
 				if ($productOnOpenCart['price'] != $productOnPluggTo->Product->price)
 				{
 					$response[] = $this->refreshProductOnPluggTo($product_id);
+				}
+
+				if ($variation->quantity != $variationOc->row['quantity'] || $variation->price != $productOnPluggTo->Product->price)
+				{
+					$response[] = $this->refreshStock($productOnOpenCart['sku'], $variationOc->row['quantity'], $variation->sku, $productOnPluggTo->Product->price, $productOnPluggTo->Product->special_price);
 				}
 
 			}
@@ -771,6 +766,30 @@ class ControllerApiPluggto extends Controller {
 		echo json_encode(array('message' => 'sucess', 'response' => $response));
 
 		exit;
+    }	
+
+    public function refreshStock($sku, $newStock, $skuFilho, $price, $specialPrice)
+    {
+		$this->load->model('catalog/product');
+
+        $this->load->model('pluggto/pluggto');
+
+		$data = array(
+			'sku'        => $sku,
+			'grant_type' => "authorization_code",
+			'variations' => array(
+				array(
+					'sku' 			=> $skuFilho,
+					'quantity'		=> $newStock,
+					'price'			=> $price,
+					'special_price' => $specialPrice
+				)
+			)
+		);
+
+		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $sku);
+
+		return $response;
     }
 
 	public function refreshProductOnPluggTo($product_id) {
@@ -780,18 +799,19 @@ class ControllerApiPluggto extends Controller {
 
         $productOnOpenCart = $this->model_catalog_product->getProduct($product_id);
 
-		if (empty($product['sku']))
+		if (empty($productOnOpenCart['sku']))
 		{
-			$product['sku'] = $product['product_id'];
+			$productOnOpenCart['sku'] = $productOnOpenCart['product_id'];
 		}
 
 		$data = array(
-			'sku'        => $product['sku'],
-			'grant_type' => "authorization_code",
-			'price'      => $product['price'],
+			'sku'        	=> $productOnOpenCart['sku'],
+			'grant_type' 	=> "authorization_code",
+			'price'      	=> $productOnOpenCart['price'],
+			'special_price'	=> $productOnOpenCart['special']
 		);
 
-		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
+		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $productOnOpenCart['sku']);
 
 		return $response;
 	}
