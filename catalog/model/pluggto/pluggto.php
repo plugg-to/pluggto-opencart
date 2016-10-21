@@ -1139,7 +1139,14 @@ class ModelPluggtoPluggto extends Model{
 
   public function getProductOptionValueId($optionId, $productId)
   {
-    $query = "SELECT * FROM " . DB_PREFIX . "product_option_value WHERE option_id = " . $optionId . " AND product_id = " . $productId;
+    if ($optionValueId != null)
+    {
+      $query = "SELECT * FROM " . DB_PREFIX . "product_option_value WHERE option_value_id = " . $optionValueId . " AND option_id = " . $optionId . " AND product_id = " . $productId;
+    }
+    else
+    {
+      $query = "SELECT * FROM " . DB_PREFIX . "product_option_value WHERE option_id = " . $optionId . " AND product_id = " . $productId;
+    }
 
     return $this->db->query($query);
   }
