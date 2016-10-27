@@ -743,7 +743,7 @@ class ControllerApiPluggto extends Controller {
 		);
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
-
+		
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 
 		if (!isset($response->Product) && empty($response->Product))

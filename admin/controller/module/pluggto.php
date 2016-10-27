@@ -459,7 +459,7 @@ class ControllerModulePluggTo extends Controller {
     $this->data['alerts']                = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
 
-    $this->data['products']    = $this->model_catalog_product->getProducts();
+    $this->data['products']    = $this->model_catalog_product->getProducts(array('enabled' => 1));
 
     $this->children = array(
       'common/header',
