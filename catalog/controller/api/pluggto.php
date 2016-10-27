@@ -714,7 +714,7 @@ class ControllerApiPluggto extends Controller {
     	$product_id = $this->request->get['product_id'];
 
         $product = $this->model_catalog_product->getProduct($product_id);
-
+        
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
@@ -739,10 +739,19 @@ class ControllerApiPluggto extends Controller {
 			'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
 			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
 			'special_price' => isset($product['special']) ? $product['special'] : 0,
-			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
+			'categories' => $this->getCategoriesToPluggTo($product['product_id']),
 		);
 
+		//configuracao especifica para o cliente
+		if ($_SERVER["SERVER_NAME"] == "www.andreiluminacao.com.br"){
+			$data['handling_time'] = $product['stock_status'];
+		}
+
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
+		
+		echo "<pre>";
+		print_r($response);
+		echo "<br>";
 		
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 

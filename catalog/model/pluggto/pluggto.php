@@ -380,9 +380,6 @@ class ModelPluggtoPluggto extends Model{
     
     $result = curl_exec($ch);
 
-     echo 'Curl error: ' . curl_error($ch);
-
-    var_dump($result);
     return json_decode($result);
   }
 
