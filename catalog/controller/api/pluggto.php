@@ -222,7 +222,7 @@ class ControllerApiPluggto extends Controller {
 				$email = null;
 
 				if (!isset($order->Order->receiver_email) && empty($order->Order->receiver_email))
-					$email = 'dafiti@plugg.to';
+					$email = sha1($order->Order->id) . '@plugg.to';
 				else 
 					$email = $order->Order->receiver_email;
 
@@ -340,10 +340,12 @@ class ControllerApiPluggto extends Controller {
 				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
+				$response_id  = $existOrderID;
+
 				if ($existOrderID) {
 					// $response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
 					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+					$this->model_checkout_order->addOrderHistory($existOrderID, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
 				} else {
 					$response_id = $this->model_checkout_order->addOrder($data);
 					
@@ -370,10 +372,18 @@ class ControllerApiPluggto extends Controller {
 
 		$response = array();
 		foreach ($order->Order->items as $key => $item) {
+
 			$nameExplode = explode('-', $item->sku);
 
+			if (!isset($nameExplode[1]) || empty($nameExplode[1])) {
+				$nameExplode = explode('-', $item->variation->sku);
+
+				if (isset($nameExplode[1]) && !empty($nameExplode[1])) {
+					$nameVar = $nameExplode[1];
+				}
+			}
+
 			$skuOriginal = $nameExplode[0];
-			$nameVar = $nameExplode[1];
 
 			$response[] = array(
 				'product_id' => $this->model_pluggto_pluggto->getIDItemBySKU($skuOriginal),
@@ -397,13 +407,27 @@ class ControllerApiPluggto extends Controller {
 
 		$nameExplode = explode('-', $item->sku);
 
-		$skuOriginal = $nameExplode[0];
-		$nameVar = $nameExplode[1];
+		if (!isset($nameExplode[1]) || empty($nameExplode[1])) {
+			$nameExplode = explode('-', $item->variation->sku);
 
-		$product_id = $this->model_pluggto_pluggto->getIDItemBySKU($skuOriginal);
-		$optionId = $this->model_pluggto_pluggto->getOptionIdByName($nameVar);
-		$optionValueId = $this->model_pluggto_pluggto->getOptionValueIdByNameNew($nameVar);
-		$optionValueId = $this->model_pluggto_pluggto->getProductOptionValueId($optionId, $product_id, $optionValueId)->row['product_option_value_id'];
+			if (isset($nameExplode[1]) && !empty($nameExplode[1])) {
+				$nameVar = $nameExplode[1];
+			} else {
+				$nameVar = $nameExplode[1];
+			}
+		} else {
+			$nameVar = $nameExplode[1];
+		}
+		
+		if (!isset($nameVar) || empty($nameVar))
+			return array();
+
+		$skuOriginal = $nameExplode[0];
+
+		$product_id 	= $this->model_pluggto_pluggto->getIDItemBySKU($skuOriginal);
+		$optionId 		= $this->model_pluggto_pluggto->getOptionIdByName($nameVar);
+		$optionValueId 	= $this->model_pluggto_pluggto->getOptionValueIdByNameNew($nameVar);
+		$optionValueId 	= $this->model_pluggto_pluggto->getProductOptionValueId($optionId, $product_id, $optionValueId)->row['product_option_value_id'];
 
 		$response = array();
 
@@ -749,14 +773,19 @@ class ControllerApiPluggto extends Controller {
 
 			if (!empty($variationOc->row))
 			{			
+				if ($variation->quantity != $variationOc->row['quantity'])
+				{
+					$newStock = array(
+						'quantity' => $variationOc->row['quantity'],
+						'action'   => 'update'
+					);	
+
+					$response[] = $this->model_pluggto_pluggto->refreshStock($variation->sku, $newStock);
+				}
+
 				if ($productOnOpenCart['price'] != $productOnPluggTo->Product->price)
 				{
 					$response[] = $this->refreshProductOnPluggTo($product_id);
-				}
-
-				if ($variation->quantity != $variationOc->row['quantity'] || $variation->price != $productOnPluggTo->Product->price)
-				{
-					$response[] = $this->refreshStock($productOnOpenCart['sku'], $variationOc->row['quantity'], $variation->sku, $productOnPluggTo->Product->price, $productOnPluggTo->Product->special_price);
 				}
 
 			}
@@ -766,30 +795,6 @@ class ControllerApiPluggto extends Controller {
 		echo json_encode(array('message' => 'sucess', 'response' => $response));
 
 		exit;
-    }	
-
-    public function refreshStock($sku, $newStock, $skuFilho, $price, $specialPrice)
-    {
-		$this->load->model('catalog/product');
-
-        $this->load->model('pluggto/pluggto');
-
-		$data = array(
-			'sku'        => $sku,
-			'grant_type' => "authorization_code",
-			'variations' => array(
-				array(
-					'sku' 			=> $skuFilho,
-					'quantity'		=> $newStock,
-					'price'			=> $price,
-					'special_price' => $specialPrice
-				)
-			)
-		);
-
-		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $sku);
-
-		return $response;
     }
 
 	public function refreshProductOnPluggTo($product_id) {
@@ -799,81 +804,22 @@ class ControllerApiPluggto extends Controller {
 
         $productOnOpenCart = $this->model_catalog_product->getProduct($product_id);
 
-		if (empty($productOnOpenCart['sku']))
+		if (empty($product['sku']))
 		{
-			$productOnOpenCart['sku'] = $productOnOpenCart['product_id'];
+			$product['sku'] = $product['product_id'];
 		}
 
 		$data = array(
-			'sku'        	=> $productOnOpenCart['sku'],
-			'grant_type' 	=> "authorization_code",
-			'price'      	=> $productOnOpenCart['price'],
-			'special_price'	=> $productOnOpenCart['special']
+			'sku'        => $product['sku'],
+			'grant_type' => "authorization_code",
+			'price'      => $product['price'],
 		);
 
-		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $productOnOpenCart['sku']);
+		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 
 		return $response;
 	}
 	
-    public function forceSyncProduct(){
-		$this->load->model('catalog/product');
-        $this->load->model('pluggto/pluggto');
-
-    	$product_id = $this->request->get['product_id'];
-
-        $product = $this->model_catalog_product->getProduct($product_id);
-        
-		$data = array(
-			'name'       => $product['name'],
-			'sku'        => $product['sku'],
-			'grant_type' => "authorization_code",
-			'price'      => $product['price'],
-			'quantity'   => $product['quantity'],
-			'external'   => $product['product_id'],
-			'description'=> html_entity_decode($product['description']),
-			'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
-			'ean'        => $product['ean'],
-			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
-			'isbn'       => $product['isbn'],
-			'available'  => $product['status'],
-			'dimension'  => array(
-				'length' => (float) $product['length'],
-				'width'  => (float) $product['width'],
-				'height' => (float) $product['height'],
-				'weight' => (float) $product['weight']
-			),
-			'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
-			'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
-			'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
-			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
-			'special_price' => isset($product['special']) ? $product['special'] : 0,
-			'categories' => $this->getCategoriesToPluggTo($product['product_id']),
-		);
-
-		//configuracao especifica para o cliente
-		if ($_SERVER["SERVER_NAME"] == "www.andreiluminacao.com.br"){
-			$data['handling_time'] = $product['stock_status'];
-		}
-
-		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
-		
-		echo "<pre>";
-		print_r($response);
-		echo "<br>";
-		
-		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
-
-		if (!isset($response->Product) && empty($response->Product))
-		{
-			echo 'Algo deu errado, tente novamente';
-			exit;
-		}
-
-		echo 'O produto foi enviado para plugg.to';
-		exit;
-    }
-
     public function importAllProductsToOpenCart(){
         $this->load->model('pluggto/pluggto');
 
@@ -992,6 +938,9 @@ class ControllerApiPluggto extends Controller {
 		$response = array();
 		foreach ($options as $i => $option) {
 		  foreach ($option['product_option_value'] as $item) {
+
+		  	if (!$item['subtract'])
+		  		continue;
 
 			$attributes = array(
 				array(
