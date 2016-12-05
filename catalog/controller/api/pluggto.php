@@ -810,16 +810,66 @@ class ControllerApiPluggto extends Controller {
 		}
 
 		$data = array(
+			'sku'        	=> $productOnOpenCart['sku'],
+			'grant_type' 	=> "authorization_code",
+			'price'      	=> $productOnOpenCart['price'],
+			'special_price'	=> $productOnOpenCart['special']
+		);
+
+		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $productOnOpenCart['sku']);
+
+		return $response;
+	}
+
+    public function forceSyncProduct(){
+		$this->load->model('catalog/product');
+        $this->load->model('pluggto/pluggto');
+
+    	$product_id = $this->request->get['product_id'];
+
+        $product = $this->model_catalog_product->getProduct($product_id);
+
+		$data = array(
+			'name'       => $product['name'],
 			'sku'        => $product['sku'],
 			'grant_type' => "authorization_code",
 			'price'      => $product['price'],
+			'quantity'   => $product['quantity'],
+			'external'   => $product['product_id'],
+			'description'=> html_entity_decode($product['description']),
+			'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
+			'ean'        => $product['ean'],
+			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
+			'isbn'       => $product['isbn'],
+			'available'  => $product['status'],
+			'dimension'  => array(
+				'length' => (float) $product['length'],
+				'width'  => (float) $product['width'],
+				'height' => (float) $product['height'],
+				'weight' => (float) $product['weight']
+			),
+			'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
+			'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
+			'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
+			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
+			'special_price' => isset($product['special']) ? $product['special'] : 0,
+			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 
-		return $response;
-	}
-	
+		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
+
+		if (!isset($response->Product) && empty($response->Product))
+		{
+			echo 'Algo deu errado, tente novamente';
+			exit;
+		}
+
+		echo 'O produto foi enviado para plugg.to';
+		exit;
+    }
+
     public function importAllProductsToOpenCart(){
         $this->load->model('pluggto/pluggto');
 
@@ -942,14 +992,17 @@ class ControllerApiPluggto extends Controller {
 		  	if (!$item['subtract'])
 		  		continue;
 
-			$attributes = array(
-				array(
-					'code'  => 'size',
-					'label' => $option['name'],
-					'value'	=> array(
-						'code' => $item['name'],
-						'label'=> $item['name']
-					)
+			$attributes = array();
+			foreach ($attributesTemp as $value) {
+				$attributes[] = $value;
+			}
+
+			$attributes[] = array(
+				'code'  => 'size',
+				'label' => $option['name'],
+				'value'	=> array(
+					'code' => $item['name'],
+					'label'=> $item['name']
 				)
 			);
 
@@ -991,7 +1044,7 @@ class ControllerApiPluggto extends Controller {
 
 		$product    = $this->model_catalog_product->getProduct($product_id);
 		$attributes = $this->model_catalog_product->getProductAttributes($product_id);
-
+		
 		$response = array();
 
 		foreach ($attributes as $i => $attribute) {
@@ -999,26 +1052,15 @@ class ControllerApiPluggto extends Controller {
 			{
 				foreach ($attribute['attribute'] as $i => $attr) {
 					$response[] = array(
-						'code'  => $attr['attribute_id'],
+						'code'  => $attr['name'],
 						'label' => $attr['text'],
 						'value' => array(
-							'code'  => $attr['attribute_id'],
+							'code'  => $attr['name'],
 							'label' => $attr['text'],
 						)
 					);
 				}
-
-				continue;
 			}
-
-			$response[] = array(
-				'code'  => $attribute['attribute_id'],
-				'label' => $attribute['product_attribute_description'][1]['text'],
-				'value' => array(
-					'code'  => $attribute['attribute_id'],
-					'label' => $attribute['product_attribute_description'][1]['text'],
-				)
-			);
 		}
 
 		return $response;
