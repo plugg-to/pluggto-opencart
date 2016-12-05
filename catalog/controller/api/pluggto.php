@@ -714,7 +714,7 @@ class ControllerApiPluggto extends Controller {
     	$product_id = $this->request->get['product_id'];
 
         $product = $this->model_catalog_product->getProduct($product_id);
-        
+
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
@@ -739,20 +739,11 @@ class ControllerApiPluggto extends Controller {
 			'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
 			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
 			'special_price' => isset($product['special']) ? $product['special'] : 0,
-			'categories' => $this->getCategoriesToPluggTo($product['product_id']),
+			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
 
-		//configuracao especifica para o cliente
-		if ($_SERVER["SERVER_NAME"] == "www.andreiluminacao.com.br"){
-			$data['handling_time'] = $product['stock_status'];
-		}
-
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
-		
-		echo "<pre>";
-		print_r($response);
-		echo "<br>";
-		
+
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 
 		if (!isset($response->Product) && empty($response->Product))
@@ -886,15 +877,19 @@ class ControllerApiPluggto extends Controller {
 		  	continue;
 
 		  foreach ($option['option_value'] as $item) {
+			$attributesTemp = $this->getAtrributesToSaveInOpenCart($product_id);
 
-			$attributes = array(
-				array(
-					'code'  => 'size',
-					'label' => $option['name'],
-					'value'	=> array(
-						'code' => $item['name'],
-						'label'=> $item['name']
-					)
+			$attributes = array();
+			foreach ($attributesTemp as $value) {
+				$attributes[] = $value;
+			}
+
+			$attributes[] = array(
+				'code'  => 'size',
+				'label' => $option['name'],
+				'value'	=> array(
+					'code' => $item['name'],
+					'label'=> $item['name']
 				)
 			);
 
@@ -936,7 +931,7 @@ class ControllerApiPluggto extends Controller {
 
 		$product    = $this->model_catalog_product->getProduct($product_id);
 		$attributes = $this->model_catalog_product->getProductAttributes($product_id);
-
+		
 		$response = array();
 
 		foreach ($attributes as $i => $attribute) {
@@ -944,26 +939,15 @@ class ControllerApiPluggto extends Controller {
 			{
 				foreach ($attribute['attribute'] as $i => $attr) {
 					$response[] = array(
-						'code'  => $attr['attribute_id'],
+						'code'  => $attr['name'],
 						'label' => $attr['text'],
 						'value' => array(
-							'code'  => $attr['attribute_id'],
+							'code'  => $attr['name'],
 							'label' => $attr['text'],
 						)
 					);
 				}
-
-				continue;
 			}
-
-			$response[] = array(
-				'code'  => $attribute['attribute_id'],
-				'label' => $attribute['product_attribute_description'][1]['text'],
-				'value' => array(
-					'code'  => $attribute['attribute_id'],
-					'label' => $attribute['product_attribute_description'][1]['text'],
-				)
-			);
 		}
 
 		return $response;
