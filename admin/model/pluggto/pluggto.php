@@ -63,6 +63,11 @@ class ModelPluggtoPluggto extends Model{
 
       $this->db->query($sql);
 
+      // add index pluggto notifications
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_notifications` ADD INDEX `type` (`type`)");
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_notifications` ADD INDEX `status` (`status`)");
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_notifications` ADD INDEX `resource_id` (`resource_id`)");
+
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "order_relation_pluggto_and_opencart` (
               `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
               `order_id_opencart` varchar(50) NOT NULL,
