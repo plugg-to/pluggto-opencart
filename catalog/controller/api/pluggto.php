@@ -148,14 +148,19 @@ class ControllerApiPluggto extends Controller {
 		if (!empty($productsQueue))
 		{
 			foreach ($productsQueue as $product) {
+
+
+
 				try {
 			        $product = $this->model_catalog_product->getProduct($product['product_id']);
+
 		            $return = $this->exportAllProductsToPluggTo($product);
 					
 					$response[$product['product_id']]['status']  = $return;
 					$response[$product['product_id']]['message'] = $return !== null ? "Product '{$product['product_id']}' imported successfully" : "Produts Could not be imported";
 
 					$this->model_pluggto_pluggto->processedQueueProduct($product['product_id'], "opencart");
+
 				} catch (Exception $e) {
 					continue;
 				}
@@ -573,12 +578,15 @@ class ControllerApiPluggto extends Controller {
 	    $productPrepare = array();
 	    $data = array();
 
+
+
+
     	if (empty($product['sku'])) {
 			$this->model_pluggto_pluggto->createLog(print_r(array('message' => 'not exist sku', 'sku' => $product['sku']), 1), 'exportAllProductsToPluggTo');
 			return 'Problem SKU' . $product['name'];
     	}
 
-		$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
+		//$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
 		
 		$data = array(
 			'name'       => $product['name'],
@@ -606,6 +614,7 @@ class ControllerApiPluggto extends Controller {
 			'special_price' => isset($product['special']) ? $product['special'] : 0,
 			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
+
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 
