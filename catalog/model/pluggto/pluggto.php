@@ -106,8 +106,8 @@ class ModelPluggtoPluggto extends Model{
     return $this->db->query($sql);
   }
 
-  public function getPaymentZoneIDByCity($city) {
-    $sql = 'SELECT zone_id FROM ' . DB_PREFIX . 'zone WHERE name LIKE "%' . $city . '%"';
+  public function getPaymentZoneIDByState($state) {
+    $sql = 'SELECT zone_id FROM ' . DB_PREFIX . 'zone WHERE name LIKE "%' . $state . '%"';
     return $this->db->query($sql);
   }
 
@@ -244,6 +244,18 @@ class ModelPluggtoPluggto extends Model{
     return false;
   }
 
+  public function getModelItemBySKU($sku){
+    $sql = 'SELECT model FROM ' . DB_PREFIX . 'product WHERE sku = "' . $sku . '"';
+    
+    $response = $this->db->query($sql);
+    
+    if (!empty($response->row)) {
+      return $response->row['model'];
+    }
+
+    return false;
+  }
+
   public function checkOrderByIDPluggTo($pluggto_id) {
     $sql = 'SELECT order_id FROM ' . DB_PREFIX . 'order WHERE invoice_prefix = "INV-' . date('Y') . "-" . base64_encode($pluggto_id) . '"';
     
@@ -358,7 +370,6 @@ class ModelPluggtoPluggto extends Model{
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
       curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
           'Content-Type: application/json',
           'Content-Length: ' . strlen($data_string))
@@ -374,7 +385,6 @@ class ModelPluggtoPluggto extends Model{
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
       curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
           'Content-Type: application/json',
           'Content-Length: ' . strlen($data_string)
