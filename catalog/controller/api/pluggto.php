@@ -281,10 +281,10 @@ class ControllerApiPluggto extends Controller {
 				} else {
 					$shippingMethod .= (isset($order->Order->shipments[0]->shipping_company) ? $order->Order->shipments[0]->shipping_company : null);
 				}
-
+				
 				$data = array(
 					'invoice_prefix' 	 => (isset($order->Order->id) ? $order->Order->id : null),
-					'store_id'			 => (isset($order->Order->id) ? $order->Order->id : null),
+					'store_id'			 => 0,
 					'store_name' 		 => $this->config->get('config_name'),
 					'store_url' 		 => HTTP_SERVER,
 					'customer_id' 		 => $customer_id,
@@ -326,15 +326,24 @@ class ControllerApiPluggto extends Controller {
 						array(
 							'code'  	 => 'sub_total',
 							'title' 	 => 'Sub-total',
+							'order_id' => $this->getLastIdOrder(),
 							'value' 	 => (isset($order->Order->total) ? $order->Order->total : null),
 							'sort_order' => 1,
 						),
 						array(
 							'code'  	 => 'total',
 							'title' 	 => 'Total',
+							'order_id' => $this->getLastIdOrder(),
 							'value' 	 => (isset($order->Order->total) ? $order->Order->total : null),
 							'sort_order' => 9,
 						),
+						array(
+							'code' => 'shipping',
+							'order_id' => $this->getLastIdOrder(),
+							'title' => $shippingMethod,
+							'value' => (isset($order->Order->shipping) ? $order->Order->shipping : null),
+							'sort_order' => 3
+						)
 					),
 					'currency_id' 		 => $currency['currency_id'],
 					'currency_code' 	 => $currency['currency_code'],
@@ -354,7 +363,7 @@ class ControllerApiPluggto extends Controller {
 						2 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
 					)
 				);
-
+				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
@@ -385,6 +394,13 @@ class ControllerApiPluggto extends Controller {
 		}
 
 		return $i;
+	}
+
+	public function getLastIdOrder()
+	{
+		$response = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order` ORDER BY order_id DESC LIMIT 1");
+
+		return $response->row['order_id'] + 1;
 	}
 
 	public function getProductsToSaveOpenCart($order) {
@@ -891,7 +907,7 @@ class ControllerApiPluggto extends Controller {
 		$result = $this->model_pluggto_pluggto->createNotification($fields);
 
 		$response = array(
-			'message' => $result === true ? 'Notification received sucessfully' : 'Failure getting notification. The field: '.$result.' can not be empty',
+			'message' => $result === true ? 'Notification received sucessfully' : 'Failure getting notification. The field: ' . $result . ' can not be empty',
 			'code'    => 200,
 			'status'  => is_bool($result) ? $result : false
 		);
