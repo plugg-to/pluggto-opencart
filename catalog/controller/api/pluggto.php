@@ -274,13 +274,12 @@ class ControllerApiPluggto extends Controller {
 					)
 				);
 
-				$shippingMethod = (isset($order->Order->shipments[0]->shipping_method) ? $order->Order->shipments[0]->shipping_method : null);
 
-				if (empty($shippingMethod) || !isset($shippingMethod)) {
-					$shippingMethod = (isset($order->Order->shipments[0]->shipping_company) ? $order->Order->shipments[0]->shipping_company : null);
-				} else {
-					$shippingMethod .= (isset($order->Order->shipments[0]->shipping_company) ? $order->Order->shipments[0]->shipping_company : null);
-				}
+				$shipping = (isset($order->Order->shipments[0]->shipping_method) ? $order->Order->shipments[0]->shipping_method : null);
+				$shipping = explode(' ', $shipping);
+
+				$shippingMethod = $shipping[1];
+				$shippingCompany = $shipping[0];
 				
 				$data = array(
 					'invoice_prefix' 	 => (isset($order->Order->id) ? $order->Order->id : null),
