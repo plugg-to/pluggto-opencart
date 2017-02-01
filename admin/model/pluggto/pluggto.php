@@ -277,6 +277,7 @@ class ModelPluggtoPluggto extends Model{
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
       curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
           'Content-Type: application/json',
           'Content-Length: ' . strlen($data_string))
@@ -475,7 +476,7 @@ class ModelPluggtoPluggto extends Model{
     return $response;
   }
 
-  public function getNotifications($limit = 100, $type = 'products'){
+  public function getNotifications($limit = 100, $type = 'all'){
     $query = "SELECT * FROM " . DB_PREFIX . "pluggto_notifications WHERE status = 1 AND type = '" . $type . "' ORDER BY id DESC LIMIT " . $limit;
 
     if ($type == 'all')

@@ -5,6 +5,8 @@ error_reporting(-1);
 
 class ControllerApiPluggto extends Controller {
 
+	protected $estados = array("AC"=>"Acre", "AL"=>"Alagoas", "AM"=>"Amazonas", "AP"=>"Amapá","BA"=>"Bahia","CE"=>"Ceará","DF"=>"Distrito Federal","ES"=>"Espírito Santo","GO"=>"Goiás","MA"=>"Maranhão","MT"=>"Mato Grosso","MS"=>"Mato Grosso do Sul","MG"=>"Minas Gerais","PA"=>"Pará","PB"=>"Paraíba","PR"=>"Paraná","PE"=>"Pernambuco","PI"=>"Piauí","RJ"=>"Rio de Janeiro","RN"=>"Rio Grande do Norte","RO"=>"Rondônia","RS"=>"Rio Grande do Sul","RR"=>"Roraima","SC"=>"Santa Catarina","SE"=>"Sergipe","SP"=>"São Paulo","TO"=>"Tocantins");
+
 	public function index(){
 		$json = array('status' => 'operational', 'HTTPcode' => 200);
 
@@ -148,14 +150,19 @@ class ControllerApiPluggto extends Controller {
 		if (!empty($productsQueue))
 		{
 			foreach ($productsQueue as $product) {
+
+
+
 				try {
 			        $product = $this->model_catalog_product->getProduct($product['product_id']);
+
 		            $return = $this->exportAllProductsToPluggTo($product);
 					
 					$response[$product['product_id']]['status']  = $return;
 					$response[$product['product_id']]['message'] = $return !== null ? "Product '{$product['product_id']}' imported successfully" : "Produts Could not be imported";
 
 					$this->model_pluggto_pluggto->processedQueueProduct($product['product_id'], "opencart");
+
 				} catch (Exception $e) {
 					continue;
 				}
@@ -238,7 +245,7 @@ class ControllerApiPluggto extends Controller {
 					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
 					'custom_field'		 => array(
-						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
+						3 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
 					)
 				);
 
@@ -254,21 +261,29 @@ class ControllerApiPluggto extends Controller {
 					'firstname'    => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
 					'lastname'     => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
 					'company'      => '',
+					'address'      => (isset($order->Order->payer_address) ? $order->Order->payer_address : null),
 					'address_1'    => (isset($order->Order->payer_address) ? $order->Order->payer_address : null),
 					'address_2'    => (isset($order->Order->payer_neighborhood) ? $order->Order->payer_neighborhood : null),
 					'postcode'     => (isset($order->Order->payer_zipcode) ? $order->Order->payer_zipcode : null),
 					'city'         => (isset($order->Order->payer_city) ? $order->Order->payer_city : null),
-					'zone_id'      => $this->getPaymentZoneIDByCity((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
+					'zone_id'      => $this->getPaymentZoneIDByState((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
 					'country_id'   => 30,
 					'custom_field' => array(
-						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
-						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null)
+						1 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
+						2 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
 					)
 				);
 
+
+				$shipping = (isset($order->Order->shipments[0]->shipping_method) ? $order->Order->shipments[0]->shipping_method : null);
+				$shipping = explode(' ', $shipping);
+
+				$shippingMethod = $shipping[1];
+				$shippingCompany = $shipping[0];
+				
 				$data = array(
 					'invoice_prefix' 	 => (isset($order->Order->id) ? $order->Order->id : null),
-					'store_id'			 => (isset($order->Order->id) ? $order->Order->id : null),
+					'store_id'			 => 0,
 					'store_name' 		 => $this->config->get('config_name'),
 					'store_url' 		 => HTTP_SERVER,
 					'customer_id' 		 => $customer_id,
@@ -287,8 +302,8 @@ class ControllerApiPluggto extends Controller {
 					'payment_postcode' 	 => (isset($order->Order->payer_zipcode) ? $order->Order->payer_zipcode : null),
 					'payment_country' 	 => (isset($order->Order->payer_country) ? $order->Order->payer_country : null),
 					'payment_country_id' => 30,
-					'payment_zone' 		 => (isset($order->Order->payer_city) ? $order->Order->payer_city : null),
-					'payment_zone_id' 	 => $this->getPaymentZoneIDByCity((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
+					'payment_zone' 		 => (isset($order->Order->payer_state) ? $order->Order->payer_state : null),
+					'payment_zone_id' 	 => $this->getPaymentZoneIDByState((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
 					'payment_method' 	 => $this->getPaymentMethodByOrderPluggTo($order->Order),
 					'payment_code'		 => $this->getPaymentCodeByOrderPluggTo($order->Order),
 					'shipping_firstname' => (isset($order->Order->receiver_name) ? $order->Order->receiver_name : null),
@@ -298,43 +313,53 @@ class ControllerApiPluggto extends Controller {
 					'shipping_address_2' => (isset($order->Order->payer_neighborhood) ? $order->Order->payer_neighborhood : null),
 					'shipping_city' 	 => (isset($order->Order->receiver_city) ? $order->Order->receiver_city : null),
 					'shipping_postcode'  => (isset($order->Order->receiver_zipcode) ? $order->Order->receiver_zipcode : null),
-					'shipping_country'   => (isset($order->Order->receiver_country) ? $order->Order->receiver_country : null),
-					'shipping_zone' 	 => (isset($order->Order->receiver_city) ? $order->Order->receiver_city : null),
-					'shipping_zone_id' 	 => $this->getPaymentZoneIDByCity((isset($order->Order->receiver_city) ? $order->Order->receiver_city : null)),
-					'shipping_method' 	 => (isset($order->Order->shipments[0]->shipping_method) ? $order->Order->shipments[0]->shipping_method : null),
+					'shipping_country' 	 => (isset($order->Order->payer_country) ? $order->Order->payer_country : null),
+					'shipping_country_id'=> 30,
+					'shipping_zone' 	 => (isset($order->Order->payer_state) ? $order->Order->payer_state : null),
+					'shipping_zone_id' 	 => $this->getPaymentZoneIDByState((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
+					'shipping_method' 	 => $shippingMethod,
 					'shipping_code' 	 => (isset($order->Order->shipments[0]->track_code) ? $order->Order->shipments[0]->track_code : null),
-					'store_id'			 => 0,
 					'comment' 			 => '',
 					'total' 			 => (isset($order->Order->total) ? $order->Order->total : null),
 					'totals'			 => array(
 						array(
 							'code'  	 => 'sub_total',
 							'title' 	 => 'Sub-total',
+							'order_id' => $this->getLastIdOrder(),
 							'value' 	 => (isset($order->Order->total) ? $order->Order->total : null),
 							'sort_order' => 1,
 						),
 						array(
 							'code'  	 => 'total',
 							'title' 	 => 'Total',
+							'order_id' => $this->getLastIdOrder(),
 							'value' 	 => (isset($order->Order->total) ? $order->Order->total : null),
 							'sort_order' => 9,
 						),
+						array(
+							'code' => 'shipping',
+							'order_id' => $this->getLastIdOrder(),
+							'title' => $shippingMethod,
+							'value' => (isset($order->Order->shipping) ? $order->Order->shipping : null),
+							'sort_order' => 3
+						)
 					),
 					'currency_id' 		 => $currency['currency_id'],
 					'currency_code' 	 => $currency['currency_code'],
 					'currency_value' 	 => $currency['currency_value'],
 					'order_product'		 => $this->getProductsToSaveOpenCart($order),
 					'products'		 	 => $this->getProductsToSaveOpenCart($order),
+					'language_id'		 => 2,
 					'custom_field'		 => array(
-						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
+						3 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
 					),
 					'shipping_custom_field' => array(
-						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),					
-						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
+						1 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
+						2 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
 					),
 					'payment_custom_field' => array(
-						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null),					
-						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
+						1 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
+						2 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
 					)
 				);
 				
@@ -342,17 +367,22 @@ class ControllerApiPluggto extends Controller {
 				
 				$response_id  = $existOrderID;
 
-				if ($existOrderID) {
-					// $response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
-					
-					$this->model_checkout_order->addOrderHistory($existOrderID, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+				if ($response_id) {					
+					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
 				} else {
 					$response_id = $this->model_checkout_order->addOrder($data);
+
+					if ($response_id <= 0)
+					{
+						$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => 'Pedido nao foi criado')));
+						continue;
+					}
+
+					$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 					
 					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+
 				}
-				
-				$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 				
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => true, 'message' => 'OK')));
 			} catch (Exception $e) {
@@ -363,6 +393,13 @@ class ControllerApiPluggto extends Controller {
 		}
 
 		return $i;
+	}
+
+	public function getLastIdOrder()
+	{
+		$response = $this->db->query("SELECT * FROM `" . DB_PREFIX . "order` ORDER BY order_id DESC LIMIT 1");
+
+		return $response->row['order_id'] + 1;
 	}
 
 	public function getProductsToSaveOpenCart($order) {
@@ -384,11 +421,14 @@ class ControllerApiPluggto extends Controller {
 			}
 
 			$skuOriginal = $nameExplode[0];
+			
+			if (empty($skuOriginal))
+				$skuOriginal = $item->sku;
 
 			$response[] = array(
 				'product_id' => $this->model_pluggto_pluggto->getIDItemBySKU($skuOriginal),
 				'name'       => $item->name,
-				'model'	     => $item->sku,
+				'model'	     => $this->model_pluggto_pluggto->getModelItemBySKU($skuOriginal),
 				'quantity'   => $item->quantity,
 				'price'		 => $item->price,
 				'total'		 => $item->total,
@@ -441,8 +481,8 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
-	public function getPaymentZoneIDByCity($city) {
-		$response = $this->model_pluggto_pluggto->getPaymentZoneIDByCity($city);
+	public function getPaymentZoneIDByState($state) {
+		$response = $this->model_pluggto_pluggto->getPaymentZoneIDByState($this->estados[$state]);
 
 		if (!empty($response->row)) {
 			return $response->row['zone_id'];
@@ -505,7 +545,7 @@ class ControllerApiPluggto extends Controller {
 			
      		$response = $this->model_pluggto_pluggto->getRelactionOrder($order['order_id']);
 
-     		$return[$response['order_id_pluggto']] = 'NÃ£o editado, pedido criado direto no PluggTo';
+     		$return[$response['order_id_pluggto']] = 'Não editado, pedido criado direto no PluggTo';
 
      		// if (empty($response))
      		// {
@@ -573,12 +613,15 @@ class ControllerApiPluggto extends Controller {
 	    $productPrepare = array();
 	    $data = array();
 
+
+
+
     	if (empty($product['sku'])) {
 			$this->model_pluggto_pluggto->createLog(print_r(array('message' => 'not exist sku', 'sku' => $product['sku']), 1), 'exportAllProductsToPluggTo');
 			return 'Problem SKU' . $product['name'];
     	}
 
-		$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
+		//$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
 		
 		$data = array(
 			'name'       => $product['name'],
@@ -606,6 +649,8 @@ class ControllerApiPluggto extends Controller {
 			'special_price' => isset($product['special']) ? $product['special'] : 0,
 			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
+
+
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 
@@ -861,7 +906,7 @@ class ControllerApiPluggto extends Controller {
 		$result = $this->model_pluggto_pluggto->createNotification($fields);
 
 		$response = array(
-			'message' => $result === true ? 'Notification received sucessfully' : 'Failure getting notification. The field: '.$result.' can not be empty',
+			'message' => $result === true ? 'Notification received sucessfully' : 'Failure getting notification. The field: ' . $result . ' can not be empty',
 			'code'    => 200,
 			'status'  => is_bool($result) ? $result : false
 		);
