@@ -10,7 +10,7 @@ class ModelPluggtoPluggto extends Model{
               `api_secret` varchar(255) NOT NULL,
               `client_id` varchar(255) NOT NULL,
               `client_secret` varchar(255) NOT NULL
-            ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
+            ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
@@ -19,7 +19,7 @@ class ModelPluggtoPluggto extends Model{
               `data` TEXT NOT NULL,
               `function` varchar(50) NOT NULL,
               `date` DATE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
@@ -27,7 +27,7 @@ class ModelPluggtoPluggto extends Model{
               `id` int(11) AUTO_INCREMENT PRIMARY KEY,
               `active` tinyint(4) NOT NULL,
               `refresh_only_stock` tinyint(4) NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";    
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";    
 
       $this->db->query($sql);
 
@@ -36,7 +36,7 @@ class ModelPluggtoPluggto extends Model{
               `field_opencart` varchar(50) NOT NULL,
               `field_pluggto` varchar(50) NOT NULL,
               `active` tinyint(4) NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
@@ -45,7 +45,7 @@ class ModelPluggtoPluggto extends Model{
               `pluggto_product_id` varchar(255) NOT NULL,
               `opencart_product_id` int(11) NOT NULL,
               `active` tinyint(4) NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
@@ -59,7 +59,7 @@ class ModelPluggtoPluggto extends Model{
               `description` text DEFAULT NULL,
               `status` tinyint(4) DEFAULT NULL,
               PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;";
+            ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
@@ -73,7 +73,7 @@ class ModelPluggtoPluggto extends Model{
               `order_id_opencart` varchar(50) NOT NULL,
               `order_id_pluggto` varchar(50) NOT NULL,
               `active` tinyint(4) NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
@@ -83,7 +83,7 @@ class ModelPluggtoPluggto extends Model{
                 `product_id_pluggto` varchar(255) NOT NULL,
                 `process` int(11) NOT NULL,
                 `response` text NOT NULL
-              ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+              ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
               ";
 
       $this->db->query($sql);

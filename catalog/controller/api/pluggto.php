@@ -1004,9 +1004,9 @@ class ControllerApiPluggto extends Controller {
 				foreach ($attribute['attribute'] as $i => $attr) {
 					$response[] = array(
 						'code'  => $attr['name'],
-						'label' => $attr['text'],
+						'label' => $attr['name'],
 						'value' => array(
-							'code'  => $attr['name'],
+							'code'  => $attr['text'],
 							'label' => $attr['text'],
 						)
 					);
