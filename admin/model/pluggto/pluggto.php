@@ -57,8 +57,7 @@ class ModelPluggtoPluggto extends Model{
               `date_created` datetime DEFAULT NULL,
               `date_modified` datetime DEFAULT NULL,
               `description` text DEFAULT NULL,
-              `status` tinyint(4) DEFAULT NULL,
-              PRIMARY KEY (`id`)
+              `status` tinyint(4) DEFAULT NULL
             ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
@@ -94,10 +93,8 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
       
     } catch (Exception $e) {
-      
+      var_dump($e->getMessage());exit;
     }
-
-    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "user ORDER BY user_id DESC");
   }
 
   public function uninstall() {
@@ -186,10 +183,15 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getCredentials() {
-    $sql = "SELECT * FROM `". DB_PREFIX . "pluggto`
-            ORDER BY id DESC
-            LIMIT 1";
-    $pluggto = $this->db->query($sql);
+    try {
+      $sql = "SELECT * FROM `". DB_PREFIX . "pluggto`
+              ORDER BY id DESC
+              LIMIT 1";
+      $pluggto = $this->db->query($sql);
+    } catch (Exception $e) {
+      $this->load->model('pluggto/pluggto');
+      $this->model_pluggto_pluggto->install();
+    }
     return $pluggto->row;
   }
 

@@ -749,7 +749,7 @@ class ControllerApiPluggto extends Controller {
 		}
 
         $product = $this->model_catalog_product->getProduct($product_id);
-       
+        
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
@@ -757,7 +757,7 @@ class ControllerApiPluggto extends Controller {
 			'price'      => $product['price'],
 			'quantity'   => $product['quantity'],
 			'external'   => $product['product_id'],
-			'description'=> html_entity_decode($product['description']),
+			// 'description'=> str_replace('"', '\'', $product['description']),
 			'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
 			'ean'        => $product['ean'],
 			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
@@ -784,10 +784,13 @@ class ControllerApiPluggto extends Controller {
 		if (!isset($response->Product) && empty($response->Product))
 		{
 			var_dump($response);
+			echo '<hr>';
 			echo 'Algo deu errado, tente novamente';
 			exit;
 		}
 
+		var_dump($response);
+		echo '<hr>';
 		echo 'O produto foi enviado para plugg.to';
 		exit;
     }
