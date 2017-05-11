@@ -622,7 +622,8 @@ class ControllerApiPluggto extends Controller {
     	}
 
 		//$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
-		
+		echo '<pre>';
+		print_r($product);
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
@@ -974,6 +975,9 @@ class ControllerApiPluggto extends Controller {
 			    'order' => $image['sort_order']
 			);
 		}
+		
+		echo '<pre>';
+		print_r($response);
 
 		return $response;
 	}
