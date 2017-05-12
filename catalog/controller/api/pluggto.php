@@ -951,28 +951,19 @@ class ControllerApiPluggto extends Controller {
 		if (isset($image_main) && !empty($image_main))
 		{
 			$response[] = array(
-			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'remove' => true
-		    );
-
-			$response[] = array(
-			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'title' => 'Imagem principal do produto',
-			    'order' => 0
+			    'url'      => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'external' => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'title'    => 'Imagem principal do produto',
+			    'order'    => 0
 			);
 		}
 
 		foreach ($images as $i => $image) {
-
 			$response[] = array(
-			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
-			    'remove' => true
-		    );
-
-			$response[] = array(
-			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
-			    'title' => 'Imagem principal do produto',
-			    'order' => $image['sort_order']
+			    'url'      => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
+			    'external' => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
+			    'title'    => 'Imagem principal do produto',
+			    'order'    => $image['sort_order']
 			);
 		}
 		
