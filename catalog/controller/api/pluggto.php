@@ -736,6 +736,11 @@ class ControllerApiPluggto extends Controller {
 
         $product = $this->model_catalog_product->getProduct($product_id);
        
+	    $brand = isset($product['manufacturer']) ? $product['manufacturer'] : '';
+		if (empty($brand)) {
+			$brand = isset($product['model']) ? $product['model'] : '';
+		}
+		
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
