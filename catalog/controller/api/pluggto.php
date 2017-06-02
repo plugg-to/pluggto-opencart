@@ -735,6 +735,11 @@ class ControllerApiPluggto extends Controller {
 
         $product = $this->model_catalog_product->getProduct($product_id);
        
+	    $brand = isset($product['manufacturer']) ? $product['manufacturer'] : '';
+		if (empty($brand)) {
+			$brand = isset($product['model']) ? $product['model'] : '';
+		}
+	   
 		$data = array(
 			'name'       => $product['name'],
 			'sku'        => $product['sku'],
@@ -743,7 +748,7 @@ class ControllerApiPluggto extends Controller {
 			'quantity'   => $product['quantity'],
 			'external'   => $product['product_id'],
 			'description'=> html_entity_decode($product['description']),
-			'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
+			'brand'      => $brand,
 			'ean'        => $product['ean'],
 			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
 			'isbn'       => $product['isbn'],
