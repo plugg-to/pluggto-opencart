@@ -343,8 +343,11 @@ class ControllerApiPluggto extends Controller {
 				
 				$response_id  = $existOrderID;
 
+				$order_status_id => $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history);
+				
 				if ($response_id) {					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+					$history_data = ['status' => $order_status_id, 'message' => ''];
+					$this->model_pluggto_pluggto->addOrderHistory($response_id, $history_data);
 
 
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
@@ -374,7 +377,7 @@ class ControllerApiPluggto extends Controller {
 
 					$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+					$this->model_checkout_order->confirm($response_id, $order_status_id);
 
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
 							array(
