@@ -1139,7 +1139,7 @@ class ControllerApiPluggto extends Controller {
 
 		$offset = 0;
 		
-		if (isset($this->request->get['offset'];)) {
+		if (isset($this->request->get['offset'])) {
 			$offset = $this->request->get['offset'];
 		}
 
