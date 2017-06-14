@@ -736,8 +736,7 @@ class ControllerApiPluggto extends Controller {
         return json_encode($json);
     }
 
-    public function forceSyncProduct(){
-	
+    public function forceSyncProduct() {
 		$this->load->model('catalog/product');
         $this->load->model('pluggto/pluggto');
 
@@ -956,10 +955,14 @@ class ControllerApiPluggto extends Controller {
 		if (isset($image_main) && !empty($image_main))
 		{
 			$response[] = array(
-			    'url'      => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'external' => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
-			    'title'    => 'Imagem principal do produto',
-			    'order'    => 0
+			    'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'remove' => true
+		    );
+
+			$response[] = array(
+			    'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+			    'title' => 'Imagem principal do produto',
+			    'order' => 1
 			);
 		}
 
