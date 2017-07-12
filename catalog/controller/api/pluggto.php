@@ -1142,7 +1142,7 @@ class ControllerApiPluggto extends Controller {
 			$offset = $this->request->get['offset'];
 		}
 
-		$this->model_catalog_product->getProducts(array('filter_status' => 1,'start' => $offset ,'limit' => 1000));
+		$response = $this->model_catalog_product->getProducts(array('filter_status' => 1,'start' => $offset ,'limit' => 1000));
 		
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
