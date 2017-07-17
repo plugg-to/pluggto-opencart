@@ -339,6 +339,8 @@ class ControllerApiPluggto extends Controller {
 					)
 				);
 				
+			echo '<pre>';print_r($data);
+			exit;
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
@@ -473,7 +475,11 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function getPaymentZoneIDByCity($city) {
-		$response = $this->model_pluggto_pluggto->getPaymentZoneIDByCity($city);
+		if (isset($this->estados[$state])) {
+			$state = $this->estados[$state];
+		}
+		
+		$response = $this->model_pluggto_pluggto->getPaymentZoneIDByState($state);
 
 		if (!empty($response->row)) {
 			return $response->row['zone_id'];
