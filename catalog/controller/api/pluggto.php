@@ -25,7 +25,6 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronOrders() {
-
 		$this->load->model('pluggto/pluggto');
 
 		$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
@@ -210,13 +209,12 @@ class ControllerApiPluggto extends Controller {
 
 	public function saveOrdersInOpenCart($orders) {
 		$i = 0;
-
+		
 		$this->load->model('account/customer');
 
 		$this->load->model('checkout/order');
 		
 		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
-		
 		foreach ($orders as $id_pluggto => $order) {
 			try {
 
@@ -338,12 +336,17 @@ class ControllerApiPluggto extends Controller {
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0df6f63... fix new field api pluggto to status history order
 				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
 
 				if ($response_id) {					
+<<<<<<< HEAD
 					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
 
 
@@ -354,6 +357,9 @@ class ControllerApiPluggto extends Controller {
 							)
 						)
 					);
+=======
+					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
+>>>>>>> 0df6f63... fix new field api pluggto to status history order
 				} else {
 					$response_id = $this->model_checkout_order->addOrder($data);
 
@@ -374,7 +380,7 @@ class ControllerApiPluggto extends Controller {
 
 					$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
 							array(
