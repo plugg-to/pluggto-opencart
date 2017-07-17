@@ -57,8 +57,7 @@ class ModelPluggtoPluggto extends Model{
               `date_created` datetime DEFAULT NULL,
               `date_modified` datetime DEFAULT NULL,
               `description` text DEFAULT NULL,
-              `status` tinyint(4) DEFAULT NULL,
-              PRIMARY KEY (`id`)
+              `status` tinyint(4) DEFAULT NULL
             ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);

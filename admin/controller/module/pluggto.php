@@ -318,7 +318,12 @@ class ControllerModulePluggTo extends Controller {
       $data['store_status'] = $this->config->get('store_status');
     }
 
-    $data['alerts'] = $this->session->data['alerts'];
+    if (isset($this->session->data['alerts'])) {
+      $data['alerts'] = $this->session->data['alerts'];
+    } else {
+      $data['alerts'] = '';
+    }
+    
     $this->session->data['alerts'] = '';
 
     $data['button_pull'] = $this->url->link('module/pluggto/pullModule', 'token=' . $this->session->data['token'], 'SSL');;
