@@ -222,7 +222,9 @@ class ControllerApiPluggto extends Controller {
 		$this->load->model('checkout/order');
 		
 		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
-		
+		echo '<pre>';
+		print_r($orders);
+		exit;
 		foreach ($orders as $id_pluggto => $order) {
 			try {
 
@@ -362,7 +364,7 @@ class ControllerApiPluggto extends Controller {
 						2 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
 					)
 				);
-				
+
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
@@ -753,7 +755,11 @@ class ControllerApiPluggto extends Controller {
 		}
 
         $product = $this->getProduct($product_id);
+<<<<<<< Updated upstream
     
+=======
+
+>>>>>>> Stashed changes
 	    $brand = isset($product['manufacturer']) ? $product['manufacturer'] : '';
 		if (empty($brand)) {
 			$brand = isset($product['model']) ? $product['model'] : '';
