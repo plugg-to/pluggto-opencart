@@ -755,11 +755,6 @@ class ControllerApiPluggto extends Controller {
 		}
 
         $product = $this->getProduct($product_id);
-<<<<<<< Updated upstream
-    
-=======
-
->>>>>>> Stashed changes
 	    $brand = isset($product['manufacturer']) ? $product['manufacturer'] : '';
 		if (empty($brand)) {
 			$brand = isset($product['model']) ? $product['model'] : '';
