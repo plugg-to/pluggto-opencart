@@ -27,6 +27,7 @@ class ControllerApiPluggto extends Controller {
 	}
 
 	public function cronOrders() {
+		echo 'TESTE123';
 		$this->load->model('pluggto/pluggto');
 
 		$num_orders_opencart = $this->saveOrdersInOpenCart($this->existNewOrdersPluggTo());
@@ -216,15 +217,13 @@ class ControllerApiPluggto extends Controller {
 
 	public function saveOrdersInOpenCart($orders) {
 		$i = 0;
-
+		
 		$this->load->model('account/customer');
 
 		$this->load->model('checkout/order');
 		
 		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
-		echo '<pre>';
-		print_r($orders);
-		exit;
+
 		foreach ($orders as $id_pluggto => $order) {
 			try {
 
@@ -365,12 +364,13 @@ class ControllerApiPluggto extends Controller {
 					)
 				);
 
+				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
 
 				if ($response_id) {					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 				} else {
 					$response_id = $this->model_checkout_order->addOrder($data);
 
@@ -382,7 +382,7 @@ class ControllerApiPluggto extends Controller {
 
 					$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 
 				}
 				

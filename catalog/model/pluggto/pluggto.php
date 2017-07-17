@@ -176,9 +176,9 @@ class ModelPluggtoPluggto extends Model{
 
     //field_pluggto == opencart
     //field_opencart == pluggto
-    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . end($status_history)->status . '"';
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . $status_history . '"';
     $response_field = $this->db->query($sql);
-
+    
     if (!empty($response_field->row)) {
       $sql = 'SELECT * FROM ' . DB_PREFIX . 'order_status WHERE name = "' . $response_field->row['field_pluggto'] . '"';
       $response_status = $this->db->query($sql);
@@ -189,7 +189,7 @@ class ModelPluggtoPluggto extends Model{
       return $response_status->row['order_status_id'];
     }
 
-    switch (end($status_history)->status) {
+    switch ($status_history) {
       case 'pending':
         return 1;
       break; 
