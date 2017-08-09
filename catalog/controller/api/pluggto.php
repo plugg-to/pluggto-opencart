@@ -350,7 +350,6 @@ class ControllerApiPluggto extends Controller {
 				$response_id  = $existOrderID;
 
 				if ($response_id) {					
-<<<<<<< HEAD
 					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
 
 
@@ -361,9 +360,6 @@ class ControllerApiPluggto extends Controller {
 							)
 						)
 					);
-=======
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
->>>>>>> 0df6f63... fix new field api pluggto to status history order
 				} else {
 					$response_id = $this->model_checkout_order->addOrder($data);
 
