@@ -340,17 +340,13 @@ class ControllerApiPluggto extends Controller {
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
-<<<<<<< HEAD
-=======
-
->>>>>>> 0df6f63... fix new field api pluggto to status history order
 				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
 
 				if ($response_id) {					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history));
+					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 
 
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
