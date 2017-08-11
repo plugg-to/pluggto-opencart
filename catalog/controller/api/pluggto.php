@@ -1367,4 +1367,55 @@ class ControllerApiPluggto extends Controller {
 		$this->response->setOutput(json_encode($response));
 	}
 
+	public function getVariationsToSaveInOpenCartMinor($product_id) {
+		$product = $this->model_catalog_product->getProduct($product_id);
+		$options = $this->model_catalog_product->getProductOptions($product_id);
+		
+		$response = array();
+		foreach ($options as $i => $option) {
+		  foreach ($option['product_option_value'] as $item) {
+
+		  	if (!$item['subtract'])
+		  		continue;
+
+			$attributes = array();
+
+		    $response[] = array(
+		      'quantity' => $item['quantity'],
+		      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+		      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+		      'sku' => $product['sku'] . '-' . $item['name']
+		    );
+		  }
+		}
+		
+		return $response;
+	}
+
+	public function getAllStockAndPriceClient() {
+		$query = $this->db->query("
+			SELECT  p.price, p.sku, p.quantity, 
+				p.product_id, pd.price as special_price
+				FROM " . DB_PREFIX . "product p	
+				LEFT JOIN " . DB_PREFIX . "product_discount pd ON pd.product_id = p.product_id
+		");
+	
+		$this->load->model('catalog/product');
+		
+		$products = [];
+		foreach ($query->rows as $product) {
+			$products[$product['sku']] = $product;
+			
+			$variations = $this->getVariationsToSaveInOpenCartMinor($product['product_id']);
+			
+			if (!empty($variations)) {
+				$products[$product['sku']]['variations'] = $variations;
+			}	
+		}
+
+		header('Content-Type: application/json');
+
+		echo json_encode($products);
+		exit;
+	}
 }
