@@ -1402,7 +1402,7 @@ class ControllerApiPluggto extends Controller {
 	
 		$this->load->model('catalog/product');
 		
-		$products = [];
+		$products = array();
 		foreach ($query->rows as $product) {
 			$products[$product['sku']] = $product;
 			
