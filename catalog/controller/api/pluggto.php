@@ -232,6 +232,10 @@ class ControllerApiPluggto extends Controller {
 				$customer    = $this->model_pluggto_pluggto->getCustomerByEmail($email);
 				$customer_id =  $customer['customer_id'];
 
+				$cpf_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('cpf');
+				$number_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('number');
+				$complement_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('complement');
+
 				$customer = array(
 					'customer_group_id'  => 1,
 					'firstname' 		 => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
@@ -241,7 +245,7 @@ class ControllerApiPluggto extends Controller {
 					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
 					'custom_field'		 => array(
-						2 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
+						$cpf_custom_field => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
 					)
 				);
 
@@ -264,8 +268,8 @@ class ControllerApiPluggto extends Controller {
 					'zone_id'      => $this->getPaymentZoneIDByCity((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
 					'country_id'   => 30,
 					'custom_field' => array(
-						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
-						8 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null)
+						$number_custom_field => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
+						$complement_custom_field => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null)
 					)
 				);
 

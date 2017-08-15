@@ -238,8 +238,7 @@ class ControllerModulePluggTo extends Controller {
     $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
-  public function pluggTransparent()  {
-
+  public function pluggTransparent() {
     $this->load->model('pluggto/pluggto');
 
     $url = 'https://core.plugg.to/users/autologin/'. $this->model_pluggto_pluggto->getAccesstoken() . '/mercadolivre';
@@ -400,6 +399,10 @@ class ControllerModulePluggTo extends Controller {
     $this->data['button_cancel'] = $this->language->get('button_cancel');
 
     $this->data['types_shippings'] = $this->typesShippings;
+
+    $this->load->model('design/custom_field');
+    
+    $this->data['custom_fields'] = $this->model_design_custom_field->getCustomFields();
 
     $this->data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
 

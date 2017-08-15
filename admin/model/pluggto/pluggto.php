@@ -28,7 +28,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
-              `id` int(11) NOT NULL,
+              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
               `active` tinyint(4) NOT NULL,
               `refresh_only_stock` tinyint(4) NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";    
@@ -36,7 +36,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_linkage_fields` (
-              `id` int(11) NOT NULL,
+              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
               `field_opencart` varchar(50) NOT NULL,
               `field_pluggto` varchar(50) NOT NULL,
               `active` tinyint(4) NOT NULL

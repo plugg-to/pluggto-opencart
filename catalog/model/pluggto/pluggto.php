@@ -173,6 +173,13 @@ class ModelPluggtoPluggto extends Model{
     );
   }
 
+  public function getIdCustomFieldByName($name) {
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . $status_history . '"';
+    $response_field = $this->db->query($sql);
+
+    return $response->row['field_pluggto'];
+  }
+
   public function getStatusSaleByHistory($status_history) {
     if (empty($status_history)) {
       return 1;//status correspondente a pendente
