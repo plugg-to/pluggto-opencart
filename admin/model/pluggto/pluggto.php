@@ -28,7 +28,11 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
+<<<<<<< HEAD
               `id` int(11) AUTO_INCREMENT PRIMARY KEY,
+=======
+              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+>>>>>>> 0dcbe87... fixes to work dynamic orders
               `active` tinyint(4) NOT NULL,
               `refresh_only_stock` tinyint(4) NOT NULL
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";    
@@ -36,7 +40,11 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_linkage_fields` (
+<<<<<<< HEAD
               `id` int(11) AUTO_INCREMENT PRIMARY KEY,
+=======
+              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+>>>>>>> 0dcbe87... fixes to work dynamic orders
               `field_opencart` varchar(50) NOT NULL,
               `field_pluggto` varchar(50) NOT NULL,
               `active` tinyint(4) NOT NULL

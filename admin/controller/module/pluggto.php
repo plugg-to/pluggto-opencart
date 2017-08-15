@@ -235,7 +235,36 @@ class ControllerModulePluggTo extends Controller {
 
     $this->session->data['alerts'] = 'Atrelamento salvo com sucesso!';
 
+<<<<<<< HEAD
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+=======
+    $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+  }
+
+  public function pluggTransparent() {
+    $this->load->model('pluggto/pluggto');
+
+    $url = 'https://core.plugg.to/users/autologin/'. $this->model_pluggto_pluggto->getAccesstoken() . '/mercadolivre';
+
+    $this->children = array(
+      'common/header',
+      'common/footer'
+    );
+
+    $this->load->model('design/layout');
+
+    $this->data['layouts'] = $this->model_design_layout->getLayouts();
+
+    if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/module/pluggto_transparent.tpl')) { //if file exists in your current template folder
+       $this->template = $this->config->get('config_template') . '/template/module/pluggto_transparent.tpl'; //get it
+    } else {
+       $this->template = '/module/pluggto_transparent.tpl'; //or get the file from the default folder
+    }
+
+    $this->data['url'] = $url;
+
+    $this->response->setOutput($this->render());
+>>>>>>> 0dcbe87... fixes to work dynamic orders
   }
 
   public function index() {
@@ -395,7 +424,15 @@ class ControllerModulePluggTo extends Controller {
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['footer']      = $this->load->controller('common/footer');
 
+<<<<<<< HEAD
     $data['types_shippings'] = $this->typesShippings;
+=======
+    $this->load->model('design/custom_field');
+    
+    $this->data['custom_fields'] = $this->model_design_custom_field->getCustomFields();
+
+    $this->data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
+>>>>>>> 0dcbe87... fixes to work dynamic orders
 
     $data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
 

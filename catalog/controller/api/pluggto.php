@@ -241,6 +241,10 @@ class ControllerApiPluggto extends Controller {
 				$customer    = $this->model_pluggto_pluggto->getCustomerByEmail($email);
 				$customer_id =  $customer['customer_id'];
 
+				$cpf_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('cpf');
+				$number_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('number');
+				$complement_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('complement');
+
 				$customer = array(
 					'customer_group_id'  => 1,
 					'firstname' 		 => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
@@ -250,7 +254,11 @@ class ControllerApiPluggto extends Controller {
 					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
 					'custom_field'		 => array(
+<<<<<<< HEAD
 						3 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
+=======
+						$cpf_custom_field => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
+>>>>>>> 0dcbe87... fixes to work dynamic orders
 					)
 				);
 
@@ -274,8 +282,13 @@ class ControllerApiPluggto extends Controller {
 					'zone_id'      => $this->getPaymentZoneIDByState((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
 					'country_id'   => 30,
 					'custom_field' => array(
+<<<<<<< HEAD
 						1 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
 						2 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
+=======
+						$number_custom_field => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
+						$complement_custom_field => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null)
+>>>>>>> 0dcbe87... fixes to work dynamic orders
 					)
 				);
 
