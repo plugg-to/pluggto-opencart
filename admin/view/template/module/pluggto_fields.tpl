@@ -47,12 +47,12 @@
                       <option value="">Não disponivel</option>
                       <?php foreach ($custom_fields as $key => $value): ?>
                         <option
-                        value="<?php echo $key; ?>"
-                        <?php if(@$default_fields['complement'] == $key): ?>
+                        value="<?php echo $value['custom_field_id']; ?>"
+                        <?php if(@$default_fields['complement'] == $value['custom_field_id']): ?>
                           selected
                         <?php endif; ?>
                         >
-                          <?php echo $value; ?>
+                          <?php echo $value['name']; ?>
                         </option>
                       <?php endforeach; ?>
                     </select>
@@ -65,12 +65,12 @@
                       <option value="">Não disponivel</option>
                       <?php foreach ($custom_fields as $key => $value): ?>
                         <option
-                        value="<?php echo $key; ?>"
-                        <?php if(@$default_fields['cpf'] == $key): ?>
+                        value="<?php echo $value['custom_field_id']; ?>"
+                        <?php if(@$default_fields['cpf'] == $value['custom_field_id']): ?>
                           selected
                         <?php endif; ?>
                         >
-                          <?php echo $value; ?>
+                          <?php echo $value['name']; ?>
                         </option>
                       <?php endforeach; ?>
                     </select>
@@ -83,12 +83,12 @@
                       <option value="">Não disponivel</option>
                       <?php foreach ($custom_fields as $key => $value): ?>
                         <option
-                        value="<?php echo $key; ?>"
-                        <?php if(@$default_fields['number'] == $key): ?>
+                        value="<?php echo $value['custom_field_id']; ?>"
+                        <?php if(@$default_fields['number'] == $value['custom_field_id']): ?>
                           selected
                         <?php endif; ?>
                         >
-                          <?php echo $value; ?>
+                          <?php echo $value['name']; ?>
                         </option>
                       <?php endforeach; ?>
                     </select>

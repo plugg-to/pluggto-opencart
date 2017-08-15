@@ -28,11 +28,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
-<<<<<<< HEAD
-              `id` int(11) AUTO_INCREMENT PRIMARY KEY,
-=======
               `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
->>>>>>> 0dcbe87... fixes to work dynamic orders
               `active` tinyint(4) NOT NULL,
               `refresh_only_stock` tinyint(4) NOT NULL
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";    
@@ -40,11 +36,7 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_linkage_fields` (
-<<<<<<< HEAD
-              `id` int(11) AUTO_INCREMENT PRIMARY KEY,
-=======
               `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
->>>>>>> 0dcbe87... fixes to work dynamic orders
               `field_opencart` varchar(50) NOT NULL,
               `field_pluggto` varchar(50) NOT NULL,
               `active` tinyint(4) NOT NULL
@@ -457,15 +449,8 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function saveField($field_opencart, $field_pluggto){
-    $sql = "SELECT * FROM `" . DB_PREFIX . "pluggto_linkage_fields` WHERE field_opencart = '" . $field_opencart . "' AND active = 1";
-    $responseField = $this->db->query($sql);
+    $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_linkage_fields` (field_opencart, field_pluggto, active) VALUES ('" . $field_opencart . "', '" . $field_pluggto . "', 1)";
     
-    if ($responseField->num_rows <= 0) {
-      $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_linkage_fields` (field_opencart, field_pluggto, active) VALUES ('" . $field_opencart . "', '" . $field_pluggto . "', 1)";
-      return $this->db->query($sql);
-    }
-
-    $sql = "UPDATE `" . DB_PREFIX . "pluggto_linkage_fields` SET field_opencart = '" . $field_opencart . "', field_pluggto = '" . $field_pluggto . "' WHERE id = '" . $responseField->row['id'] . "' ";
     return $this->db->query($sql);
   }
 

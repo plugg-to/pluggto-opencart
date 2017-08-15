@@ -235,10 +235,7 @@ class ControllerModulePluggTo extends Controller {
 
     $this->session->data['alerts'] = 'Atrelamento salvo com sucesso!';
 
-<<<<<<< HEAD
     $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
-=======
-    $this->redirect($this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
   }
 
   public function pluggTransparent() {
@@ -264,7 +261,6 @@ class ControllerModulePluggTo extends Controller {
     $this->data['url'] = $url;
 
     $this->response->setOutput($this->render());
->>>>>>> 0dcbe87... fixes to work dynamic orders
   }
 
   public function index() {
@@ -367,22 +363,22 @@ class ControllerModulePluggTo extends Controller {
     $this->response->setOutput($this->load->view('module/pluggto.tpl', $data));
   }
 
-  public function pluggTransparent()  {
+  // public function pluggTransparent()  {
 
-    $this->load->model('pluggto/pluggto');
-    $this->load->model('design/layout');
+  //   $this->load->model('pluggto/pluggto');
+  //   $this->load->model('design/layout');
 
-    $data['layouts'] = $this->model_design_layout->getLayouts();
+  //   $data['layouts'] = $this->model_design_layout->getLayouts();
     
-    $data['url'] = 'https://core.plugg.to/users/autologin/'. $this->model_pluggto_pluggto->getAccesstoken() . '/mercadolivre';
+  //   $data['url'] = 'https://core.plugg.to/users/autologin/'. $this->model_pluggto_pluggto->getAccesstoken() . '/mercadolivre';
     
-    $data['header'] = $this->load->controller('common/header');
-    $data['column_left'] = $this->load->controller('common/column_left');
-    $data['footer'] = $this->load->controller('common/footer');
-    $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
+  //   $data['header'] = $this->load->controller('common/header');
+  //   $data['column_left'] = $this->load->controller('common/column_left');
+  //   $data['footer'] = $this->load->controller('common/footer');
+  //   $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
 
-    $this->response->setOutput($this->load->view('module/pluggto_transparent.tpl', $data));
-  }
+  //   $this->response->setOutput($this->load->view('module/pluggto_transparent.tpl', $data));
+  // }
 
 
   public function settingsBasicFields() {
@@ -424,15 +420,11 @@ class ControllerModulePluggTo extends Controller {
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['footer']      = $this->load->controller('common/footer');
 
-<<<<<<< HEAD
     $data['types_shippings'] = $this->typesShippings;
-=======
-    $this->load->model('design/custom_field');
-    
-    $this->data['custom_fields'] = $this->model_design_custom_field->getCustomFields();
 
-    $this->data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
->>>>>>> 0dcbe87... fixes to work dynamic orders
+    $this->load->model('customer/custom_field');
+    
+    $data['custom_fields'] = $this->model_customer_custom_field->getCustomFields();
 
     $data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
 

@@ -174,10 +174,10 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getIdCustomFieldByName($name) {
-    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . $status_history . '"';
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart LIKE "%' . $name . '%" LIMIT 1';
     $response_field = $this->db->query($sql);
 
-    return $response->row['field_pluggto'];
+    return !empty($response_field->row['field_pluggto']) ? $response_field->row['field_pluggto'] : 0;
   }
 
   public function getStatusSaleByHistory($status_history) {

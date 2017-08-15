@@ -227,7 +227,7 @@ class ControllerApiPluggto extends Controller {
 		$this->load->model('checkout/order');
 		
 		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
-
+		
 		foreach ($orders as $id_pluggto => $order) {
 			try {
 
@@ -254,11 +254,7 @@ class ControllerApiPluggto extends Controller {
 					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
 					'custom_field'		 => array(
-<<<<<<< HEAD
-						3 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
-=======
 						$cpf_custom_field => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
->>>>>>> 0dcbe87... fixes to work dynamic orders
 					)
 				);
 
@@ -282,16 +278,10 @@ class ControllerApiPluggto extends Controller {
 					'zone_id'      => $this->getPaymentZoneIDByState((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
 					'country_id'   => 30,
 					'custom_field' => array(
-<<<<<<< HEAD
-						1 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
-						2 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
-=======
 						$number_custom_field => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
 						$complement_custom_field => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : null)
->>>>>>> 0dcbe87... fixes to work dynamic orders
 					)
 				);
-
 
 				$shipping = (isset($order->Order->shipments[0]->shipping_method) ? $order->Order->shipments[0]->shipping_method : null);
 				$shipping = explode(' ', $shipping);
@@ -369,38 +359,51 @@ class ControllerApiPluggto extends Controller {
 					'products'		 	 => $this->getProductsToSaveOpenCart($order),
 					'language_id'		 => 2,
 					'custom_field'		 => array(
-						3 => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
+						$cpf_custom_field => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
 					),
 					'shipping_custom_field' => array(
-						1 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
-						2 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
+						$number_custom_field => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
+						$complement_custom_field => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
 					),
 					'payment_custom_field' => array(
-						1 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
-						2 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
+						$cpf_custom_field => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
+						$complement_custom_field => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
 					)
 				);
-
 				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
+				
+				echo '<br>';
+				echo $response_id . '<br>';
 
 				if ($response_id) {					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
+					$this->model_checkout_order->addOrderHistory(
+						$response_id, 
+						$this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status)
+					);
 				} else {
 					$response_id = $this->model_checkout_order->addOrder($data);
 
 					if ($response_id <= 0)
 					{
-						$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => 'Pedido nao foi criado')));
+						$this->model_pluggto_pluggto->updateStatusNotification(
+							$id_pluggto, 
+							json_encode(
+									array(
+									'success' => false, 
+									'message' => 'Pedido nao foi criado'
+								)
+							)
+						);
+
 						continue;
 					}
 
 					$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 					
 					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
-
 				}
 				
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => true, 'message' => 'OK')));
