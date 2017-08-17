@@ -409,10 +409,9 @@ class ControllerApiPluggto extends Controller {
 
 		$response = array();
 		foreach ($order->Order->items as $key => $item) {
-
 			$nameExplode = explode('-', $item->sku);
 
-			if (!isset($nameExplode[1]) || empty($nameExplode[1])) {
+			if (!isset($nameExplode[1])) {
 				$nameExplode = explode('-', $item->variation->sku);
 
 				if (isset($nameExplode[1]) && !empty($nameExplode[1])) {
