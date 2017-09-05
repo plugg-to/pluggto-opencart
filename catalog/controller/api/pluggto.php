@@ -1,10 +1,10 @@
 <?php
 
-ini_set('memory_limit', '-1');
+// ini_set('memory_limit', '-1');
 
-ini_set("display_errors", "0");
-ini_set('max_execution_time', 0);
-error_reporting(0);
+// ini_set("display_errors", "0");
+// ini_set('max_execution_time', 0);
+// error_reporting(0);
 
 
 class ControllerApiPluggto extends Controller {
@@ -196,7 +196,7 @@ class ControllerApiPluggto extends Controller {
 		$response = array();
 
 		$notifications = $this->model_pluggto_pluggto->getNotifications(10, 'orders');
-		
+
 		foreach ($notifications as $notification) {
 			$order = $this->model_pluggto_pluggto->getOrderPluggTo($notification['resource_id']);
 			
@@ -207,7 +207,7 @@ class ControllerApiPluggto extends Controller {
 
 			$response[$notification['resource_id']] = $order;
 		}
-		
+
 		return $response;
 	}
 
@@ -344,13 +344,21 @@ class ControllerApiPluggto extends Controller {
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
+				echo '<pre>';
+
+				print_r($data);
 				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
-
+				
+				echo '<br>';
+				echo $response_id;
+				echo '<br>';
+				echo '<br>';
+				
 				if ($response_id) {					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
+					$this->model_checkout_order->confirm($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 
 
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
@@ -361,7 +369,7 @@ class ControllerApiPluggto extends Controller {
 						)
 					);
 				} else {
-					$response_id = $this->model_checkout_order->addOrder($data);
+					$response_id = $this->model_checkout_order->create($data);
 
 					if ($response_id <= 0)
 					{
@@ -380,7 +388,7 @@ class ControllerApiPluggto extends Controller {
 
 					$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 					
-					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
+					$this->model_checkout_order->confirm($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
 							array(
@@ -393,6 +401,8 @@ class ControllerApiPluggto extends Controller {
 				}
 
 			} catch (Exception $e) {
+				echo '<pre>';print_r($e->getMessage());
+
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => $e->getMessage())));
 			}
 
@@ -482,7 +492,7 @@ class ControllerApiPluggto extends Controller {
 			$state = $this->estados[$state];
 		}
 		
-		$response = $this->model_pluggto_pluggto->getPaymentZoneIDByState($state);
+		$response = $this->model_pluggto_pluggto->getPaymentZoneIDByCity($state);
 
 		if (!empty($response->row)) {
 			return $response->row['zone_id'];
