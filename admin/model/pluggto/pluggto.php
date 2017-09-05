@@ -45,10 +45,11 @@ class ModelPluggtoPluggto extends Model{
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_relation_opencart_products` (
-              `id` int(11) NOT NULL,
+              `id` int(11) NOT NULL AUTO_INCREMENT,
               `pluggto_product_id` varchar(255) NOT NULL,
               `opencart_product_id` int(11) NOT NULL,
-              `active` tinyint(4) NOT NULL
+              `active` tinyint(4) NOT NULL,
+              PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
