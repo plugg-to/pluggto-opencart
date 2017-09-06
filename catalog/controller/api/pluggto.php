@@ -352,7 +352,7 @@ class ControllerApiPluggto extends Controller {
 				
 				$response_id  = $existOrderID;
 
-				$order_status_id => $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history);
+				$order_status_id = $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history);
 				
 				if ($response_id) {					
 					$history_data = ['status' => $order_status_id, 'message' => ''];
