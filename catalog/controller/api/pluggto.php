@@ -351,23 +351,13 @@ class ControllerApiPluggto extends Controller {
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
-<<<<<<< HEAD
-				
-				echo '<br>';
-				echo $response_id;
-				echo '<br>';
-				echo '<br>';
-				
-				if ($response_id) {					
-					$this->model_checkout_order->confirm($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
-=======
 
 				$order_status_id => $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history);
 				
 				if ($response_id) {					
 					$history_data = ['status' => $order_status_id, 'message' => ''];
+
 					$this->model_pluggto_pluggto->addOrderHistory($response_id, $history_data);
->>>>>>> remotes/WallasFaria/pluggto_opencart/1.5-oc-version
 
 
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
@@ -397,11 +387,7 @@ class ControllerApiPluggto extends Controller {
 
 					$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 					
-<<<<<<< HEAD
-					$this->model_checkout_order->confirm($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
-=======
 					$this->model_checkout_order->confirm($response_id, $order_status_id);
->>>>>>> remotes/WallasFaria/pluggto_opencart/1.5-oc-version
 
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
 							array(
