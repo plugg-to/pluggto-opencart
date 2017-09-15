@@ -355,7 +355,7 @@ class ControllerApiPluggto extends Controller {
 				$order_status_id = $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history);
 				
 				if ($response_id) {					
-					$history_data = ['status' => $order_status_id, 'message' => ''];
+					$history_data = array('status' => $order_status_id, 'message' => '');
 
 					$this->model_pluggto_pluggto->addOrderHistory($response_id, $history_data);
 
@@ -1093,8 +1093,8 @@ class ControllerApiPluggto extends Controller {
 			{
 				foreach ($attribute['attribute'] as $i => $attr) {
 					$response[] = array(
-						'code'  => $attr['attribute_id'],
-						'label' => $attr['text'],
+						'code'  => strtoupper($attr['name']),
+						'label' => strtoupper($attr['name']),
 						'value' => array(
 							'code'  => $attr['attribute_id'],
 							'label' => $attr['text'],
