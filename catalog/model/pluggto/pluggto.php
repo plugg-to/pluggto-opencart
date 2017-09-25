@@ -169,14 +169,14 @@ class ModelPluggtoPluggto extends Model{
     );
   }
 
-  public function getStatusSaleByHistory($status_history) {
-    if (empty($status_history)) {
+  public function getStatusSaleByHistory($status) {
+    if (empty($status)) {
       return 1;//status correspondente a pendente
     }
 
     //field_pluggto == opencart
     //field_opencart == pluggto
-    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . end($status_history)->status . '"';
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . $status . '"';
     $response_field = $this->db->query($sql);
 
     if (!empty($response_field->row)) {
@@ -189,7 +189,7 @@ class ModelPluggtoPluggto extends Model{
       return $response_status->row['order_status_id'];
     }
 
-    switch (end($status_history)->status) {
+    switch ($status) {
       case 'pending':
         return 1;
       break; 
@@ -1120,6 +1120,12 @@ class ModelPluggtoPluggto extends Model{
     $query = $this->db->query("SELECT customer_id, firstname, lastname FROM `" . DB_PREFIX . "customer` WHERE email = '" . $this->db->escape($email) . "' AND email != ''");
 
     return $query->row;
+  }
+
+  public function getIdCustomFieldByName($name) {
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart LIKE "%' . $name . '%" LIMIT 1';
+    $response_field = $this->db->query($sql);
+    return !empty($response_field->row['field_pluggto']) ? $response_field->row['field_pluggto'] : 0;
   }
 
   public function editCustomer($data, $customer_id) {
