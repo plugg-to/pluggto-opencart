@@ -5,7 +5,7 @@ error_reporting(-1);
 
 class ControllerApiPluggto extends Controller {
 
-	protected $estados = array("AC"=>"Acre", "AL"=>"Alagoas", "AM"=>"Amazonas", "AP"=>"Amap�","BA"=>"Bahia","CE"=>"Cear�","DF"=>"Distrito Federal","ES"=>"Esp�rito Santo","GO"=>"Goi�s","MA"=>"Maranh�o","MT"=>"Mato Grosso","MS"=>"Mato Grosso do Sul","MG"=>"Minas Gerais","PA"=>"Par�","PB"=>"Para�ba","PR"=>"Paran�","PE"=>"Pernambuco","PI"=>"Piau�","RJ"=>"Rio de Janeiro","RN"=>"Rio Grande do Norte","RO"=>"Rond�nia","RS"=>"Rio Grande do Sul","RR"=>"Roraima","SC"=>"Santa Catarina","SE"=>"Sergipe","SP"=>"S�o Paulo","TO"=>"Tocantins");
+	protected $estados = array("AC"=>"Acre", "AL"=>"Alagoas", "AM"=>"Amazonas", "AP"=>"Amapá","BA"=>"Bahia","CE"=>"Ceará","DF"=>"Distrito Federal","ES"=>"Espírito Santo","GO"=>"Goiás","MA"=>"Maranhão","MT"=>"Mato Grosso","MS"=>"Mato Grosso do Sul","MG"=>"Minas Gerais","PA"=>"Pará","PB"=>"Paraíba","PR"=>"Paraná","PE"=>"Pernambuco","PI"=>"Piauí","RJ"=>"Rio de Janeiro","RN"=>"Rio Grande do Norte","RO"=>"Rondônia","RS"=>"Rio Grande do Sul","RR"=>"Roraima","SC"=>"Santa Catarina","SE"=>"Sergipe","SP"=>"São Paulo","TO"=>"Tocantins");
 
 	public function index(){
 		$json = array('status' => 'operational', 'HTTPcode' => 200);
@@ -459,19 +459,7 @@ class ControllerApiPluggto extends Controller {
 			
      		$response = $this->model_pluggto_pluggto->getRelactionOrder($order['order_id']);
 
-     		$return[$response['order_id_pluggto']] = 'N�o editado, pedido criado direto no PluggTo';
-
-     		// if (empty($response))
-     		// {
-     		// 	$responsePluggTo = $this->model_pluggto_pluggto->createOrder($params);
-
-     		// 	if (!empty($responsePluggTo->Order->id))
-     		// 	{
-     		// 		$this->model_pluggto_pluggto->createRelationOrder($responsePluggTo->Order->id, $order['order_id']);
-     		// 	}
-
-     		// 	$return[$responsePluggTo->Order->id] = print_r($responsePluggTo, 1);
-     		// }
+			$return[$response['order_id_pluggto']] = 'Não editado, pedido criado direto no PluggTo';
 
      		if (!empty($response))
      		{
