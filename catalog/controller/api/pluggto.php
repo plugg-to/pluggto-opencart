@@ -641,7 +641,8 @@ class ControllerApiPluggto extends Controller {
 		$this->load->model('catalog/product');
         $this->load->model('pluggto/pluggto');
 
-    	$product_id = $this->request->get['product_id'];
+		$product_id = $this->request->get['product_id'];
+		$force = isset($this->request->get['force']) ? $this->request->get['force'] : true;
 		
 		if (isset($this->request->get['error'])) {
 			$error = $this->request->get['error'];
@@ -656,32 +657,44 @@ class ControllerApiPluggto extends Controller {
 			$brand = isset($product['model']) ? $product['model'] : '';
 		}
 		
-		$data = array(
-			'name'       => $product['name'],
-			'sku'        => $product['sku'],
-			'grant_type' => "authorization_code",
-			'price'      => $product['price'],
-			'quantity'   => $product['quantity'],
-			'external'   => $product['product_id'],
-			'description'=> str_replace('"', '\'', $product['description']),
-			'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
-			'ean'        => $product['ean'],
-			'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
-			'isbn'       => $product['isbn'],
-			'available'  => $product['status'],
-			'dimension'  => array(
-				'length' => (float) $product['length'],
-				'width'  => (float) $product['width'],
-				'height' => (float) $product['height'],
-				'weight' => (float) $product['weight']
-			),
-			'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
-			'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
-			'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
-			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
-			'special_price' => isset($product['special']) ? $product['special'] : 0,
-			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
-		);
+		if ($force === true) {
+			$data = array(
+				'name'       => $product['name'],
+				'sku'        => $product['sku'],
+				'grant_type' => "authorization_code",
+				'price'      => $product['price'],
+				'quantity'   => $product['quantity'],
+				'external'   => $product['product_id'],
+				'description'=> str_replace('"', '\'', $product['description']),
+				'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
+				'ean'        => $product['ean'],
+				'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
+				'isbn'       => $product['isbn'],
+				'available'  => $product['status'],
+				'dimension'  => array(
+					'length' => (float) $product['length'],
+					'width'  => (float) $product['width'],
+					'height' => (float) $product['height'],
+					'weight' => (float) $product['weight']
+				),
+				'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
+				'link'       => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
+				'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
+				'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
+				'special_price' => isset($product['special']) ? $product['special'] : 0,
+				'categories' => $this->getCategoriesToPluggTo($product['product_id'])
+			);
+		} else {
+			$data = array(
+				'sku'        => $product['sku'],
+				'grant_type' => "authorization_code",
+				'price'      => $product['price'],
+				'quantity'   => $product['quantity'],
+				'external'   => $product['product_id'],
+				'variations' => $this->getVariationsToSaveInOpenCart($product['product_id'], $force),
+				'special_price' => isset($product['special']) ? $product['special'] : 0
+			);
+		}
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 		
@@ -850,7 +863,6 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
-
 	public function getPhotosToSaveInOpenCart($product_id, $image_main) {
 		$images = $this->model_catalog_product->getProductImages($product_id);
 
@@ -875,7 +887,8 @@ class ControllerApiPluggto extends Controller {
 
 		return $response;
 	}
-	public function getVariationsToSaveInOpenCart($product_id) {
+
+	public function getVariationsToSaveInOpenCart($product_id, $force = true) {
 		$product = $this->model_catalog_product->getProduct($product_id);
 		$options = $this->model_catalog_product->getProductOptions($product_id);
 		
@@ -900,26 +913,36 @@ class ControllerApiPluggto extends Controller {
 				)
 			);
 
-		    $response[] = array(
-		      'name'     => $product['name'] . ' - ' . $item['name'],
-		      'external' => $option['product_option_id'],
-		      'quantity' => $item['quantity'],
-		      'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
-		      'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
-		      'sku' => $product['sku'] . '-' . $item['name'],
-		      'ean' => '',
-		      'photos' => array(),
-		      'attributes' => $attributes,
-		      'dimesion' => array(
-		        'length' => $product['length'],
-		        'width'  => $product['width'],
-		        'height' => $product['height'],
-		        'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
-		      )
-		    );
+			if ($force === true) {
+				$response[] = array(
+					'name'     => $product['name'] . ' - ' . $item['name'],
+					'external' => $option['product_option_id'],
+					'quantity' => $item['quantity'],
+					'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+					'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+					'sku' => $product['sku'] . '-' . $item['name'],
+					'ean' => '',
+					'photos' => array(),
+					'attributes' => $attributes,
+					'dimesion' => array(
+						'length' => $product['length'],
+						'width'  => $product['width'],
+						'height' => $product['height'],
+						'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
+					)
+				);
+			} else {
+				$response[] = array(
+					'name'     => $product['name'] . ' - ' . $item['name'],
+					'quantity' => $item['quantity'],
+					'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+					'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+					'sku' => $product['sku'] . '-' . $item['name']
+				);
+			}
 		  }
 		}
-		
+
 		return $response;
 	}
 
