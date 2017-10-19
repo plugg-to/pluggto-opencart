@@ -9,7 +9,7 @@ error_reporting(0);
 
 class ControllerApiPluggto extends Controller {
 
-	protected $estados = array("AC"=>"Acre", "AL"=>"Alagoas", "AM"=>"Amazonas", "AP"=>"Amapá","BA"=>"Bahia","CE"=>"Ceará","DF"=>"Distrito Federal","ES"=>"Espírito Santo","GO"=>"Goiás","MA"=>"Maranhão","MT"=>"Mato Grosso","MS"=>"Mato Grosso do Sul","MG"=>"Minas Gerais","PA"=>"Pará","PB"=>"Paraíba","PR"=>"Paraná","PE"=>"Pernambuco","PI"=>"Piauí","RJ"=>"Rio de Janeiro","RN"=>"Rio Grande do Norte","RO"=>"Rondônia","RS"=>"Rio Grande do Sul","RR"=>"Roraima","SC"=>"Santa Catarina","SE"=>"Sergipe","SP"=>"São Paulo","TO"=>"Tocantins");
+	protected $estados = array("AC"=>"Acre", "AL"=>"Alagoas", "AM"=>"Amazonas", "AP"=>"Amapï¿½","BA"=>"Bahia","CE"=>"Cearï¿½","DF"=>"Distrito Federal","ES"=>"Espï¿½rito Santo","GO"=>"Goiï¿½s","MA"=>"Maranhï¿½o","MT"=>"Mato Grosso","MS"=>"Mato Grosso do Sul","MG"=>"Minas Gerais","PA"=>"Parï¿½","PB"=>"Paraï¿½ba","PR"=>"Paranï¿½","PE"=>"Pernambuco","PI"=>"Piauï¿½","RJ"=>"Rio de Janeiro","RN"=>"Rio Grande do Norte","RO"=>"Rondï¿½nia","RS"=>"Rio Grande do Sul","RR"=>"Roraima","SC"=>"Santa Catarina","SE"=>"Sergipe","SP"=>"Sï¿½o Paulo","TO"=>"Tocantins");
 
 	public function index(){
 		$json = array('status' => 'operational', 'HTTPcode' => 200);
@@ -570,7 +570,7 @@ class ControllerApiPluggto extends Controller {
 			
      		$response = $this->model_pluggto_pluggto->getRelactionOrder($order['order_id']);
 
-     		$return[$response['order_id_pluggto']] = 'Não editado, pedido criado direto no PluggTo';
+     		$return[$response['order_id_pluggto']] = 'Nï¿½o editado, pedido criado direto no PluggTo';
 
      		// if (empty($response))
      		// {
@@ -804,6 +804,15 @@ class ControllerApiPluggto extends Controller {
 			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
 			'special_price' => isset($product['special']) ? $product['special'] : 0,
 			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
+		);
+		
+		$data['attributes'][] = array(
+			'code'  => 'model',
+			'label' => 'model',
+			'value'	=> array(
+				'code' => $product['model'],
+				'label'=> $product['model']
+			)
 		);
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
