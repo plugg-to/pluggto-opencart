@@ -784,6 +784,15 @@ class ControllerApiPluggto extends Controller {
 			'special_price' => isset($product['special']) ? $product['special'] : 0,
 			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
+	    
+		$data['attributes'][] = array(
+			'code'  => 'model',
+			'label' => 'model',
+			'value'	=> array(
+				'code' => $product['model'],
+				'label'=> $product['model']
+			)
+		);
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 		
