@@ -1,11 +1,6 @@
 <?php
 
-// ini_set('memory_limit', '-1');
-
-// ini_set("display_errors", "0");
-// ini_set('max_execution_time', 0);
-// error_reporting(0);
-
+ini_set('memory_limit', '-1');
 
 class ControllerApiPluggto extends Controller {
 
@@ -207,7 +202,7 @@ class ControllerApiPluggto extends Controller {
 
 			$response[$notification['resource_id']] = $order;
 		}
-
+		
 		return $response;
 	}
 
@@ -221,7 +216,6 @@ class ControllerApiPluggto extends Controller {
 		$currency = $this->model_pluggto_pluggto->getCurrencyMain();
 		foreach ($orders as $id_pluggto => $order) {
 			try {
-
 				$email = null;
 
 				if (!isset($order->Order->receiver_email) && empty($order->Order->receiver_email))
@@ -231,7 +225,7 @@ class ControllerApiPluggto extends Controller {
 
 				$customer    = $this->model_pluggto_pluggto->getCustomerByEmail($email);
 				$customer_id =  $customer['customer_id'];
-
+				
 				$cpf_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('cpf');
 				$number_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('number');
 				$complement_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('complement');
@@ -344,21 +338,13 @@ class ControllerApiPluggto extends Controller {
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
-				echo '<pre>';
-
-				print_r($data);
 				
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
-
-				$order_status_id = $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status_history);
-				
-				if ($response_id) {					
-					$history_data = array('status' => $order_status_id, 'message' => '');
-
-					$this->model_pluggto_pluggto->addOrderHistory($response_id, $history_data);
-
+				echo '<pre>';print_r($response_id);
+				if ($response_id) {
+					$this->model_checkout_order->update($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
 							array(
@@ -368,8 +354,13 @@ class ControllerApiPluggto extends Controller {
 						)
 					);
 				} else {
-					$response_id = $this->model_checkout_order->create($data);
+					$response_id = $this->model_checkout_order->addOrder($data);
 
+
+					$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
+
+					$this->model_checkout_order->confirm($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
+					echo '<pre>';print_r($response_id);
 					if ($response_id <= 0)
 					{
 						$this->model_pluggto_pluggto->updateStatusNotification(
@@ -384,11 +375,7 @@ class ControllerApiPluggto extends Controller {
 						
 						continue;
 					}
-
-					$this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
 					
-					$this->model_checkout_order->confirm($response_id, $order_status_id);
-
 					$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(
 							array(
 								'success' => true,
@@ -400,11 +387,11 @@ class ControllerApiPluggto extends Controller {
 				}
 
 			} catch (Exception $e) {
-				echo '<pre>';print_r($e->getMessage());
-
+				echo '<pre>';print_r($e->getMessage());exit;
+			
 				$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => $e->getMessage())));
 			}
-
+			
 			$i++;
 		}
 
@@ -491,7 +478,7 @@ class ControllerApiPluggto extends Controller {
 			$state = $this->estados[$state];
 		}
 		
-		$response = $this->model_pluggto_pluggto->getPaymentZoneIDByCity($state);
+		$response = $this->model_pluggto_pluggto->getPaymentZoneIDByState($state);
 
 		if (!empty($response->row)) {
 			return $response->row['zone_id'];
@@ -783,15 +770,6 @@ class ControllerApiPluggto extends Controller {
 			'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
 			'special_price' => isset($product['special']) ? $product['special'] : 0,
 			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
-		);
-	    
-		$data['attributes'][] = array(
-			'code'  => 'model',
-			'label' => 'model',
-			'value'	=> array(
-				'code' => $product['model'],
-				'label'=> $product['model']
-			)
 		);
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
@@ -1094,7 +1072,7 @@ class ControllerApiPluggto extends Controller {
 
 		$product    = $this->model_catalog_product->getProduct($product_id);
 		$attributes = $this->model_catalog_product->getProductAttributes($product_id);
-
+		
 		$response = array();
 
 		foreach ($attributes as $i => $attribute) {
@@ -1105,7 +1083,7 @@ class ControllerApiPluggto extends Controller {
 						'code'  => strtoupper($attr['name']),
 						'label' => strtoupper($attr['name']),
 						'value' => array(
-							'code'  => $attr['attribute_id'],
+							'code'  => $attr['text'],
 							'label' => $attr['text'],
 						)
 					);
