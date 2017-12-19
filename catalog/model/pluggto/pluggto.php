@@ -1,8 +1,8 @@
 <?php
 
-// ini_set("display_errors", "0");
-// ini_set('max_execution_time', 0);
-// error_reporting(0);
+ini_set("display_errors", "0");
+ini_set('max_execution_time', 0);
+error_reporting(0);
 
 class ModelPluggtoPluggto extends Model{
  
@@ -242,13 +242,6 @@ class ModelPluggtoPluggto extends Model{
       break;
     }
   }
-  
-  public function addOrderHistory($order_id, $data) {
-    $this->db->query("UPDATE `" . DB_PREFIX . "order` SET order_status_id = '" . (int)$data['order_status_id'] . "', date_modified = NOW() WHERE order_id = '" . (int)$order_id . "'");
-
-    $this->db->query("INSERT INTO " . DB_PREFIX . "order_history SET order_id = '" . (int)$order_id . "',  order_status_id = '" . (int)$data['order_status_id'] . "', notify = '" . (isset($data['notify']) ? (int)$data['notify'] : 0) . "', comment = '" . $this->db->escape(strip_tags($data['comment'])) . "', 
-        date_added = NOW()");
-  }
 
   public function getIDItemBySKU($sku){
     $sql = 'SELECT product_id FROM ' . DB_PREFIX . 'product WHERE sku = "' . $sku . '"';
@@ -470,7 +463,9 @@ class ModelPluggtoPluggto extends Model{
   public function getNotifications($limit = 100, $type = 'products'){
     $query = "SELECT * FROM " . DB_PREFIX . "pluggto_notifications WHERE status = 1 AND type = '" . $type . "' LIMIT " . $limit;
     
-    return $this->db->query($query)->rows;
+    $t = $this->db->query($query);
+
+    return $t->rows;
   }
 
   public function getQueuesProducts($origin='opencart'){
@@ -1194,6 +1189,11 @@ class ModelPluggtoPluggto extends Model{
     $orders = $this->getOrders(array('filter_date_modified' => true));
 
     return $orders;
+  }
+
+  public function getPaymentZoneIDByState($state) {
+    $sql = 'SELECT zone_id FROM ' . DB_PREFIX . 'zone WHERE name LIKE "%' . $state . '%"';
+    return $this->db->query($sql);
   }
 
 }
