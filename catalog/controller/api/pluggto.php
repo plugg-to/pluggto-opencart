@@ -309,16 +309,25 @@ class ControllerApiPluggto extends Controller {
 					'total' 			 => (isset($order->Order->total) ? $order->Order->total : null),
 					'totals'			 => array(
 						array(
-							'code'  	 => 'sub_total',
-							'title' 	 => 'Sub-total',
-							'value' 	 => (isset($order->Order->total) ? $order->Order->total : null),
-							'sort_order' => 1,
+							"code" => "sub_total",
+							"title" => "Sub-Total",
+							"text" => "R$ " . (isset($order->Order->subtotal) ? number_format($order->Order->subtotal, 2, ",", ".") : "0.00"),
+							"value" => (isset($order->Order->subtotal) ? $order->Order->subtotal : 0.00),
+							"sort_order" => 1
 						),
 						array(
-							'code'  	 => 'total',
-							'title' 	 => 'Total',
-							'value' 	 => (isset($order->Order->total) ? $order->Order->total : null),
-							'sort_order' => 9,
+							"code" => "shipping",
+							"title" => "Taxa fixa de frete",
+							"text" => "R$ " . (isset($order->Order->shipping) ? number_format($order->Order->shipping, 2, ",", ".") : "0.00"),
+							"value" => (isset($order->Order->shipping) ? $order->Order->shipping : 0.00),
+							"sort_order" => 1
+						),
+						array(
+							"code" => "total",
+							"title" => "Total",
+							"text" => "R$ " . (isset($order->Order->total) ? number_format($order->Order->total, 2, ",", ".") : "0.00"),
+							"value" => (isset($order->Order->total) ? $order->Order->total : 0.00),
+							"sort_order" => 1
 						),
 					),
 					'currency_id' 		 => $currency['currency_id'],
