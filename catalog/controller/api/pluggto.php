@@ -259,7 +259,7 @@ class ControllerApiPluggto extends Controller {
 					'address_2'    => (isset($order->Order->payer_neighborhood) ? $order->Order->payer_neighborhood : null),
 					'postcode'     => (isset($order->Order->payer_zipcode) ? $order->Order->payer_zipcode : null),
 					'city'         => (isset($order->Order->payer_city) ? $order->Order->payer_city : null),
-					'zone_id'      => $this->getPaymentZoneIDByCity((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
+					'zone_id'      => $this->getPaymentZoneIDByState((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
 					'country_id'   => 30,
 					'custom_field' => array(
 						$number_custom_field => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null),
@@ -289,7 +289,7 @@ class ControllerApiPluggto extends Controller {
 					'payment_country' 	 => (isset($order->Order->payer_country) ? $order->Order->payer_country : null),
 					'payment_country_id' => 30,
 					'payment_zone' 		 => (isset($order->Order->payer_city) ? $order->Order->payer_city : null),
-					'payment_zone_id' 	 => $this->getPaymentZoneIDByCity((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
+					'payment_zone_id' 	 => $this->getPaymentZoneIDByState((isset($order->Order->payer_state) ? $order->Order->payer_state : null)),
 					'payment_method' 	 => $this->getPaymentMethodByOrderPluggTo($order->Order),
 					'payment_code'		 => $this->getPaymentCodeByOrderPluggTo($order->Order),
 					'shipping_firstname' => (isset($order->Order->receiver_name) ? $order->Order->receiver_name : null),
@@ -300,8 +300,8 @@ class ControllerApiPluggto extends Controller {
 					'shipping_city' 	 => (isset($order->Order->receiver_city) ? $order->Order->receiver_city : null),
 					'shipping_postcode'  => (isset($order->Order->receiver_zipcode) ? $order->Order->receiver_zipcode : null),
 					'shipping_country'   => (isset($order->Order->receiver_country) ? $order->Order->receiver_country : null),
-					'shipping_zone' 	 => (isset($order->Order->receiver_city) ? $order->Order->receiver_city : null),
-					'shipping_zone_id' 	 => $this->getPaymentZoneIDByCity((isset($order->Order->receiver_city) ? $order->Order->receiver_city : null)),
+					'shipping_zone' 	 => (isset($order->Order->receiver_state) ? $order->Order->receiver_state : null),
+					'shipping_zone_id' 	 => $this->getPaymentZoneIDByState((isset($order->Order->receiver_state) ? $order->Order->receiver_state : null)),
 					'shipping_method' 	 => (isset($order->Order->shipments[0]->shipping_method) ? $order->Order->shipments[0]->shipping_method : null),
 					'shipping_code' 	 => (isset($order->Order->shipments[0]->track_code) ? $order->Order->shipments[0]->track_code : null),
 					'store_id'			 => 0,
@@ -347,7 +347,7 @@ class ControllerApiPluggto extends Controller {
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
-				
+				echo '<pre>';print_r($data);exit;
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
@@ -414,6 +414,8 @@ class ControllerApiPluggto extends Controller {
 
 		$response = array();
 		foreach ($order->Order->items as $key => $item) {
+			$skuOriginal = $item->sku;
+
 			$nameExplode = explode('-', $item->sku);
 
 			if (!isset($nameExplode[1])) {
@@ -424,8 +426,10 @@ class ControllerApiPluggto extends Controller {
 				}
 			}
 
-			$skuOriginal = $nameExplode[0];
-
+			if (!empty($nameExplode[0])) {
+				$skuOriginal = $nameExplode[0];
+			}
+			
 			$response[] = array(
 				'product_id' => $this->model_pluggto_pluggto->getIDItemBySKU($skuOriginal),
 				'name'       => $item->name,
@@ -482,7 +486,7 @@ class ControllerApiPluggto extends Controller {
 		return $response;
 	}
 
-	public function getPaymentZoneIDByCity($city) {
+	public function getPaymentZoneIDByState($state) {
 		if (isset($this->estados[$state])) {
 			$state = $this->estados[$state];
 		}
