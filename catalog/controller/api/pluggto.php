@@ -347,7 +347,7 @@ class ControllerApiPluggto extends Controller {
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
-				echo '<pre>';print_r($data);exit;
+
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
