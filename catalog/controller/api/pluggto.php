@@ -4,6 +4,36 @@ ini_set('memory_limit', '-1');
 
 class ControllerApiPluggto extends Controller {
 
+	protected $estados = array(
+		'AC'=>'Acre',
+		'AL'=>'Alagoas',
+		'AP'=>'Amapá',
+		'AM'=>'Amazonas',
+		'BA'=>'Bahia',
+		'CE'=>'Ceará',
+		'DF'=>'Distrito Federal',
+		'ES'=>'Espírito Santo',
+		'GO'=>'Goiás',
+		'MA'=>'Maranhão',
+		'MT'=>'Mato Grosso',
+		'MS'=>'Mato Grosso do Sul',
+		'MG'=>'Minas Gerais',
+		'PA'=>'Pará',
+		'PB'=>'Paraíba',
+		'PR'=>'Paraná',
+		'PE'=>'Pernambuco',
+		'PI'=>'Piauí',
+		'RJ'=>'Rio de Janeiro',
+		'RN'=>'Rio Grande do Norte',
+		'RS'=>'Rio Grande do Sul',
+		'RO'=>'Rondônia',
+		'RR'=>'Roraima',
+		'SC'=>'Santa Catarina',
+		'SP'=>'São Paulo',
+		'SE'=>'Sergipe',
+		'TO'=>'Tocantins'
+	);
+
 	public function index(){
 		$json = array('status' => 'operational', 'HTTPcode' => 200);
 
@@ -347,7 +377,7 @@ class ControllerApiPluggto extends Controller {
 						7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : null)
 					)
 				);
-
+				echo '<pre>';print_r($data);exit;
 				$existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 				
 				$response_id  = $existOrderID;
