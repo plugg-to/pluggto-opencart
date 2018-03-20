@@ -665,7 +665,7 @@ class ControllerApiPluggto extends Controller {
 				'price'      => $product['price'],
 				'quantity'   => $product['quantity'],
 				'external'   => $product['product_id'],
-				'description'=> str_replace('"', '\'', $product['description']),
+				'description'=> html_entity_decode(str_replace('"', '\'', $product['description'])),
 				'brand'      => isset($product['manufacturer']) ? $product['manufacturer'] : '',
 				'ean'        => $product['ean'],
 				'nbm'        => isset($product['nbm']) ? $product['nbm'] : '',
