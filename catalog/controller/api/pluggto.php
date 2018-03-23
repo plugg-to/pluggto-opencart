@@ -657,7 +657,7 @@ class ControllerApiPluggto extends Controller {
 			$brand = isset($product['model']) ? $product['model'] : '';
 		}
 		
-		if ($force === true) {
+		if ($force == true) {
 			$data = array(
 				'name'       => $product['name'],
 				'sku'        => $product['sku'],
