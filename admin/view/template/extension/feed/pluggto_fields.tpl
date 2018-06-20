@@ -36,6 +36,236 @@
             <div class="panel panel-default">
               <div class="panel-heading">
                 <h3 class="panel-title">
+                  <i class="fa fa-pencil"></i> Não enviar os seguintes campos
+                </h3>
+              </div>
+              
+              <div class="panel-body">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Nome</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_name]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_name']) && $default_fields['sync_name']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_name']) || !$default_fields['sync_name']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Descrição</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_description]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_description']) && $default_fields['sync_description']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_description']) || !$default_fields['sync_description']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Fotos</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_photos]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_photos']) && $default_fields['sync_photos']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_photos']) || !$default_fields['sync_photos']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Categorias</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_categories]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_categories']) && $default_fields['sync_categories']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_categories']) || !$default_fields['sync_categories']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Atributos</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_attributes]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_attributes']) && $default_fields['sync_attributes']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_attributes']) || $default_fields['sync_attributes']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Marca</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_brand]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_brand']) && $default_fields['sync_brand']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_brand']) || !$default_fields['sync_brand']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Preço</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_price]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_price']) && $default_fields['sync_price']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_price']) || !$default_fields['sync_price']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Preço Promocional</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_special_price]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_special_price']) && $default_fields['sync_special_price']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_special_price']) || !$default_fields['sync_special_price']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Estoque</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_quantity]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_quantity']) && $default_fields['sync_quantity']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_quantity']) || !$default_fields['sync_quantity']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Dimensões</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_dimensions]">
+                      <option value="1" 
+                        <?php
+                          if (isset($default_fields['sync_dimensions']) && $default_fields['sync_dimensions']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Sim</option>
+                      <option value="0"
+                        <?php
+                          if (!isset($default_fields['sync_dimensions']) || !$default_fields['sync_dimensions']): 
+                            echo 'selected'; 
+                          endif; 
+                        ?>
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">
                   <i class="fa fa-pencil"></i> Atrelamento de Campos Customizaveis
                 </h3>
               </div>
@@ -322,6 +552,7 @@
                   </div>
               </div>
             </div>
+
             <div class="panel panel-default">
               <div class="panel-heading">
                 <h3 class="panel-title">
@@ -458,6 +689,7 @@
                 </div>
               </div>
             </div>
+
             <div class="form-group" style="float: right; padding-right: 15px;">
               <button type="submit" class="btn btn-success">Salvar</button>
             </div>
