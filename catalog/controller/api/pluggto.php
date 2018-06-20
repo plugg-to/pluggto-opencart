@@ -787,6 +787,8 @@ class ControllerApiPluggto extends Controller {
 		if (empty($brand)) {
 			$brand = isset($product['model']) ? $product['model'] : '';
 		}
+
+		$productExist = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id);
 		
 		$data = array(
 			'name'       => $product['name'],
@@ -815,13 +817,58 @@ class ControllerApiPluggto extends Controller {
 			'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 		);
 
+		if (!empty($productExist)) {
+			if (!$this->model_pluggto_pluggto->getSync('sync_name')) {
+				unset($data['name']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_description')) {
+				unset($data['description']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_price')) {
+				unset($data['price']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_special_price')) {
+				unset($data['special_price']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_dimensions')) {
+				unset($data['dimension']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_quantity')) {
+				unset($data['quantity']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_photos')) {
+				unset($data['photos']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_categories')) {
+				unset($data['categories']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_attributes')) {
+				unset($data['attributes']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_brand')) {
+				unset($data['brand']);
+			}
+		}
+
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 		
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 
+		$this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
+
 		if (!isset($response->Product) && empty($response->Product))
 		{
 			var_dump($response);
+			
 			echo 'Algo deu errado, tente novamente';
 			exit;
 		}
