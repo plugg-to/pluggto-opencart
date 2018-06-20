@@ -827,6 +827,17 @@ class ModelPluggtoPluggto extends Model{
       return $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1 AND opencart_product_id = " . $product_id_opencart . "");
   }
 
+  public function getSync($field) 
+  {
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_linkage_fields where field_opencart = '{$field}'");
+
+    if (empty($result)) {
+      return true;
+    }
+    
+    return isset($result->row['field_pluggto']) ? $result->row['field_pluggto'] : 1;
+  }
+
   public function createTo($product) {
       $url = "https://api.plugg.to/products";
       $method = "post";
