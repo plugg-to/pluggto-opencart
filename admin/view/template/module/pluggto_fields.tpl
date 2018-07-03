@@ -271,6 +271,24 @@
               </div>
               <div class="panel-body">
                 <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Endereço "Informações Adicionais":</label>
+                  <div class="col-sm-10">
+                    <select name="fields[information_adds]" class="form-control">
+                      <option value="">Não disponivel</option>
+                      <?php foreach ($custom_fields as $key => $value): ?>
+                        <option
+                        value="<?php echo $value['custom_field_id']; ?>"
+                        <?php if(@$default_fields['information_adds'] == $value['custom_field_id']): ?>
+                          selected
+                        <?php endif; ?>
+                        >
+                          <?php echo $value['name']; ?>
+                        </option>
+                      <?php endforeach; ?>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
                   <label class="col-sm-2 control-label" for="input-name">Endereço Complemento:</label>
                   <div class="col-sm-10">
                     <select name="fields[complement]" class="form-control">
