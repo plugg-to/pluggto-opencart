@@ -154,6 +154,7 @@ class ControllerApiPluggto extends Controller {
 				$cpf_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('cpf');
 				$number_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('number');
 				$complement_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('complement');
+				$add_infor = $this->model_pluggto_pluggto->getIdCustomFieldByName('information_adds');
 
 				$customer = array(
 					'customer_group_id'  => 1,
@@ -175,7 +176,8 @@ class ControllerApiPluggto extends Controller {
 						$cpf_custom_field => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
 						'address' => array(
 							$number_custom_field => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
-							$complement_custom_field => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
+							$complement_custom_field => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : ""),
+							$add_infor => (isset($order->Order->receiver_additional_info) ? $order->Order->receiver_additional_info : "")
 						)
 					)
 				);
