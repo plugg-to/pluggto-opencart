@@ -5,7 +5,7 @@ ini_set('max_execution_time', 0);
 error_reporting(-1);
 
 
-class ControllerModulePluggTo extends Controller {
+class ControllerExtensionModulePluggTo extends Controller {
   private $error = array();
 
   private $typesShippings = array(
@@ -25,20 +25,20 @@ class ControllerModulePluggTo extends Controller {
   );
 
   public function install() {
-    $this->load->model('pluggto/pluggto');
-    $this->model_pluggto_pluggto->install();
+    $this->load->model('extension/module/pluggto');
+    $this->model_extension_module_pluggto->install();
   }
 
   public function uninstall() {
-    $this->load->model('pluggto/pluggto');
-    $this->model_pluggto_pluggto->uninstall();
+    $this->load->model('extension/module/pluggto');
+    $this->model_extension_module_pluggto->uninstall();
   }
 
   /**
   * Salvar configuraçoes de sicronizacao
   **/
   public function saveSettingsProductsSynchronization() {
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
 
     $data = array(
       'refresh_only_stock' => $this->request->post['refresh_only_stock'],
@@ -47,41 +47,41 @@ class ControllerModulePluggTo extends Controller {
         
     $this->session->data['alerts'] = 'Configurações salvas com sucesso!';
     
-    $response = $this->model_pluggto_pluggto->saveSettingsProductsSynchronization($data);
+    $response = $this->model_extension_module_pluggto->saveSettingsProductsSynchronization($data);
     if (!$response)    
       $this->session->data['alerts'] = 'Ocorreu algum erro ao salvar as configurações de sicronização';
 
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->response->redirect($redirect = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL'));
   }
 
   /**
   * Desligar todos o relacionamento da opencart com o pluggto
   **/
   public function offAllProductsWithPluggTo() {
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
 
-    $this->model_pluggto_pluggto->offAllProductsWithPluggTo();
+    $this->model_extension_module_pluggto->offAllProductsWithPluggTo();
 
     $this->session->data['alerts'] = 'Todos os produtos foram desvinculados!';
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->response->redirect($redirect = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL'));
   }
 
   /**
   * Importar todos os produtos do pluggto para o opencart
   **/
   public function importAllProductsToOpenCart() {
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
 
-    $this->model_pluggto_pluggto->saveImportationQueue();
+    $this->model_extension_module_pluggto->saveImportationQueue();
 
     $this->session->data['alerts'] = 'Importação agendada com sucesso!';
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->response->redirect($redirect = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL'));
   }
 
   public function saveProducts($result)
   {
     foreach ($result->result as $i => $product) {
-      $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+      $this->model_extension_module_pluggto->prepareToSaveInOpenCart($product);
     }
 
     return true;
@@ -92,13 +92,13 @@ class ControllerModulePluggTo extends Controller {
   * Caso esteja divergente os valores do opencart sao considerados e enviados para o pluggto
   **/
   public function verifyStockAndPriceProducts() {
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
     $this->load->model('catalog/product');
 
-    $products_pluggto_relations = $this->model_pluggto_pluggto->getAllPluggToProductRelactionsOpenCart();
+    $products_pluggto_relations = $this->model_extension_module_pluggto->getAllPluggToProductRelactionsOpenCart();
 
     foreach ($products_pluggto_relations->rows as $i => $product){
-      $pluggto_product_response = $this->model_pluggto_pluggto->getProduct($product['pluggto_product_id']);
+      $pluggto_product_response = $this->model_extension_module_pluggto->getProduct($product['pluggto_product_id']);
       $opencart_product_response = $this->model_catalog_product->getProduct($product['opencart_product_id']);
 
       if (isset($pluggto_product_response) && $pluggto_product_response->Product->quantity != $opencart_product_response['quantity']){
@@ -107,7 +107,7 @@ class ControllerModulePluggTo extends Controller {
           'quantity' => $opencart_product_response['quantity']
         );
 
-        $response = $this->model_pluggto_pluggto->updateStockPluggTo($data, $product['pluggto_product_id']);
+        $response = $this->model_extension_module_pluggto->updateStockPluggTo($data, $product['pluggto_product_id']);
       }
       
       if (isset($pluggto_product_response) && $pluggto_product_response->Product->price != $opencart_product_response['price']){
@@ -115,21 +115,21 @@ class ControllerModulePluggTo extends Controller {
           'price' => $opencart_product_response['price']
         );
 
-        $response = $this->model_pluggto_pluggto->updateTo($data, $product['pluggto_product_id']);
+        $response = $this->model_extension_module_pluggto->updateTo($data, $product['pluggto_product_id']);
       }
     }
 
     $this->session->data['alerts'] = 'Verificação feita com sucesso!';
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->response->redirect($redirect = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL'));
   }
 
   public function exportAllProductsToPluggTo() {
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
 
-    $this->model_pluggto_pluggto->saveExportationQueue();
+    $this->model_extension_module_pluggto->saveExportationQueue();
 
     $this->session->data['alerts'] = 'Exportação agendada com sucesso!';
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->response->redirect($redirect = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL'));
   }
 
   public function getSpecialPriceProductToPluggTo($product_id) {
@@ -225,30 +225,30 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function saveFieldsLinkage(){
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
 
     $fields = $this->request->post['fields'];
 
     foreach ($fields as $key => $value) {
-      $this->model_pluggto_pluggto->saveField($key, $value);
+      $this->model_extension_module_pluggto->saveField($key, $value);
     }
 
     $this->session->data['alerts'] = 'Atrelamento salvo com sucesso!';
 
-    $this->response->redirect($redirect = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL'));
+    $this->response->redirect($redirect = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL'));
   }
 
   public function index() {
-    $this->template = 'module/pluggto.tpl';
-    $this->language->load('module/pluggto');
+    $this->template = 'extension/module/pluggto';
+    $this->language->load('extension/module/pluggto');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
 
     if (isset($this->request->post['checkCredentials'])) {
 
-      if ($this->model_pluggto_pluggto->getAccesstoken()) {
+      if ($this->model_extension_module_pluggto->getAccessuser_token()) {
         $this->data['access_status'] = "Credencials logadas com sucesso.";
       } else {
         $this->data['access_status'] = "Credencias incorretas.";
@@ -256,10 +256,10 @@ class ControllerModulePluggTo extends Controller {
     }
 
     if (isset($this->request->post['api_user'])) {
-      $this->model_pluggto_pluggto->setCredentials($this->request->post['api_user'], $this->request->post['api_secret'], $this->request->post['client_id'], $this->request->post['client_secret']);
+      $this->model_extension_module_pluggto->setCredentials($this->request->post['api_user'], $this->request->post['api_secret'], $this->request->post['client_id'], $this->request->post['client_secret']);
     }
 
-    $credentials = $this->model_pluggto_pluggto->getCredentials();
+    $credentials = $this->model_extension_module_pluggto->getCredentials();
     if (empty($credentials)) {
       $credentials['api_user'] = "";
       $credentials['api_secret'] = "";
@@ -267,7 +267,7 @@ class ControllerModulePluggTo extends Controller {
       $credentials['client_secret'] = "";
     }
 
-    $settingsProductsSynchronization = $this->model_pluggto_pluggto->getSettingsProductsSynchronization();
+    $settingsProductsSynchronization = $this->model_extension_module_pluggto->getSettingsProductsSynchronization();
     $data['settingsProductsSynchronization'] = $settingsProductsSynchronization;
 
     $data['heading_title'] = $this->language->get('heading_title');
@@ -277,32 +277,32 @@ class ControllerModulePluggTo extends Controller {
     $data['breadcrumbs'] = array();
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
-      'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('common/home', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
-      'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('extension/module', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
-      'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('module/bestseller', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
     
-    $data['action_products'] = $this->url->link('module/pluggto/saveSettingsProductsSynchronization', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_import_all_products_to_opencart'] = $this->url->link('module/pluggto/importAllProductsToOpenCart', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_off_all_products_pluggto'] = $this->url->link('module/pluggto/offAllProductsWithPluggTo', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_verify_stock_and_price_products'] = $this->url->link('module/pluggto/verifyStockAndPriceProducts', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_export_all_products_to_pluggto'] = $this->url->link('module/pluggto/exportAllProductsToPluggTo', 'token=' . $this->session->data['token'], 'SSL');
-    $data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_basic_fields'] = $this->url->link('module/pluggto/settingsBasicFields', 'token=' . $this->session->data['token'], 'SSL');
-    $data['load_queue'] = $this->url->link('module/pluggto/loadqueue', 'token=' . $this->session->data['token'], 'SSL');
-    $data['link_log_queue'] = $this->url->link('module/pluggto/linkLogQueue', 'token=' . $this->session->data['token'], 'SSL');
-    $data['force_sync_products'] = $this->url->link('module/pluggto/listAllProductsToForceSync', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action_products'] = $this->url->link('extension/module/pluggto/saveSettingsProductsSynchronization', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['link_import_all_products_to_opencart'] = $this->url->link('extension/module/pluggto/importAllProductsToOpenCart', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['link_off_all_products_pluggto'] = $this->url->link('extension/module/pluggto/offAllProductsWithPluggTo', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['link_verify_stock_and_price_products'] = $this->url->link('extension/module/pluggto/verifyStockAndPriceProducts', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['link_export_all_products_to_pluggto'] = $this->url->link('extension/module/pluggto/exportAllProductsToPluggTo', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['action_basic_fields'] = $this->url->link('extension/module/pluggto/saveFieldsLinkage', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['link_basic_fields'] = $this->url->link('extension/module/pluggto/settingsBasicFields', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['load_queue'] = $this->url->link('extension/module/pluggto/loadqueue', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['link_log_queue'] = $this->url->link('extension/module/pluggto/linkLogQueue', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['force_sync_products'] = $this->url->link('extension/module/pluggto/listAllProductsToForceSync', 'user_token=' . $this->session->data['user_token'], 'SSL');
 
-    $data['action'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel'] = $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action'] = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['cancel'] = $this->url->link('extension/module', 'user_token=' . $this->session->data['user_token'], 'SSL');
 
     if (isset($this->request->post['store_admin'])) {
       $data['store_admin'] = $this->request->post['store_admin'];
@@ -319,7 +319,7 @@ class ControllerModulePluggTo extends Controller {
     $data['alerts'] = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
 
-    $data['button_pull'] = $this->url->link('module/pluggto/pullModule', 'token=' . $this->session->data['token'], 'SSL');;
+    $data['button_pull'] = $this->url->link('extension/module/pluggto/pullModule', 'user_token=' . $this->session->data['user_token'], 'SSL');;
     $data['button_cancel'] = $this->language->get('button_cancel');
 
     $data['button_add_module'] = $this->language->get('button_add_module');
@@ -329,37 +329,37 @@ class ControllerModulePluggTo extends Controller {
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['footer'] = $this->load->controller('common/footer');
 
-    $this->response->setOutput($this->load->view('module/pluggto.tpl', $data));
+    $this->response->setOutput($this->load->view('extension/module/pluggto', $data));
   }
 
   public function settingsBasicFields() {
-    $this->template = 'module/pluggto.tpl';
-    $this->language->load('module/pluggto');
+    $this->template = 'extension/module/pluggto';
+    $this->language->load('extension/module/pluggto');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
 
     $data['heading_title'] = $this->language->get('heading_title');
 
     $data['breadcrumbs'] = array();
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
-      'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('common/home', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
-      'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('extension/module', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
-      'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('module/bestseller', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
-    $data['action_basic_fields']   = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel']                = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action_basic_fields']   = $this->url->link('extension/module/pluggto/saveFieldsLinkage', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['cancel']                = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL');
 
     $data['alerts']                = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
@@ -373,20 +373,20 @@ class ControllerModulePluggTo extends Controller {
 
     $data['types_shippings'] = $this->typesShippings;
 
-    $data['default_fields']  = $this->model_pluggto_pluggto->getAllDefaultsFields();
+    $data['default_fields']  = $this->model_extension_module_pluggto->getAllDefaultsFields();
 
-    $data['status_opencart'] = $this->model_pluggto_pluggto->getStatusOpenCart();
+    $data['status_opencart'] = $this->model_extension_module_pluggto->getStatusOpenCart();
     
-    $this->response->setOutput($this->load->view('module/pluggto_fields.tpl', $data)); // aqui
+    $this->response->setOutput($this->load->view('extension/module/pluggto_fields', $data)); // aqui
   }
 
   public function listAllProductsToForceSync(){
-    $this->template = 'module/pluggto.tpl';
-    $this->language->load('module/pluggto');
+    $this->template = 'extension/module/pluggto';
+    $this->language->load('extension/module/pluggto');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
     $this->load->model('catalog/product');
 
     $data['heading_title'] = $this->language->get('heading_title');
@@ -394,23 +394,23 @@ class ControllerModulePluggTo extends Controller {
     $data['breadcrumbs'] = array();
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
-      'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('common/home', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
-      'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('extension/module', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
-      'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('module/bestseller', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
-    $data['action_basic_fields']   = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel']                = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action_basic_fields']   = $this->url->link('extension/module/pluggto/saveFieldsLinkage', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['cancel']                = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL');
 
-    $data['token'] = $this->session->data['token'];
+    $data['user_token'] = $this->session->data['user_token'];
 
     $data['alerts']                = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
@@ -421,37 +421,37 @@ class ControllerModulePluggTo extends Controller {
 
     $data['products']    = $this->model_catalog_product->getProducts();
 
-    $this->response->setOutput($this->load->view('module/pluggto_products_sync.tpl', $data)); // aqui
+    $this->response->setOutput($this->load->view('extension/module/pluggto_products_sync', $data)); // aqui
   }
 
   public function linkLogQueue(){
-    $this->template = 'module/pluggto.tpl';
-    $this->language->load('module/pluggto');
+    $this->template = 'extension/module/pluggto';
+    $this->language->load('extension/module/pluggto');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
-    $this->load->model('pluggto/pluggto');
+    $this->load->model('extension/module/pluggto');
 
     $data['heading_title'] = $this->language->get('heading_title');
 
     $data['breadcrumbs'] = array();
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
-      'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('common/home', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
-      'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('extension/module', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
-      'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('module/bestseller', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
-    $data['action_basic_fields'] = $this->url->link('module/pluggto/saveFieldsLinkage', 'token=' . $this->session->data['token'], 'SSL');
-    $data['cancel'] = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $data['action_basic_fields'] = $this->url->link('extension/module/pluggto/saveFieldsLinkage', 'user_token=' . $this->session->data['user_token'], 'SSL');
+    $data['cancel'] = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL');
 
     $data['alerts'] = $this->session->data['alerts'];
     $this->session->data['alerts'] = '';
@@ -463,9 +463,9 @@ class ControllerModulePluggTo extends Controller {
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['footer'] = $this->load->controller('common/footer');
 
-    $data['queues'] = $this->model_pluggto_pluggto->getAllItemsInQueues();
+    $data['queues'] = $this->model_extension_module_pluggto->getAllItemsInQueues();
 
-    $this->response->setOutput($this->load->view('module/pluggto_queue.tpl', $data));
+    $this->response->setOutput($this->load->view('extension/module/pluggto_queue', $data));
   }
 
   protected function validate() {
@@ -477,9 +477,9 @@ class ControllerModulePluggTo extends Controller {
   }
 
   public function loadQueue(){
-    $this->template = 'module/pluggto_load_queue.tpl';
-    $this->language->load('module/pluggto');
-    $this->load->model('pluggto/pluggto');
+    $this->template = 'extension/module/pluggto_load_queue';
+    $this->language->load('extension/module/pluggto');
+    $this->load->model('extension/module/pluggto');
 
     $this->document->setTitle($this->language->get('heading_title'));
 
@@ -488,17 +488,17 @@ class ControllerModulePluggTo extends Controller {
     $data['breadcrumbs'] = array();
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_home'),
-      'href'      => $this->url->link('common/home', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('common/home', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('text_module'),
-      'href'      => $this->url->link('extension/module', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('extension/module', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['breadcrumbs'][] = array(
       'text'      => $this->language->get('heading_title'),
-      'href'      => $this->url->link('module/bestseller', 'token=' . $this->session->data['token'], 'SSL'),
+      'href'      => $this->url->link('module/bestseller', 'user_token=' . $this->session->data['user_token'], 'SSL'),
     );
 
     $data['header']        = $this->load->controller('common/header');
@@ -507,11 +507,11 @@ class ControllerModulePluggTo extends Controller {
     $data['button_cancel'] = $this->language->get('button_cancel');
     $data['column_left']   = $this->load->controller('common/column_left');
     $data['alerts']        = $this->session->data['alerts'];
-    $data['cancel']        = $this->url->link('module/pluggto', 'token=' . $this->session->data['token'], 'SSL');
+    $data['cancel']        = $this->url->link('extension/module/pluggto', 'user_token=' . $this->session->data['user_token'], 'SSL');
     $data['footer']        = $this->load->controller('common/footer');
-    $data['queue']         = $this->model_pluggto_pluggto->getNotifications();
+    $data['queue']         = $this->model_extension_module_pluggto->getNotifications();
     
-    $this->response->setOutput($this->load->view('module/pluggto_load_queue.tpl', $data));
+    $this->response->setOutput($this->load->view('extension/module/pluggto_load_queue', $data));
   }
 
 }

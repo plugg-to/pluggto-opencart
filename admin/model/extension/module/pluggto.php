@@ -1,6 +1,6 @@
 <?php
 
-class ModelPluggtoPluggto extends Model{
+class ModelExtensionModulePluggto extends Model{
  
   public function install() {
     try {        
