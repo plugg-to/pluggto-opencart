@@ -6,16 +6,16 @@
 !README.md
 
 !catalog/controller/api/pluggto.php
-!catalog/model/extension/module/api/pluggto.php
+!catalog/model/extension/feed/api/pluggto.php
 
 !admin/pluggto_cron.php
-!admin/controller/extension/module/pluggto.php
-!admin/model/extension/module/pluggto.php
-!admin/language/pt-br/extension/module/pluggto.php
-!admin/language/en-gb/extension/module/pluggto.php
-!admin/view/template/extension/module/pluggto.twig
-!admin/view/template/extension/module/pluggto_fields.twig
-!admin/view/template/extension/module/pluggto_load_queue.twig
-!admin/view/template/extension/module/pluggto_products_sync.twig
-!admin/view/template/extension/module/pluggto_queue.twig
+!admin/controller/extension/feed/pluggto.php
+!admin/model/extension/feed/pluggto.php
+!admin/language/pt-br/extension/feed/pluggto.php
+!admin/language/en-gb/extension/feed/pluggto.php
+!admin/view/template/extension/feed/pluggto.twig
+!admin/view/template/extension/feed/pluggto_fields.twig
+!admin/view/template/extension/feed/pluggto_load_queue.twig
+!admin/view/template/extension/feed/pluggto_products_sync.twig
+!admin/view/template/extension/feed/pluggto_queue.twig
 
