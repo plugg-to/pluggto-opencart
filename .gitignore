@@ -18,4 +18,5 @@
 !admin/view/template/extension/feed/pluggto_load_queue.twig
 !admin/view/template/extension/feed/pluggto_products_sync.twig
 !admin/view/template/extension/feed/pluggto_queue.twig
+!admin/view/template/extension/feed/pluggto_transparent.twig
 
