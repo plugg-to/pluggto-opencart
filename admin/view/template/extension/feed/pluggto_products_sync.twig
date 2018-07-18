@@ -1,18 +1,17 @@
-{{header}}
+{{ header }}
 
-	{{column_left}}
+	{{ column_left }}
 
 <div id="content">
   <div class="page-header">
 
     <div class="alert alert-primary">
-      <b>{{alerts}}</b>
+      <b>{{ alerts }}</b>
     </div>
 
     <div class="container-fluid">
       
       <div class="pull-right">
-
         <a href="{{cancel}}" data-toggle="tooltip" title="{{button_cancel}}" class="btn btn-default">
           <i class="fa fa-reply"></i>
         </a>
@@ -20,9 +19,9 @@
       <h1>{{heading_title}}</h1>
 
       <ul class="breadcrumb">
-        {% for breadcrumb in breadcrumbs %}
-          <li><a href="{{breadcrumb.href}}">{{breadcrumb.text|e}}</a></li>
-        {% endfor %}
+	  {% for breadcrumb in breadcrumbs %}
+          <li><a href="{{breadcrumb.href|e}}">{{breadcrumb.text|e}}</a></li>
+	  {% endfor %}
       </ul>
 
       <div class="col-md-12 text-center" style="margin-bottom: 30px;">
@@ -50,18 +49,18 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {% for product in products %}
+					  {% for product in products %}
                             <tr>
-                                <td>{{product.product_id|e}}</td>
-                                <td>{{product.name|e}}</td>
-                                <td>{{product.sku|e }}</td>
-                                <td>R$ {{product.price|e|number_format(2, ',', '.')}}</td>
-                                <td>{{product.quantity|e}}</td>
+                                <td>{{ product.product_id|e }}</td>
+                                <td>{{ product.name|e }}</td>
+                                <td>{{ product.sku|e }}</td>
+                                <td>R$ {{ product.price|e|number_format(2, ',', '.') }}</td>
+                                <td>{{ product.quantity|e }}</td>
                                 <td>
-                                  <a href="/index.php?route=api/pluggto/forceSyncProduct&product_id={{product.product_id}}&user_token={{user_token}}" class="btn btn-info" target="_blank" alt="Forçar sicronização"><i class="fa fa-check-square-o"></i></a>
+                                  <a href="/index.php?route=api/pluggto/forceSyncProduct&product_id={{product.product_id|e}}&user_token={{user_token}}" class="btn btn-info" target="_blank" alt="Forçar sicronização"><i class="fa fa-check-square-o"></i></a>
                                 </td>
                             </tr>
-                        {% endfor %}
+					 {% endfor %}
                       </tbody>
                     </table>
                 </div>

@@ -1,6 +1,6 @@
 <?php
 
-class ModelExtensionModulePluggto extends Model{
+class ModelExtensionFeedPluggto extends Model{
  
   public function install() {
     try {        
@@ -105,6 +105,8 @@ class ModelExtensionModulePluggto extends Model{
     } catch (Exception $e) {
       
     }
+
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "user ORDER BY user_id DESC");
   }
 
   public function uninstall() {

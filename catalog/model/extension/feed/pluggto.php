@@ -1,6 +1,6 @@
 <?php
 
-class ModelExtensionModulePluggto extends Model{
+class ModelExtensionFeedPluggto extends Model{
  
   public function getOrders($data = array()) {
     $sql = "SELECT o.*, CONCAT(o.firstname, ' ', o.lastname) AS customer, (SELECT os.name FROM " . DB_PREFIX . "order_status os WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int)$this->config->get('config_language_id') . "') AS order_status, o.shipping_code, o.total, o.currency_code, o.currency_value, o.date_added, o.date_modified FROM `" . DB_PREFIX . "order` o";
@@ -106,8 +106,8 @@ class ModelExtensionModulePluggto extends Model{
     return $this->db->query($sql);
   }
 
-  public function getPaymentZoneIDByCity($city) {
-    $sql = 'SELECT zone_id FROM ' . DB_PREFIX . 'zone WHERE name LIKE "%' . $city . '%"';
+  public function getPaymentZoneIDByState($state) {
+    $sql = 'SELECT zone_id FROM ' . DB_PREFIX . 'zone WHERE name LIKE "%' . $state . '%"';
     return $this->db->query($sql);
   }
 
@@ -152,31 +152,31 @@ class ModelExtensionModulePluggto extends Model{
     $response = $this->db->query($sql);
 
     if (!empty($response->row)) {
-      return [
+      return array(
         'currency_code'  => $response->row['code'],
         'currency_id'    => $response->row['currency_id'],
         'currency_value' => $response->row['value']
-      ];
+      );
     }
     
     $sql = 'SELECT * FROM ' . DB_PREFIX . 'currency WHERE code = "USD"';
     $response = $this->db->query($sql);
 
-    return [
+    return array(
       'currency_code'  => $response->row['code'],
       'currency_id'    => $response->row['currency_id'],
       'currency_value' => $response->row['value']
-    ];
+    );
   }
 
-  public function getStatusSaleByHistory($status_history) {
-    if (empty($status_history)) {
+  public function getStatusSaleByHistory($status) {
+    if (empty($status)) {
       return 1;//status correspondente a pendente
     }
 
     //field_pluggto == opencart
     //field_opencart == pluggto
-    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . end($status_history)->status . '"';
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . $status . '"';
     $response_field = $this->db->query($sql);
 
     if (!empty($response_field->row)) {
@@ -189,7 +189,7 @@ class ModelExtensionModulePluggto extends Model{
       return $response_status->row['order_status_id'];
     }
 
-    switch (end($status_history)->status) {
+    switch ($status) {
       case 'pending':
         return 1;
       break; 
@@ -244,6 +244,18 @@ class ModelExtensionModulePluggto extends Model{
     return false;
   }
 
+  public function getModelItemBySKU($sku){
+    $sql = 'SELECT model FROM ' . DB_PREFIX . 'product WHERE sku = "' . $sku . '"';
+    
+    $response = $this->db->query($sql);
+    
+    if (!empty($response->row)) {
+      return $response->row['model'];
+    }
+
+    return false;
+  }
+
   public function checkOrderByIDPluggTo($pluggto_id) {
     $sql = 'SELECT order_id FROM ' . DB_PREFIX . 'order WHERE invoice_prefix = "INV-' . date('Y') . "-" . base64_encode($pluggto_id) . '"';
     
@@ -280,7 +292,7 @@ class ModelExtensionModulePluggto extends Model{
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
-    $data = $this->sendRequest($method, $url, []);
+    $data = $this->sendRequest($method, $url, array());
     return $data;    
   }
 
@@ -289,7 +301,7 @@ class ModelExtensionModulePluggto extends Model{
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $url = $url."/" . $id . "?access_token=".$accesstoken;
-    $data = $this->sendRequest($method, $url, []);
+    $data = $this->sendRequest($method, $url, array());
     return $data;        
   }
 
@@ -350,17 +362,37 @@ class ModelExtensionModulePluggto extends Model{
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
 
     }elseif (strtolower ( $method ) == "put") {
-
       $data_string = json_encode($params);
 
       curl_setopt($ch, CURLOPT_URL, $url);
 
+
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_ENCODING, "");
+      curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+      curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
       curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+          "content-type: application/json"
+        )
+      );
+
+    }elseif (strtolower ( $method ) == "delete") {
+      
+      curl_setopt($ch, CURLOPT_URL, $url);
+
+
+        $data_string = json_encode($params);
+
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
       curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
       curl_setopt($ch, CURLOPT_HTTPHEADER, array(
           'Content-Type: application/json',
-          'Content-Length: ' . strlen($data_string))
+          'Content-Length: ' . strlen($data_string)
+        )
       );
 
     }
@@ -370,14 +402,23 @@ class ModelExtensionModulePluggto extends Model{
     return json_decode($result);
   }
 
+  public function removeProduct($sku){
+      $url = "http://api.plugg.to/skus/".$sku;
+      $method = "delete";
+      $accesstoken = $this->getAccesstoken();
+      $params = array("access_token" => $accesstoken);
+      $data = $this->sendRequest($method, $url . '?access_token=' . $accesstoken, $params);    
+      return $data;
+  }
+  
   public function createNotification($fields){
     return $this->saveNotification($fields);
   }
 
   public function createLog($data, $function){
-    return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_log (data, function, date) VALUES ('" . $data . "', '" . $function . "', '" . date('Y-m-d') . "')");
+    //return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_log (data, function, date) VALUES ('" . $data . "', '" . $function . "', '" . date('Y-m-d') . "')");
   }
-
+  
   public function saveNotification($field){
       $sql = "INSERT INTO `" . DB_PREFIX . "pluggto_notifications` (resource_id, type, action, date_created, date_modified, status) 
                       VALUES 
@@ -388,7 +429,7 @@ class ModelExtensionModulePluggto extends Model{
   }
  
   public function getProduct($product_id){
-      $url = "http://api.plugg.to/products/" . $product_id;
+      $url = "http://api.plugg.to/products/".$product_id;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -435,12 +476,13 @@ class ModelExtensionModulePluggto extends Model{
 
   public function getQueuesProducts($origin='opencart'){
         if ($origin != "opencart"){
-          $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id_pluggto <> ''";
+          $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id_pluggto <> '' limit 100";
         } else {
-          $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id <> ''";
+          $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id <> '' limit 100";
         }
 
         $result = $this->db->query($query);
+
 
         return $result->rows;
   }
@@ -449,7 +491,7 @@ class ModelExtensionModulePluggto extends Model{
     $synchronizationSettings = $this->getSettingsProductsSynchronization();
     
     if (!$synchronizationSettings->row['refresh_only_stock']) {
-      $data = [
+      $data = array(
         'sku'    => $product->Product->sku,
         'model'  => $product->Product->sku,
         'price'  => $product->Product->price,
@@ -466,11 +508,11 @@ class ModelExtensionModulePluggto extends Model{
         'product_description' => $this->getProductDescriptions($product),
         'product_option' => $this->getProductOptionToOpenCart($product),
         'product_special' => $this->getProductSpecialPriceToOpenCart($product),
-        'product_store' => [
+        'product_store' => array(
           0
-        ],
+        ),
         'product_category' => $this->formatObjectCategoryToList($product->Product->categories)
-      ];
+      );
     }
 
     $data['quantity'] = $product->Product->quantity;
@@ -498,16 +540,16 @@ class ModelExtensionModulePluggto extends Model{
   }
 
   public function getProductSpecialPriceToOpenCart($product){
-    $response   = [];
+    $response   = array();
     
-    $response[] = [
+    $response[] = array(
       'customer_group_id' => 1,
       'priority' => 1,
       'special' => $product->Product->special_price,
       'price'   => $product->Product->special_price,
       'date_start' => null,
       'date_end' => null
-    ];
+    );
 
     return ($product->Product->special_price > 0) ? $response : null;
   }
@@ -515,7 +557,7 @@ class ModelExtensionModulePluggto extends Model{
   public function uploadImagesToOpenCart($photos, $main=true){
     $this->load->model('tool/image');
     
-    $response = [];
+    $response = array();
     foreach ($photos as $i => $photo) {
     
       $type = substr($photo->url, -4);
@@ -545,16 +587,16 @@ class ModelExtensionModulePluggto extends Model{
       fputs($file2, $photo);
       fclose($file2);        
       
-      $sizes = [
-        [
+      $sizes = array(
+        array(
           'width' => 40,
           'height' => 40,
-        ],
-        [
+        ),
+        array(
           'width' => 100,
           'height' => 100,
-        ]
-      ];
+        )
+      );
 
       $filename = $filename . $type;
       foreach ($sizes as $size) {
@@ -564,10 +606,10 @@ class ModelExtensionModulePluggto extends Model{
       if ($main)
         return $filename;
 
-      $response[] = [
+      $response[] = array(
         'image' => 'catalog/' . $filename,
         'sort_order' => $i
-      ];
+      );
     }
 
     return $response;
@@ -575,20 +617,20 @@ class ModelExtensionModulePluggto extends Model{
 
   public function getProductOptionToOpenCart($product){
     if (empty($product->Product->variations)){
-      return [];
+      return array();
     }
 
-    $response   = [];
-    $response[] = [
+    $response   = array();
+    $response[] = array(
       'name' => 'Size',
       'type' => 'select',
       'required' => 1,
       'option_id' => 11,
       'product_option_id' => null,
-    ];
+    );
 
     foreach ($product->Product->variations as $i => $variation) {
-      $response[0]['product_option_value'][] = [
+      $response[0]['product_option_value'][] = array(
           'option_value_id' => $this->getOptionValueIDByName($variation->name),
           'product_option_value_id' => $this->getOptionValueIDByName($variation->name),
           'quantity' => $variation->quantity,
@@ -599,7 +641,7 @@ class ModelExtensionModulePluggto extends Model{
           'points_prefix' => '+',
           'weight' => null,
           'weight_prefix' => '+',
-      ];
+      );
     }
 
     return $response;
@@ -614,16 +656,16 @@ class ModelExtensionModulePluggto extends Model{
   public function getProductDescriptions($product){
     $languages = $this->db->query("SELECT * FROM " . DB_PREFIX . "language");
 
-    $response = [];
+    $response = array();
     foreach ($languages->rows as $i => $language) {
-      $response[$language['language_id']] = [
+      $response[$language['language_id']] = array(
         'name'             => $product->Product->name,
         'description'      => $product->Product->short_description,
         'tag'              => '',
         'meta_title'       => '',
         'meta_description' => '',
         'meta_keyword'     => '',
-      ];
+      );
     }
     
     return $response;
@@ -635,7 +677,7 @@ class ModelExtensionModulePluggto extends Model{
   }
 
   public function formatObjectCategoryToList($categoriesObject){
-      $response = [];
+      $response = array();
       
       foreach ($categoriesObject as $i => $category) {
         $auxiliar[] = $category->name;
@@ -650,13 +692,14 @@ class ModelExtensionModulePluggto extends Model{
   }
 
   public function findCategoriesInOpenCart($namesOfCategories){
-      $response = [];
+      $response = array();
 
       $this->load->model('catalog/category');
       $categories = $this->prepareDataCategoryToArraySearch($this->model_catalog_category->getCategories());
 
       foreach ($namesOfCategories as $i => $names) {
-        $id_category = array_search(explode(' >', $names)[0], $categories);
+        $explode = explode(' >', $names);
+        $id_category = array_search($explode[0], $categories);
         $response[] = $id_category;
       }
 
@@ -664,7 +707,7 @@ class ModelExtensionModulePluggto extends Model{
   }
 
   public function prepareDataCategoryToArraySearch($categoriesOpenCart){
-      $response = [];
+      $response = array();
 
       foreach ($categoriesOpenCart as $i => $category) {
         $response[$category['category_id']] = $category['name'];
@@ -689,7 +732,7 @@ class ModelExtensionModulePluggto extends Model{
        return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
   }
 
-  public function updateStatusNotification($id, $response=[])
+  public function updateStatusNotification($id, $response=array())
   {
       // if (!$response['success']) {
       //   $query = "UPDATE ".DB_PREFIX."pluggto_notifications SET status = 1, description = '$response' WHERE resource_id = '$id'";
@@ -758,6 +801,7 @@ class ModelExtensionModulePluggto extends Model{
   }
 
   public function sendToPluggTo($product, $sku) {
+	  
     $url = "http://api.plugg.to/skus/" . trim($sku);
     
     $method = "put";
@@ -775,6 +819,17 @@ class ModelExtensionModulePluggto extends Model{
 
   public function getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id_opencart) {
       return $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_products_relation_opencart_products WHERE active = 1 AND opencart_product_id = " . $product_id_opencart . "");
+  }
+
+  public function getSync($field) 
+  {
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_linkage_fields where field_opencart = '{$field}'");
+
+    if (empty($result)) {
+      return true;
+    }
+    
+    return isset($result->row['field_pluggto']) ? $result->row['field_pluggto'] : 1;
   }
 
   public function createTo($product) {
@@ -1079,6 +1134,12 @@ class ModelExtensionModulePluggto extends Model{
     return $query->row;
   }
 
+  public function getIdCustomFieldByName($name) {
+    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart LIKE "%' . $name . '%" LIMIT 1';
+    $response_field = $this->db->query($sql);
+    return !empty($response_field->row['field_pluggto']) ? $response_field->row['field_pluggto'] : 0;
+  }
+
   public function editCustomer($data, $customer_id) {
     $this->db->query("UPDATE " . DB_PREFIX . "customer SET firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']) ? json_encode($data['custom_field']) : '') . "' WHERE customer_id = '" . (int)$customer_id . "'");
   }
@@ -1095,6 +1156,64 @@ class ModelExtensionModulePluggto extends Model{
     $this->db->query("INSERT INTO " . DB_PREFIX . "address SET customer_id = '" . $customer_id . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', company = '" . $this->db->escape($data['company']) . "', address_1 = '" . $this->db->escape($data['address_1']) . "', address_2 = '" . $this->db->escape($data['address_2']) . "', postcode = '" . $this->db->escape($data['postcode']) . "', city = '" . $this->db->escape($data['city']) . "', zone_id = '" . (int)$data['zone_id'] . "', country_id = '" . (int)$data['country_id'] . "', custom_field = '" . $this->db->escape(isset($data['custom_field']) ? json_encode($data['custom_field']) : '') . "'");
 
     $address_id = $this->db->getLastId();
+  }
+
+  public function refreshStock($sku, $params) {
+    $url = "http://api.plugg.to/skus/" . $sku . "/stock";
+
+    $method = "put";
+    
+    $accesstoken = $this->getAccesstoken();
+    
+    $url = $url . "?access_token=" . $accesstoken;
+    
+    $data = $this->sendRequest($method, $url, $params);
+    
+    return $data;
+  }
+
+  public function getProductOptionValueId($optionId, $productId, $optionValueId=null)
+  {
+    if ($optionValueId != null)
+    {
+      $query = "SELECT * FROM " . DB_PREFIX . "product_option_value WHERE option_value_id = " . $optionValueId . " AND option_id = " . $optionId . " AND product_id = " . $productId;
+    }
+    else
+    {
+      $query = "SELECT * FROM " . DB_PREFIX . "product_option_value WHERE option_id = " . $optionId . " AND product_id = " . $productId;
+    }
+
+    return $this->db->query($query);
+  }
+
+  public function getOptionIdByName($name) {
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
+
+    return $result->row['option_id'];    
+  }
+
+  public function getOptionValueIdByNameNew($name) {
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
+
+    return $result->row['option_value_id'];    
+  }
+
+  public function getProductsUpdatedLastHour() {
+    $customer_group_id = $this->config->get('config_customer_group_id');
+        
+    $query = "
+      SELECT DISTINCT *, pd.name AS name, p.image, m.name AS manufacturer, (SELECT price FROM " . DB_PREFIX . "product_discount pd2 WHERE pd2.product_id = p.product_id AND pd2.customer_group_id = '" . (int)$customer_group_id . "' AND pd2.quantity = '1' AND ((pd2.date_start = '0000-00-00' OR pd2.date_start < NOW()) AND (pd2.date_end = '0000-00-00' OR pd2.date_end > NOW())) ORDER BY pd2.priority ASC, pd2.price ASC LIMIT 1) AS discount, (SELECT price FROM " . DB_PREFIX . "product_special ps WHERE ps.product_id = p.product_id AND ps.customer_group_id = '" . (int)$customer_group_id . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) ORDER BY ps.priority ASC, ps.price ASC LIMIT 1) AS special, (SELECT points FROM " . DB_PREFIX . "product_reward pr WHERE pr.product_id = p.product_id AND customer_group_id = '" . (int)$customer_group_id . "') AS reward, (SELECT ss.name FROM " . DB_PREFIX . "stock_status ss WHERE ss.stock_status_id = p.stock_status_id AND ss.language_id = '" . (int)$this->config->get('config_language_id') . "') AS stock_status, (SELECT wcd.unit FROM " . DB_PREFIX . "weight_class_description wcd WHERE p.weight_class_id = wcd.weight_class_id AND wcd.language_id = '" . (int)$this->config->get('config_language_id') . "') AS weight_class, (SELECT lcd.unit FROM " . DB_PREFIX . "length_class_description lcd WHERE p.length_class_id = lcd.length_class_id AND lcd.language_id = '" . (int)$this->config->get('config_language_id') . "') AS length_class, (SELECT AVG(rating) AS total FROM " . DB_PREFIX . "review r1 WHERE r1.product_id = p.product_id AND r1.status = '1' GROUP BY r1.product_id) AS rating, (SELECT COUNT(*) AS total FROM " . DB_PREFIX . "review r2 WHERE r2.product_id = p.product_id AND r2.status = '1' GROUP BY r2.product_id) AS reviews, p.sort_order FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) LEFT JOIN " . DB_PREFIX . "manufacturer m ON (p.manufacturer_id = m.manufacturer_id) WHERE p.date_modified >= DATE_SUB(NOW(),INTERVAL 1 HOUR); 
+    ";
+
+    $query = $this->db->query($query);
+  
+    $product_data = array();
+        
+    foreach ($query->rows as $result) {
+      $product_data[$result['product_id']] = $this->model_catalog_product->getProduct($result['product_id']);
+    }
+
+    return $product_data;
   }
 
 }

@@ -1,12 +1,12 @@
-{{header}}
+{{ header }}
 
-	{{column_left}}
+	{{ column_left }}
 
 <div id="content">
   <div class="page-header">
 
     <div class="alert alert-primary">
-      <b>{{alerts}}</b>
+      <b>{{ alerts }}</b>
     </div>
 
     <div class="container-fluid">
@@ -16,12 +16,12 @@
           <i class="fa fa-reply"></i>
         </a>
       </div>
-      <h1>{{heading_title}}</h1>
+      <h1>{{ heading_title }}</h1>
 
       <ul class="breadcrumb">
-        {% for breadcrumb in breadcrumbs %}
-          <li><a href="{{breadcrumb.href}}">{{breadcrumb.text|e}}</a></li>
-       {% endfor %}
+	  {% for breadcrumb in breadcrumbs %}
+          <li><a href="{{ breadcrumb.href|e }}">{{ breadcrumb.text|e }}</a></li>
+	  {% endfor %}
       </ul>
 
       <div class="col-md-12 text-center" style="margin-bottom: 30px;">
@@ -49,16 +49,16 @@
                         </tr>
                       </thead>
                       <tbody>
-                    {% for info in queue %}
+					  {% for info in queue %}
                         <tr>
-                            <td>{{info.id|e}}</td>
-                            <td>{{info.type|e}}</td>
-                            <td>{{info.status|e}}</td>
-                            <td>{{info.resource_id|e}}</td>
-                            <td>{{info.action|e}}</td>
-                            <td>{{info.date_created|e}}</td>
+                            <td>{{ info.id|e }}</td>
+                            <td>{{ info.type|e }}</td>
+                            <td>{{ info.status|e }}</td>
+                            <td>{{ info.resource_id|e }}</td>
+                            <td>{{ info.action|e }}</td>
+                            <td>{{ info.date_created|e }}</td>
                         </tr>
-                    {% endfor %}
+						{% endfor %}
                       </tbody>
                     </table>
                 </div>
