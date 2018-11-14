@@ -144,6 +144,15 @@
                             <small>Somente produtos habilitados no OpenCart serão enviados para o plugg.to</small><br>
                           </div>
                         </div>
+						<div class="form-group">
+                          <label class="col-sm-2 control-label" for="input-name">Deletar produtos na PluggTo quando deletados no OpenCart:</label>
+                          <div class="col-sm-10">
+                            <select name="del_sync" class="form-control">
+                              <option value="1" <?php echo (isset($settingsProductsSynchronization->row['del_sync']) && $settingsProductsSynchronization->row['del_sync'] == 1) ? 'selected' : ''; ?> >Sim</option>
+                              <option value="0" <?php echo (isset($settingsProductsSynchronization->row['del_sync']) && $settingsProductsSynchronization->row['del_sync'] == 0) ? 'selected' : ''; ?> >Não</option>
+                            </select>
+                          </div>
+                        </div>
                         <div class="form-group">
                           <label class="col-sm-2 control-label" for="input-name">Verificar divergencia de Estoque e Preço</label>
                           <div class="col-sm-10">

@@ -3,14 +3,14 @@
 class ModelPluggtoPluggto extends Model{
  
   public function install() {
-    try {        
+try {        
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto` (
               `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
               `api_user` varchar(255) NOT NULL,
               `api_secret` varchar(255) NOT NULL,
               `client_id` varchar(255) NOT NULL,
               `client_secret` varchar(255) NOT NULL
-            ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;";
+            ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
@@ -19,70 +19,77 @@ class ModelPluggtoPluggto extends Model{
               `data` TEXT NOT NULL,
               `function` varchar(50) NOT NULL,
               `date` DATE
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "settings_products_synchronization` (
-              `id` int(11) AUTO_INCREMENT PRIMARY KEY,
+              `id` int(11) NOT NULL,
               `active` tinyint(4) NOT NULL,
-              `refresh_only_stock` tinyint(4) NOT NULL
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";    
+              `refresh_only_stock` tinyint(4) NOT NULL,
+			  `del_sync` tinyint(4) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";    
 
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_linkage_fields` (
-              `id` int(11) AUTO_INCREMENT PRIMARY KEY,
+              `id` int(11) NOT NULL,
               `field_opencart` varchar(50) NOT NULL,
               `field_pluggto` varchar(50) NOT NULL,
               `active` tinyint(4) NOT NULL
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_relation_opencart_products` (
-              `id` int(11) AUTO_INCREMENT PRIMARY KEY,
+              `id` int(11) NOT NULL,
               `pluggto_product_id` varchar(255) NOT NULL,
               `opencart_product_id` int(11) NOT NULL,
               `active` tinyint(4) NOT NULL
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
       $sql = "CREATE TABLE `" . DB_PREFIX . "pluggto_notifications` (
-              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+              `id` int(11) NOT NULL AUTO_INCREMENT,
               `resource_id` varchar(100) NOT NULL,
               `type` varchar(20) DEFAULT NULL,
               `action` varchar(50) DEFAULT NULL,
               `date_created` datetime DEFAULT NULL,
               `date_modified` datetime DEFAULT NULL,
               `description` text DEFAULT NULL,
-              `status` tinyint(4) DEFAULT NULL
-            ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;";
+              `status` tinyint(4) DEFAULT NULL,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
-      // add index pluggto notifications
-      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_notifications` ADD INDEX `type` (`type`)");
-      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_notifications` ADD INDEX `status` (`status`)");
-      $this->db->query("ALTER TABLE `" . DB_PREFIX . "pluggto_notifications` ADD INDEX `resource_id` (`resource_id`)");
-
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "order_relation_pluggto_and_opencart` (
-              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+              `id` int(11) NOT NULL,
               `order_id_opencart` varchar(50) NOT NULL,
               `order_id_pluggto` varchar(50) NOT NULL,
               `active` tinyint(4) NOT NULL
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;";
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
+      $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
+              ADD PRIMARY KEY (`id`);";
+
+      $this->db->query($sql);
+
+      $sql = "ALTER TABLE `" . DB_PREFIX . "pluggto_products_relation_opencart_products`
+               MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
+      
+      $this->db->query($sql);
+
       $sql = "CREATE TABLE IF NOT EXISTS `" . DB_PREFIX . "pluggto_products_queue` (
-              `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+              `id` int(11) NOT NULL,
                 `product_id` int(11) NOT NULL,
                 `product_id_pluggto` varchar(255) NOT NULL,
                 `process` int(11) NOT NULL,
                 `response` text NOT NULL
-              ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
               ";
 
       $this->db->query($sql);
@@ -91,14 +98,27 @@ class ModelPluggtoPluggto extends Model{
                MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
 
       $this->db->query($sql);
+
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "oc_pluggto_products_queue` ADD PRIMARY KEY (`id`);");
+      
+      $this->db->query("ALTER TABLE `" . DB_PREFIX . "oc_pluggto_products_queue` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
       
     } catch (Exception $e) {
-      var_dump($e->getMessage());exit;
+      
     }
+
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "user ORDER BY user_id DESC");
   }
 
   public function uninstall() {
     $this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "pluggto`;");
+	$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "pluggto_products_queue`;");
+	$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "pluggto_products_relation_opencart_products`;");
+	$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "order_relation_pluggto_and_opencart`;");
+	$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "pluggto_notifications`;");
+	$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "settings_products_synchronization`;");
+	$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "pluggto_log`;");
+	$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "pluggto_linkage_fields`;");
   }
 
   public function getProductsTable() {
@@ -285,7 +305,13 @@ class ModelPluggtoPluggto extends Model{
           'Content-Length: ' . strlen($data_string))
       );
 
-    }
+    }elseif (strtolower ( $method ) == "delete") {
+		
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	}
     
     $result = curl_exec($ch);
     
@@ -293,7 +319,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function updateTo($product, $id) {
-    $url = "http://api.plugg.to/products/".$id;
+    $url = "http://api.plugg.to/skus/".$id;
     
     $method = "put";
     
@@ -309,7 +335,7 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function sendToPluggTo($product, $sku) {
-    $url = "http://api.plugg.to/products/" . $sku;
+    $url = "http://api.plugg.to/skus/" . $sku;
     
     $method = "put";
     
@@ -323,6 +349,20 @@ class ModelPluggtoPluggto extends Model{
     
     return $data;    
   }
+  
+  public function deleteInPluggTo($sku) {
+    $url = "http://api.plugg.to/skus/" . $sku;
+    
+    $method = "delete";
+    
+    $accesstoken = $this->getAccesstoken();
+    
+    $url = $url . "?access_token=" . $accesstoken;
+    
+    $data = $this->sendRequest($method, $url, null);
+    
+    return $data;    
+  }
 
   public function updateStockPluggTo($product, $id) {
     $url = "http://api.plugg.to/products/" . $id . "/stock";
@@ -332,6 +372,17 @@ class ModelPluggtoPluggto extends Model{
     $params = $product;
     $data = $this->sendRequest($method, $url, $params);
     return $data;
+  }
+  
+   public function getSync($field) 
+  {
+    $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "pluggto_linkage_fields where field_opencart = '{$field}'");
+
+    if (empty($result)) {
+      return true;
+    }
+    
+    return isset($result->row['field_pluggto']) ? $result->row['field_pluggto'] : 1;
   }
 
   public function createTo($product) {
@@ -356,6 +407,11 @@ class ModelPluggtoPluggto extends Model{
 
   public function createPluggToProductRelactionOpenCartPluggTo($pluggto_product_id, $opencart_product_id) {
     return $this->db->query("INSERT INTO " . DB_PREFIX . "pluggto_products_relation_opencart_products SET pluggto_product_id = '" . $this->db->escape($pluggto_product_id) . "', opencart_product_id = '" . $this->db->escape($opencart_product_id) . "', active = 1");    
+  }
+  
+  public function InsertItemsInQueues($status, $description, $date_created, $type, $action){
+   $sql = 'INSERT INTO ' . DB_PREFIX . 'pluggto_notifications (status, description, date_created, type, action) VALUES ('.$status.',"'. $description.'","'. $date_created.'","'. $type.'","' .$action.'")';
+   $this->db->query($sql);
   }
 
   public function getAllPluggToProductRelactionsOpenCart() {
@@ -438,13 +494,13 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function saveSettingsProductsSynchronization($data) {
-    $sql = "INSERT INTO " . DB_PREFIX . "settings_products_synchronization (`active`, `refresh_only_stock`) VALUES (" . $data['active'] . ", " . $data['refresh_only_stock'] . ")";
+    $sql = "INSERT INTO " . DB_PREFIX . "settings_products_synchronization (`active`, `refresh_only_stock`, `del_sync` ) VALUES (" . $data['active'] . ", " . $data['refresh_only_stock'] . ", " . $data['del_sync'] . ")";
     return $this->db->query($sql);
   }
 
   public function getSettingsProductsSynchronization(){
-    $sql = "SELECT * FROM " . DB_PREFIX . "settings_products_synchronization ORDER BY id DESC LIMIT 1";
-    return $this->db->query($sql);    
+    $config_pluggto = "SELECT * FROM `" . DB_PREFIX . "settings_products_synchronization` ORDER BY id DESC LIMIT 1";
+    return $this->db->query($config_pluggto);    
   }
 
   public function saveField($field_opencart, $field_pluggto){

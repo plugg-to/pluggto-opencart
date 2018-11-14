@@ -429,7 +429,7 @@ class ModelPluggtoPluggto extends Model{
   }
  
   public function getProduct($product_id){
-      $url = "http://api.plugg.to/products/".$product_id;
+      $url = "http://api.plugg.to/skus/".$product_id;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -1187,14 +1187,22 @@ class ModelPluggtoPluggto extends Model{
 
   public function getOptionIdByName($name) {
     $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
-
-    return $result->row['option_id'];    
+	
+	if(isset($result->row['option_id']) &&!empty($result->row['option_id'])){
+		return $result->row['option_id']; 
+	}else{
+		return 0;
+	}		
   }
 
   public function getOptionValueIdByNameNew($name) {
     $result = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE name = '" . $name . "'");
 
-    return $result->row['option_value_id'];    
+	if(isset($result->row['option_value_id']) &&!empty($result->row['option_value_id'])){
+		return $result->row['option_value_id'];  
+	}else{
+		return 0;
+	}			
   }
 
   public function getProductsUpdatedLastHour() {

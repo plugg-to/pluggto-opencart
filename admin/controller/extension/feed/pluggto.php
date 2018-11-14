@@ -21,15 +21,241 @@ class ControllerExtensionFeedPluggTo extends Controller {
 
   public function install() {
     $this->load->model('pluggto/pluggto');
-
-    $this->model_pluggto_pluggto->install();
+	$this->model_pluggto_pluggto->install();
+	
+	$this->load->model('setting/setting');
+	$this->model_setting_setting->editSetting('pluggto', ['pluggto_status'=>1]);
+	
+	$this->load->model('extension/event');
+	$this->model_extension_event->addEvent('pluggto_add',  'admin/model/catalog/product/addProduct/after', 'extension/feed/pluggto/forceSyncProduct');
+	$this->model_extension_event->addEvent('pluggto_edit',  'admin/model/catalog/product/editProduct/after', 'extension/feed/pluggto/forceSyncProduct');
+	$this->model_extension_event->addEvent('pluggto_delete',  'admin/model/catalog/product/deleteProduct/before', 'extension/feed/pluggto/deleteProduct');
+	
   }
 
   public function uninstall() {
     $this->load->model('pluggto/pluggto');
-
-    $this->model_pluggto_pluggto->uninstall();
+	$this->model_pluggto_pluggto->uninstall();
+	
+	$this->load->model('setting/setting');
+	$this->model_setting_setting->deleteSetting('pluggto');
+	
+	$this->load->model('extension/event');
+	$this->model_extension_event->deleteEvent('pluggto_add');
+	$this->model_extension_event->deleteEvent('pluggto_edit');
+	$this->model_extension_event->deleteEvent('pluggto_delete');
   }
+  
+  	public function forceSyncProduct($eventRoute, $product_update) {
+		
+		$this->load->model('catalog/product');
+		$this->load->model('pluggto/pluggto');
+		
+		if(isset($product_update[0]["sku"]) && !empty($product_update[0]["sku"])){
+			$produto_bruto = $product_update[0];
+			$result = $this->db->query("SELECT product_id FROM `" . DB_PREFIX . "product` WHERE `sku` LIKE '".$produto_bruto["sku"]."'");		
+			
+			$product = array(
+				'name' => $produto_bruto["product_description"][1]["name"],
+				'sku' => $produto_bruto["sku"],
+				'price' => $produto_bruto["price"],
+				'quantity' => $produto_bruto ["quantity"],
+				'product_id' => $result->row["product_id"],
+				'description' => $produto_bruto["product_description"][1]["description"],
+				'manufacturer' => $produto_bruto["manufacturer"],
+				'model' => $produto_bruto["model"],
+				'ean' => $produto_bruto["ean"],
+				'nbm' => $produto_bruto["mpn"],
+				'isbn' => $produto_bruto["isbn"],
+				'status' => $produto_bruto["status"],
+				'length' => $produto_bruto["length"],
+				'width' => $produto_bruto["width"],
+				'height' => $produto_bruto ["height"],
+				'weight' => $produto_bruto["weight"],
+				'image' => $produto_bruto["image"]
+				);
+		}else{
+			$product_id = $product_update[0];
+			$product = $this->model_catalog_product->getProduct($product_id);
+			$productExist = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id);		
+		}
+		
+		$force = isset($this->request->get['force']) ? $this->request->get['force'] : true;
+
+		if (isset($this->request->get['error'])) {
+			$error = $this->request->get['error'];
+
+			error_reporting($error);
+		}
+		
+
+		if(isset($product['manufacturer_id']) && !empty($product['manufacturer_id'])){
+			$dados_marca = $this->db->query("SELECT * FROM `" . DB_PREFIX . "manufacturer` WHERE `manufacturer_id` LIKE '".$product['manufacturer_id']."'");
+			$marca = $dados_marca->row;
+			$brand = $marca['name']; 			
+		}else{
+			$brand = isset($product['manufacturer']) ? $product['manufacturer'] : '';
+		}
+		
+		if (empty($brand)) {
+			$brand = isset($product['model']) ? $product['model'] : '';
+		}
+		
+		
+		if ($force == true) {
+			$data = array(
+				'name' => $product['name'],
+				'sku' => $product['sku'],
+				'grant_type' => "authorization_code",
+				'price' => $product['price'],
+				'quantity' => $product['quantity'],
+				'external' => $product['product_id'],
+				'description' => html_entity_decode(str_replace('"', '\'', $product['description'])),
+				'brand' => $brand,
+				'model' => isset($product['model']) ? $product['model'] : '',
+				'ean' => $product['ean'],
+				'nbm' => isset($product['nbm']) ? $product['nbm'] : '',
+				'isbn' => $product['isbn'],
+				'available' => $product['status'],
+				'dimension' => array(
+					'length' => (float) $product['length'],
+					'width' => (float) $product['width'],
+					'height' => (float) $product['height'],
+					'weight' => (float) $product['weight'],
+				),
+				'photos' => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
+				'link' => 'http://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
+				'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
+				'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
+				'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+				'categories' => $this->getCategoriesToPluggTo($product['product_id'])
+			);
+
+			$data['attributes'][] = array(
+				'code' => 'model',
+				'label' => 'model',
+				'value' => array(
+					'code' => $product['model'],
+					'label' => $product['model'],
+				),
+			);
+		} else {
+			$data = array(
+				'sku' => $product['sku'],
+				'grant_type' => "authorization_code",
+				'price' => $product['price'],
+				'quantity' => $product['quantity'],
+				'external' => $product['product_id'],
+				'variations' => $this->getVariationsToSaveInOpenCart($product['product_id'], $force),
+				'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+			);
+		}
+
+		if (!empty($productExist)) {
+			if (!$this->model_pluggto_pluggto->getSync('sync_name')) {
+				unset($data['name']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_description')) {
+				unset($data['description']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_price')) {
+				unset($data['price']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_special_price')) {
+				unset($data['special_price']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_dimensions')) {
+				unset($data['dimension']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_quantity')) {
+				unset($data['quantity']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_photos')) {
+				unset($data['photos']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_categories')) {
+				unset($data['categories']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_attributes')) {
+				unset($data['attributes']);
+			}
+
+			if (!$this->model_pluggto_pluggto->getSync('sync_brand')) {
+				unset($data['brand']);
+			}
+		}
+		
+		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
+
+		//$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
+		
+		if(!isset($response->error) && isset($response->Product)){
+			$this->model_pluggto_pluggto->createPluggToProductRelactionOpenCartPluggTo($response->Product->id, $product['product_id']);
+		}
+
+		/*if (!isset($response['response']->Product) && empty($response['response']->Product)) {
+		}else{
+			$status = 1;
+			$description = 'O produto foi enviado para plugg.to';
+			$date_created = date("Y-m-d H:i:s");		
+			$type =  $response['method'];
+			$action = '/skus/'.$product['sku'];
+			$this->model_pluggto_pluggto->InsertItemsInQueues($status, $description, $date_created, $type, $action);
+		}*/
+		
+		
+	}
+	
+	public function deleteProduct($eventRoute, $product) {		
+		$this->load->model('catalog/product');
+		$this->load->model('pluggto/pluggto');
+		
+		$del_ativo = $this->model_pluggto_pluggto->getSettingsProductsSynchronization();
+		$del_ativo = $del_ativo->row["del_sync"];
+		
+		if($del_ativo == 1){
+		
+		$product_id = $product[0];
+		$product_data = $this->model_catalog_product->getProduct($product_id);
+		
+		$response = $this->model_pluggto_pluggto->deleteInPluggTo($product_data['sku']);
+		
+		}
+	}
+	
+	public function getCategoriesToPluggTo($product_id) {
+		$this->load->model('catalog/product');
+		$this->load->model('catalog/category');
+		
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_to_category WHERE product_id = '" . (int)$product_id . "'");
+
+		$categories = $query->rows;
+
+		$response = array();
+		foreach ($categories as $category) {
+			$categoryData = $this->model_catalog_category->getCategory($category['category_id']);
+			$firstParent = (isset($categoryData['parent_id']) && !empty($categoryData['parent_id'])) ? $this->model_catalog_category->getCategory($categoryData['parent_id']) : null;
+			$secondParent = (isset($firstParent['parent_id']) && !empty($firstParent['parent_id'])) ? $this->model_catalog_category->getCategory($firstParent['parent_id']) : null;
+			$thirdParent = (isset($secondParent['parent_id']) && !empty($secondParent['parent_id'])) ? $this->model_catalog_category->getCategory($secondParent['parent_id']) : null;
+
+			$response[] = array(
+				'name' => ((isset($categoryData['name'])) ? $categoryData['name'] : '')
+				. ((isset($firstParent['name'])) ? ' > ' . $firstParent['name'] : '')
+				. ((isset($secondParent['name'])) ? ' > ' . $secondParent['name'] : '')
+				. ((isset($thirdParent['name'])) ? ' > ' . $thirdParent['name'] : ''),
+			);
+		}
+
+		return $response;
+	}
 
   /**
   * Salvar configuraçoes de sicronizacao
@@ -40,7 +266,9 @@ class ControllerExtensionFeedPluggTo extends Controller {
     $data = array(
       'refresh_only_stock' => 1,
       'active' => $this->request->post['active'],
-      'only_actives' => $this->request->post['only_actives']
+      'only_actives' => $this->request->post['only_actives'],
+	  'del_sync' => $this->request->post['del_sync'],
+	  
     );
         
     $this->session->data['alerts'] = 'Configurações salvas com sucesso!';
@@ -131,96 +359,120 @@ class ControllerExtensionFeedPluggTo extends Controller {
   }
 
   public function getSpecialPriceProductToPluggTo($product_id) {
+	$this->load->model('catalog/product');
     $specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
-    $special = $specialPrice['special'];
-    return end($special);
+    $special = $specialPrice[0]['price'];
+    return $special;
   }
 
   public function getPhotosToSaveInOpenCart($product_id, $image_main) {
-    $images = $this->model_catalog_product->getProductImages($product_id);
+		$images = $this->model_catalog_product->getProductImages($product_id);
 
-    $response = array(
-      array(
-        'url' =>  'http://' . $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
-        'remove' => true
-      ),
-      array(
-        'url'   => 'http://' . $_SERVER['SERVER_NAME'] . '/image/cache/' . $image_main,
-        'title' => 'Imagem principal do produto',
-        'order' => 0
-      )
-    );
+		$response = array();
 
-    return $response;
-  }
+		if (isset($image_main) && !empty($image_main)) {
+			$response[] = array(
+				'url' => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image_main,
+				'title' => 'Imagem principal do produto',
+				'order' => 1,
+			);
+		}
 
-  public function getVariationsToSaveInOpenCart($product_id) {
-    $product = $this->model_catalog_product->getProduct($product_id);
-    $options = $this->model_catalog_product->getProductOptions($product_id);
-  
-    $response = array();
-    foreach ($options as $i => $option) {
-      foreach ($option['product_option_value'] as $item) {
-        $response[] = array(
-          'name'     => $product['name'],
-          'external' => $option['product_option_id'],
-          'quantity' => $item['quantity'],
-          'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
-          'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
-          'sku' => 'sku-' . $option['product_option_id'],
-          'ean' => '',
-          'photos' => array(),
-          'attributes' => array(),
-          'dimesion' => array(
-            'length' => $product['length'],
-            'width'  => $product['width'],
-            'height' => $product['height'],
-            'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
-          )
-        );
-      }
-    }
+		foreach ($images as $i => $image) {
+			$response[] = array(
+				'url' => 'http://' . $_SERVER['SERVER_NAME'] . '/image/' . $image['image'],
+				'title' => 'Imagem principal do produto',
+				'order' => $image['sort_order'],
+			);
+		}
 
-    return $response;
-  }
+		return $response;
+	}
 
-  public function getAtrributesToSaveInOpenCart($product_id) {
-    $this->load->model('catalog/product');
+  public function getVariationsToSaveInOpenCart($product_id, $force = true) {
+		$product = $this->model_catalog_product->getProduct($product_id);
+		$options = $this->model_catalog_product->getProductOptions($product_id);
+		
+		$response = array();
+		foreach ($options as $i => $option) {
+		  foreach ($option['product_option_value'] as $item) {
 
-    $product    = $this->model_catalog_product->getProduct($product_id);
-    $attributes = $this->model_catalog_product->getProductAttributes($product_id);
+		  	if (isset($item['subtract']))
+		  		return;
 
-    $response = array();
+			/*$attributes = array();
+			foreach ($attributesTemp as $value) {
+				$attributes[] = $value;
+			}*/
 
-    foreach ($attributes as $i => $attribute) {
-      if (isset($attribute['attribute']) && !empty($attribute['attribute']))
-      {
-        foreach ($attribute['attribute'] as $i => $attr) {
-          $response[] = array(
-            'code'  => $attr['attribute_id'],
-            'label' => $attr['text'],
-            'value' => array(
-              'code'  => $attr['attribute_id'],
-              'label' => $attr['text'],
-            )
-          );
-        }
+			$attributes[] = array(
+				'code'  => 'size',
+				'label' => $option['name'],
+				'value'	=> array(
+					'code' => $item['name'],
+					'label'=> $item['name']
+				)
+			);
 
-        continue;
-      }
+			if ($force === true) {
+				$response[] = array(
+					'name'     => $product['name'] . ' - ' . $item['name'],
+					'external' => $option['product_option_id'],
+					'quantity' => $item['quantity'],
+					'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+					'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+					'sku' => $product['sku'] . '-' . $item['name'],
+					'ean' => '',
+					'photos' => array(),
+					'attributes' => $attributes,
+					'dimesion' => array(
+						'length' => $product['length'],
+						'width'  => $product['width'],
+						'height' => $product['height'],
+						'weight' => ($item['weight_prefix'] == '+') ? $item['weight'] + $product['weight'] : $item['weight'] - $product['weight'],
+					)
+				);
+			} else {
+				$response[] = array(
+					'name'     => $product['name'] . ' - ' . $item['name'],
+					'quantity' => $item['quantity'],
+					'special_price' => $this->getSpecialPriceProductToPluggTo($product_id),
+					'price' => ($item['price_prefix'] == '+') ? $product['price'] + $item['price'] : $product['price'] - $item['price'] ,
+					'sku' => $product['sku'] . '-' . $item['name']
+				);
+			}
+		  }
+		}
 
-      $response[] = array(
-        'code'  => $attribute['attribute_id'],
-        'label' => $attribute['product_attribute_description'][1]['text'],
-        'value' => array(
-          'code'  => $attribute['attribute_id'],
-          'label' => $attribute['product_attribute_description'][1]['text'],
-        )
-      );
-    }
+		return $response;
+	}
 
-    return $response;
-  }
+ public function getAtrributesToSaveInOpenCart($product_id) {
+		$this->load->model('catalog/product');
+
+		$product    = $this->model_catalog_product->getProduct($product_id);
+		$attributes = $this->model_catalog_product->getProductAttributes($product_id);
+		
+		$response = array();
+
+		foreach ($attributes as $i => $attribute) {
+			if (isset($attribute['attribute']) && !empty($attribute['attribute']))
+			{
+				foreach ($attribute['attribute'] as $i => $attr) {
+					$response[] = array(
+						'code'  => $attr['name'],
+						'label' => $attr['name'],
+						'value' => array(
+							'code'  => $attr['text'],
+							'label' => $attr['text'],
+						)
+					);
+				}
+			}
+		}
+
+		return $response;
+	}
 
   public function saveFieldsLinkage(){
     $this->load->model('pluggto/pluggto');
