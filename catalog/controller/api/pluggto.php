@@ -254,17 +254,12 @@ class ControllerApiPluggto extends Controller {
 					'telephone' 		 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'fax' 				 => (isset($order->Order->receiver_phone) ? $order->Order->receiver_phone : null),
 					'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
-					'custom_field'		 => array(
-<<<<<<< HEAD
-						$cpf_custom_field => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null)
-=======
-						$cpf_custom_field => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
+					'custom_field'		 => array( $cpf_custom_field => (isset($order->Order->payer_cpf) ? $order->Order->payer_cpf : null),
 						'address' => array(
 							$number_custom_field => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
 							$complement_custom_field => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : ""),
 							$add_infor => (isset($order->Order->receiver_additional_info) ? $order->Order->receiver_additional_info : "")
 						)
->>>>>>> 8d2167e... Mapeando informação de informações adicionais
 					)
 				);
 
