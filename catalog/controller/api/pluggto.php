@@ -275,12 +275,9 @@ class ControllerApiPluggto extends Controller {
 				$response_id  = $existOrderID;
 
 				if ($response_id) {					
-					var_dump($this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 					$this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 				} else {
 					$response_id = $this->model_checkout_order->addOrder($data);
-					echo 'here';
-					var_dump($response_id);
 					if ($response_id <= 0)
 					{
 						$this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => 'Pedido nao foi criado')));
@@ -647,9 +644,6 @@ class ControllerApiPluggto extends Controller {
         $product = $this->model_catalog_product->getProduct($product_id);
         
 	    $brand = isset($product['manufacturer']) ? $product['manufacturer'] : '';
-		if (empty($brand)) {
-			$brand = isset($product['model']) ? $product['model'] : '';
-		}
 
 		$productExist = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id);
 		
@@ -754,15 +748,10 @@ class ControllerApiPluggto extends Controller {
 
 		if (!isset($response->Product) && empty($response->Product))
 		{
-			var_dump($response);
-			echo '<hr>';
-			
 			echo 'Algo deu errado, tente novamente';
 			exit;
 		}
 
-		var_dump($response);
-		echo '<hr>';
 		echo 'O produto foi enviado para plugg.to';
 		exit;
     }
@@ -957,7 +946,7 @@ class ControllerApiPluggto extends Controller {
 			}*/
 
 			$attributes[] = array(
-				'code'  => 'size',
+				'code'  =>$option['name'],
 				'label' => $option['name'],
 				'value'	=> array(
 					'code' => $item['name'],
@@ -999,8 +988,9 @@ class ControllerApiPluggto extends Controller {
 	}
 	
 	public function getSpecialPriceProductToPluggTo($product_id) {
-		$this->load->model('catalog/product');
-		$specialPrice = $this->model_catalog_product->getProductSpecials2($product_id);
+		
+		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "' ORDER BY priority, price");
+		$specialPrice = $query->rows;
 		$special = $specialPrice[0]['price'];
 		return $special;
   }

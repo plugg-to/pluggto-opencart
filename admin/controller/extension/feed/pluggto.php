@@ -16,7 +16,8 @@ class ControllerExtensionFeedPluggTo extends Controller {
     'carta_comercial' => 'Carta Comercial',
     'carta_comercial_registrada' => 'Carta Comercial Registrada',
     'free' => 'Frete Gratis',
-    'frete_register' => 'Frete por carta registrada'
+    'frete_register' => 'Frete por carta registrada',
+	'transportadora' => 'Transportadora'
   );
 
   public function install() {
@@ -96,12 +97,7 @@ class ControllerExtensionFeedPluggTo extends Controller {
 		}else{
 			$brand = isset($product['manufacturer']) ? $product['manufacturer'] : '';
 		}
-		
-		if (empty($brand)) {
-			$brand = isset($product['model']) ? $product['model'] : '';
-		}
-		
-		
+				
 		if ($force == true) {
 			$data = array(
 				'name' => $product['name'],
@@ -406,7 +402,7 @@ class ControllerExtensionFeedPluggTo extends Controller {
 			}*/
 
 			$attributes[] = array(
-				'code'  => 'size',
+				'code'  => $option['name'],
 				'label' => $option['name'],
 				'value'	=> array(
 					'code' => $item['name'],
