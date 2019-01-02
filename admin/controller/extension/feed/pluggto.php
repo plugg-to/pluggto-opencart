@@ -98,7 +98,7 @@ class ControllerExtensionFeedPluggTo extends Controller {
 			$brand = isset($product['manufacturer']) ? $product['manufacturer'] : '';
 		}
 				
-		if ($force == true) {
+		//if ($force == true) {
 			$data = array(
 				'name' => $product['name'],
 				'sku' => $product['sku'],
@@ -127,7 +127,7 @@ class ControllerExtensionFeedPluggTo extends Controller {
 				'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 			);
 
-			$data['attributes'][] = array(
+			/*$data['attributes'][] = array(
 				'code' => 'model',
 				'label' => 'model',
 				'value' => array(
@@ -187,7 +187,7 @@ class ControllerExtensionFeedPluggTo extends Controller {
 			if (!$this->model_pluggto_pluggto->getSync('sync_brand')) {
 				unset($data['brand']);
 			}
-		}
+		}*/
 		
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 

@@ -647,7 +647,7 @@ class ControllerApiPluggto extends Controller {
 
 		$productExist = $this->model_pluggto_pluggto->getRelactionProductPluggToAndOpenCartByProductIdOpenCart($product_id);
 		
-		if ($force == true) {
+		//if ($force == true) {
 			$data = array(
 				'name'       => $product['name'],
 				'sku'        => $product['sku'],
@@ -676,7 +676,7 @@ class ControllerApiPluggto extends Controller {
 				'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 			);
 
-			$data['attributes'][] = array(
+			/*$data['attributes'][] = array(
 				'code'  => 'model',
 				'label' => 'model',
 				'value'	=> array(
@@ -736,7 +736,7 @@ class ControllerApiPluggto extends Controller {
 			if (!$this->model_pluggto_pluggto->getSync('sync_brand')) {
 				unset($data['brand']);
 			}
-		}
+		}*/
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
 		
