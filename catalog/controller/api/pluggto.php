@@ -991,9 +991,13 @@ class ControllerApiPluggto extends Controller {
 		
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "' ORDER BY priority, price");
 		$specialPrice = $query->rows;
-		$special = $specialPrice[0]['price'];
+		$special = 0;
+    	if(isset($specialPrice[0]['price'])){
+      		$special = $specialPrice[0]['price'];
+    	}
+		
 		return $special;
-  }
+  	}
 
 	public function getAtrributesToSaveInOpenCart($product_id) {
 		$this->load->model('catalog/product');

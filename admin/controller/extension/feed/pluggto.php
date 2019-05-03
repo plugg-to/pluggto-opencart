@@ -357,7 +357,10 @@ class ControllerExtensionFeedPluggTo extends Controller {
   public function getSpecialPriceProductToPluggTo($product_id) {
 	$this->load->model('catalog/product');
     $specialPrice = $this->model_catalog_product->getProductSpecials($product_id);
-    $special = $specialPrice[0]['price'];
+    $special = 0;
+    if(isset($specialPrice[0]['price'])){
+      $special = $specialPrice[0]['price'];
+    }
     return $special;
   }
 
