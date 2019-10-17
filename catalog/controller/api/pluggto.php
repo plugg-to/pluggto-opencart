@@ -641,7 +641,8 @@ class ControllerApiPluggto extends Controller {
 			error_reporting($error);
 		}
 
-        $product = $this->model_catalog_product->getProduct($product_id);
+        $product = $this->model_pluggto_pluggto->getProductStore($product_id);
+
         
 	    $brand = isset($product['manufacturer']) ? $product['manufacturer'] : '';
 
@@ -737,8 +738,10 @@ class ControllerApiPluggto extends Controller {
 				unset($data['brand']);
 			}
 		}*/
+			
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
+
 		
 		$this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 		
@@ -990,14 +993,18 @@ class ControllerApiPluggto extends Controller {
 	public function getSpecialPriceProductToPluggTo($product_id) {
 		
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$product_id . "' ORDER BY priority, price");
-		$specialPrice = $query->rows;
-		$special = 0;
-    	if(isset($specialPrice[0]['price'])){
-      		$special = $specialPrice[0]['price'];
-    	}
-		
+
+        $specialPrice = $query->rows;
+
+		if(isset($specialPrice[0]['price'])){
+            $special = $specialPrice[0]['price'];
+        } else {
+            $special = 0.00;
+        }
+
+
 		return $special;
-  	}
+  }
 
 	public function getAtrributesToSaveInOpenCart($product_id) {
 		$this->load->model('catalog/product');
@@ -1101,7 +1108,16 @@ class ControllerApiPluggto extends Controller {
 	}
 	
 	public function getProductsActives() {
-		$this->load->model('catalog/product');
+		$this->load->model('pluggto/pluggto');
+
+
+        $configs = $this->model_pluggto_pluggto->getSettingsProductsSynchronization();
+
+        if(isset($configs->row['only_actives'])){
+            $onlyActives = $configs->row['only_actives'];
+        } else {
+            $onlyActives = 1;
+        }
 
 		$offset = 0;
 		
@@ -1109,8 +1125,15 @@ class ControllerApiPluggto extends Controller {
 			$offset = $this->request->get['offset'];
 		}
 
-		$response = $this->model_catalog_product->getProducts(array('filter_status' => 1,'start' => $offset ,'limit' => 1000));
-		
+
+        if($onlyActives == 1){
+            $response = $this->model_pluggto_pluggto->getProductsStore(array('status' => $onlyActives,'start' => $offset ,'limit' => 1000));
+        } else {
+            $response = $this->model_pluggto_pluggto->getProductsStore(array('start' => $offset ,'limit' => 1000));
+        }
+
+
+
 		if (isset($this->request->server['HTTP_ORIGIN'])) {
 			$this->response->addHeader('Access-Control-Allow-Origin: ' . $this->request->server['HTTP_ORIGIN']);
 

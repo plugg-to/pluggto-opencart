@@ -27,8 +27,9 @@ try {
               `id` int(11) NOT NULL,
               `active` tinyint(4) NOT NULL,
               `refresh_only_stock` tinyint(4) NOT NULL,
-			  `del_sync` tinyint(4) NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";    
+			  `del_sync` tinyint(4) NOT NULL,
+			  `only_actives` tinyint(1) DEFAULT 1
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);
 
@@ -494,7 +495,7 @@ try {
   }
 
   public function saveSettingsProductsSynchronization($data) {
-    $sql = "INSERT INTO " . DB_PREFIX . "settings_products_synchronization (`active`, `refresh_only_stock`, `del_sync` ) VALUES (" . $data['active'] . ", " . $data['refresh_only_stock'] . ", " . $data['del_sync'] . ")";
+    $sql = "INSERT INTO " . DB_PREFIX . "settings_products_synchronization (`active`, `refresh_only_stock`, `del_sync`, `only_actives` ) VALUES (" . $data['active'] . ", " . $data['refresh_only_stock'] . ", " . $data['del_sync'] . ", " . $data['only_actives'] .")";
     return $this->db->query($sql);
   }
 
