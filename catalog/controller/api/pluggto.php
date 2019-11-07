@@ -677,67 +677,75 @@ class ControllerApiPluggto extends Controller {
 				'categories' => $this->getCategoriesToPluggTo($product['product_id'])
 			);
 
-			/*$data['attributes'][] = array(
-				'code'  => 'model',
-				'label' => 'model',
-				'value'	=> array(
-					'code' => $product['model'],
-					'label'=> $product['model']
-				)
-			);
-		} else {
-			$data = array(
-				'sku'        => $product['sku'],
-				'grant_type' => "authorization_code",
-				'price'      => $product['price'],
-				'quantity'   => $product['quantity'],
-				'external'   => $product['product_id'],
-				'variations' => $this->getVariationsToSaveInOpenCart($product['product_id'], $force),
-				'special_price' => $this->getSpecialPriceProductToPluggTo($product_id)
-			);
-		}
+            if(!isset($data['photos']) || empty($data['photos'])){
 
-		if (!empty($productExist)) {
-			if (!$this->model_pluggto_pluggto->getSync('sync_name')) {
-				unset($data['name']);
-			}
+                if(isset($product['image']) && !empty($product['image'])){
+                    $data['photos'] = [];
+                    $data['photos'][] = ['url'=> $this->config->get('config_url') . 'image/' . $product['image']];
+                }
+            }
 
-			if (!$this->model_pluggto_pluggto->getSync('sync_description')) {
-				unset($data['description']);
-			}
+        /*$data['attributes'][] = array(
+            'code'  => 'model',
+            'label' => 'model',
+            'value'	=> array(
+                'code' => $product['model'],
+                'label'=> $product['model']
+            )
+        );
+    } else {
+        $data = array(
+            'sku'        => $product['sku'],
+            'grant_type' => "authorization_code",
+            'price'      => $product['price'],
+            'quantity'   => $product['quantity'],
+            'external'   => $product['product_id'],
+            'variations' => $this->getVariationsToSaveInOpenCart($product['product_id'], $force),
+            'special_price' => $this->getSpecialPriceProductToPluggTo($product_id)
+        );
+    }
 
-			if (!$this->model_pluggto_pluggto->getSync('sync_price')) {
-				unset($data['price']);
-			}
+    if (!empty($productExist)) {
+        if (!$this->model_pluggto_pluggto->getSync('sync_name')) {
+            unset($data['name']);
+        }
 
-			if (!$this->model_pluggto_pluggto->getSync('sync_special_price')) {
-				unset($data['special_price']);
-			}
+        if (!$this->model_pluggto_pluggto->getSync('sync_description')) {
+            unset($data['description']);
+        }
 
-			if (!$this->model_pluggto_pluggto->getSync('sync_dimensions')) {
-				unset($data['dimension']);
-			}
+        if (!$this->model_pluggto_pluggto->getSync('sync_price')) {
+            unset($data['price']);
+        }
 
-			if (!$this->model_pluggto_pluggto->getSync('sync_quantity')) {
-				unset($data['quantity']);
-			}
+        if (!$this->model_pluggto_pluggto->getSync('sync_special_price')) {
+            unset($data['special_price']);
+        }
 
-			if (!$this->model_pluggto_pluggto->getSync('sync_photos')) {
-				unset($data['photos']);
-			}
+        if (!$this->model_pluggto_pluggto->getSync('sync_dimensions')) {
+            unset($data['dimension']);
+        }
 
-			if (!$this->model_pluggto_pluggto->getSync('sync_categories')) {
-				unset($data['categories']);
-			}
+        if (!$this->model_pluggto_pluggto->getSync('sync_quantity')) {
+            unset($data['quantity']);
+        }
 
-			if (!$this->model_pluggto_pluggto->getSync('sync_attributes')) {
-				unset($data['attributes']);
-			}
+        if (!$this->model_pluggto_pluggto->getSync('sync_photos')) {
+            unset($data['photos']);
+        }
 
-			if (!$this->model_pluggto_pluggto->getSync('sync_brand')) {
-				unset($data['brand']);
-			}
-		}*/
+        if (!$this->model_pluggto_pluggto->getSync('sync_categories')) {
+            unset($data['categories']);
+        }
+
+        if (!$this->model_pluggto_pluggto->getSync('sync_attributes')) {
+            unset($data['attributes']);
+        }
+
+        if (!$this->model_pluggto_pluggto->getSync('sync_brand')) {
+            unset($data['brand']);
+        }
+    }*/
 			
 
 		$response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
@@ -1110,6 +1118,9 @@ class ControllerApiPluggto extends Controller {
 	public function getProductsActives() {
 		$this->load->model('pluggto/pluggto');
 
+		try{
+
+
 
         $configs = $this->model_pluggto_pluggto->getSettingsProductsSynchronization();
 
@@ -1147,6 +1158,10 @@ class ControllerApiPluggto extends Controller {
 		$this->response->addHeader('Content-Type: application/json');
 
 		$this->response->setOutput(json_encode($response));
+
+        } catch (Exception $e){
+		    var_dump($e->getMessage());die;
+        }
 	}
 
 	public function getProductsUpdatedLastHour() {

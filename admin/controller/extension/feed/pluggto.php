@@ -24,14 +24,14 @@ class ControllerExtensionFeedPluggTo extends Controller {
     $this->load->model('pluggto/pluggto');
 	$this->model_pluggto_pluggto->install();
 	
-	$this->load->model('setting/setting');
-	$this->model_setting_setting->editSetting('pluggto', ['pluggto_status'=>1]);
-	
-	$this->load->model('extension/event');
-	$this->model_extension_event->addEvent('pluggto_add',  'admin/model/catalog/product/addProduct/after', 'extension/feed/pluggto/forceSyncProduct');
-	$this->model_extension_event->addEvent('pluggto_edit',  'admin/model/catalog/product/editProduct/after', 'extension/feed/pluggto/forceSyncProduct');
-	$this->model_extension_event->addEvent('pluggto_delete',  'admin/model/catalog/product/deleteProduct/before', 'extension/feed/pluggto/deleteProduct');
-	
+	    $this->load->model('setting/setting');
+	    $this->model_setting_setting->editSetting('pluggto', ['pluggto_status'=>1]);
+
+      $this->load->model('extension/event');
+      $this->model_extension_event->addEvent('pluggto_add',  'admin/model/catalog/product/addProduct/after', 'extension/feed/pluggto/forceSyncProduct');
+      $this->model_extension_event->addEvent('pluggto_edit',  'admin/model/catalog/product/editProduct/after', 'extension/feed/pluggto/forceSyncProduct');
+      $this->model_extension_event->addEvent('pluggto_delete',  'admin/model/catalog/product/deleteProduct/before', 'extension/feed/pluggto/deleteProduct');
+
   }
 
   public function uninstall() {
