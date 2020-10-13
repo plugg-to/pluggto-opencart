@@ -136,6 +136,58 @@ class ControllerApiPluggto extends Controller {
         return $response;
     }
 
+    public function convertToStateShortName($name){
+
+        if(strlen($name) == 2){
+            return $name;
+        }
+
+        $estadosBrasileiros = array(
+            'AC'=>'acre',
+            'AL'=>'alagoas',
+            'AP'=>'amapa',
+            'AM'=>'amazonas',
+            'BA'=>'bahia',
+            'CE'=>'ceara',
+            'DF'=>'distrito federal',
+            'ES'=>'espírito santo',
+            'GO'=>'goias',
+            'MA'=>'maranhao',
+            'MT'=>'mato grosso',
+            'MS'=>'mato grosso do sul',
+            'MG'=>'minas gerais',
+            'PA'=>'para',
+            'PB'=>'paraiba',
+            'PR'=>'parana',
+            'PE'=>'pernambuco',
+            'PI'=>'piaui',
+            'RJ'=>'rio de janeiro',
+            'RN'=>'rio grande do norte',
+            'RS'=>'rio grande do sul',
+            'RO'=>'rondonia',
+            'RR'=>'roraima',
+            'SC'=>'santa catarina',
+            'SP'=>'sao paulo',
+            'SE'=>'sergipe',
+            'TO'=>'tocantins'
+        );
+        // retira acentos para fazer a busca
+        $newname = preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/"),explode(" ","a A e E i I o O u U n N"),$name);
+        // deixa tudo em minuscula
+
+        $newname = strtolower($newname);
+
+        // faz busca
+
+        if(array_search($newname,$estadosBrasileiros)){
+            return array_search($newname,$estadosBrasileiros);
+        } else {
+            return $name;
+        }
+
+
+
+    }
 
 
 
@@ -167,17 +219,22 @@ class ControllerApiPluggto extends Controller {
                 $complement_custom_field = $this->model_pluggto_pluggto->getIdCustomFieldByName('complement');
                 $add_infor               = $this->model_pluggto_pluggto->getIdCustomFieldByName('information_adds');
 
+                $order->Order->payer_phone = (!empty($order->Order->payer_phone_area)? '('.$order->Order->payer_phone_area.') '.$order->Order->payer_phone :  $order->Order->payer_phone);
+                $order->Order->receiver_phone = (!empty($order->Order->receiver_phone_area)? '('.$order->Order->receiver_phone_area.') '.$order->Order->receiver_phone :  $order->Order->receiver_phone);
+                if(isset($order->Order->receiver_state)) $order->Order->receiver_state = $this->convertToStateShortName($order->Order->receiver_state);
+                if(isset($order->Order->payer_state)) $order->Order->payer_state = $this->convertToStateShortName($order->Order->payer_state);
+
                 $customer = array(
                     'customer_group_id'  => 1,
                     'firstname' 		 => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
                     'lastname' 			 => (isset($order->Order->payer_lastname) ? $order->Order->payer_lastname : null),
                     'email' 			 => $email,
-                    'telephone' 		 => (isset($order->Order->payer_phone) ? $order->Order->payer_phone : null),
-                    'fax' 				 => (isset($order->Order->payer_phone) ? $order->Order->payer_phone : null),
+                    'telephone' 		 => (!empty($order->Order->payer_phone) ? $order->Order->payer_phone : $order->Order->receiver_phone),
+                    'fax' 				 => (!empty($order->Order->payer_phone) ? $order->Order->payer_phone : $order->Order->receiver_phone),
                     'payment_firstname'  => (isset($order->Order->payer_name) ? $order->Order->payer_name : null),
                     'address_1' => (!empty($order->Order->payer_address) ? $order->Order->payer_address : ""),
                     'city' => (isset($order->Order->payer_city) ? $order->Order->payer_city : ""),
-                    'address_2' => (isset($order->Order->zipcode_neighborhood) ? $order->Order->zipcode_neighborhood : ""),
+                    'address_2' => (isset($order->Order->payer_neighborhood) ? $order->Order->payer_neighborhood : ""),
                     'postcode' => (!empty($order->Order->payer_zipcode) ? $order->Order->payer_zipcode : $order->Order->receiver_zipcode),
                     'zone_id' => $this->getPaymentZoneIDByState(isset($order->Order->receiver_state) ? $order->Order->receiver_state : null),
                     'country_id' => 30,
@@ -199,8 +256,6 @@ class ControllerApiPluggto extends Controller {
                 }
 
 
-
-
                 $shippingMethod = (isset($order->Order->shipments[0]->shipping_method) ? $order->Order->shipments[0]->shipping_method : null);
 
                 if (empty($shippingMethod) || !isset($shippingMethod)) {
@@ -210,8 +265,7 @@ class ControllerApiPluggto extends Controller {
                 }
 
 
-                $order->Order->payer_phone = (!empty($order->Order->payer_phone_area)? '('.$order->Order->payer_phone_area.') '.$order->Order->payer_phone :  $order->Order->payer_phone);
-                $order->Order->receiver_phone = (!empty($order->Order->receiver_phone_area)? '('.$order->Order->receiver_phone_area.') '.$order->Order->receiver_phone :  $order->Order->receiver_phone);
+
 
                 $data = array(
                     'invoice_prefix' 	 => (isset($order->Order->id) ? $order->Order->id : null),
@@ -277,12 +331,12 @@ class ControllerApiPluggto extends Controller {
                         1 => (!empty($order->Order->payer_cpf) ? $order->Order->payer_cpf : (!empty($order->Order->payer_tax_id) ? $order->Order->payer_tax_id: (!empty($order->Order->receiver_cpf)? $order->Order->receiver_cpf : ""  )) ),
                     ),
                     'shipping_custom_field' => array(
-                        3 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
-                        5 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
+                        7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
+                        3 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
                     ),
                     'payment_custom_field' => array(
-                        3 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
-                        5 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
+                        7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
+                        3 => (isset($order->Order->receiver_address_complement) ? $order->Order->receiver_address_complement : "")
                     )
                 );
 
