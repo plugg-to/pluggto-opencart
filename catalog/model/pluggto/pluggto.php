@@ -3,6 +3,7 @@
 class ModelPluggtoPluggto extends Model{
  
   public function getOrders($data = array()) {
+
     $sql = "SELECT o.*, CONCAT(o.firstname, ' ', o.lastname) AS customer, (SELECT os.name FROM " . DB_PREFIX . "order_status os WHERE os.order_status_id = o.order_status_id AND os.language_id = '" . (int)$this->config->get('config_language_id') . "') AS order_status, o.shipping_code, o.total, o.currency_code, o.currency_value, o.date_added, o.date_modified FROM `" . DB_PREFIX . "order` o";
 
     if (isset($data['filter_order_status'])) {
@@ -37,9 +38,15 @@ class ModelPluggtoPluggto extends Model{
       $sql .= " AND DATE(o.date_modified) = DATE('" . $this->db->escape($data['filter_date_modified']) . "')";
     }
 
+    if (!empty($data['modified_data_start'])) {
+          $sql .= " AND o.date_modified > '" . $this->db->escape($data['modified_data_start']) . "'";
+      }
+
     if (!empty($data['filter_total'])) {
       $sql .= " AND o.total = '" . (float)$data['filter_total'] . "'";
     }
+
+
 
     $sort_data = array(
       'o.order_id',
@@ -112,9 +119,15 @@ class ModelPluggtoPluggto extends Model{
   }
 
   public function getOrderTotalByCode($order_id, $code) {
+
     $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_total WHERE order_id = '" . (int)$order_id . "' AND code = '" . $code . "' ORDER BY sort_order");
-    
-    return $query->row['value'];
+
+    if(isset($query->row['value'])){
+        return $query->row['value'];
+    } else {
+       return 0;
+    }
+
   }
 
   public function getShippingMethodToPluggByOpenCart($input){
@@ -278,12 +291,25 @@ class ModelPluggtoPluggto extends Model{
     return $data;
   }
 
+    public function getOneOrder($id) {
+        $url = "http://api.plugg.to/orders/" . $id;
+        $method = "GET";
+        $accesstoken = $this->getAccesstoken();
+        $url = $url."?access_token=".$accesstoken;
+        $data = $this->sendRequest($method, $url,array());
+        return $data;
+    }
+
+
   public function editOrder($params, $id) {
+
     $url = "http://api.plugg.to/orders/" . $id;
+
     $method = "put";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
     $data = $this->sendRequest($method, $url, $params);
+
     return $data;
   }
 

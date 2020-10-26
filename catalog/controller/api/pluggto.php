@@ -45,7 +45,10 @@ class ControllerApiPluggto extends Controller {
     public function cronUpdateOrders() {
         $this->load->model('pluggto/pluggto');
 
-        $num_orders_pluggto = $this->saveOrdersInPluggTo($this->model_pluggto_pluggto->getOrders(array('start' => 0, 'limit' => 999999999)));
+        $endDate = date("Y-m-j H:i:s", strtotime( '-2 days' ) );
+
+        $num_orders_pluggto = $this->saveOrdersInPluggTo($this->model_pluggto_pluggto->getOrders(array('start' => 0, 'limit' => 999999999,'modified_data_start'=>$endDate)));
+
 
         $response = array(
             'orders_created_or_updated_pluggto' => $num_orders_pluggto,
@@ -486,7 +489,35 @@ class ControllerApiPluggto extends Controller {
 
         $cont = 0;
         $return = array();
+
+        
         foreach ($orders as $order) {
+
+            $cont ++;
+            
+            var_dump($cont);
+            
+
+            try{
+
+            $responseData = $this->model_pluggto_pluggto->getRelactionOrder($order['order_id']);
+
+            if (empty($responseData))
+            {
+                continue;
+            }
+
+            $response = $this->model_pluggto_pluggto->getOneOrder($responseData['order_id_pluggto']);
+
+
+            if(!isset($response->Order->id)){
+                continue;
+            } else {
+                $orderInPluggto = $response->Order;
+            }
+
+
+
             $params = array(
                 'external' 			  => $order['order_id'],
                 'status' 			  => $this->model_pluggto_pluggto->getStatusToPluggToByStatusOpenCart($order['order_status_id']),
@@ -521,18 +552,18 @@ class ControllerApiPluggto extends Controller {
                 'payer_ie'			  => '',
                 'payer_gender'        => 'n/a',
                 'items'				  => $this->getItemsToOrderPluggTo($order),
-                'shipments'           => $this->getDataShipmentsByOrder($order),
+                'shipments'           => $this->getDataShipmentsByOrder($order,$orderInPluggto),
             );
 
-            $response = $this->model_pluggto_pluggto->getRelactionOrder($order['order_id']);
+            $responsePluggTo = $this->model_pluggto_pluggto->editOrder($params, $responseData['order_id_pluggto']);
 
-            $return[$response['order_id_pluggto']] = 'Não editado, pedido criado direto no PluggTo';
-
-            if (!empty($response))
-            {
-                $responsePluggTo = $this->model_pluggto_pluggto->editOrder($params, $response['order_id_pluggto']);
-
-                $return[$response['order_id_pluggto']] = print_r($responsePluggTo, 1);
+            } catch (Exception $e){
+                var_dump('erro');
+                var_dump($e->getFile());
+                var_dump($e->getLine());
+                var_dump($e->getMessage());
+                echo("<pre>");
+                var_dump($order);
             }
         }
 
@@ -541,7 +572,7 @@ class ControllerApiPluggto extends Controller {
         return $return;
     }
 
-    public function getDataShipmentsByOrder($order){
+    public function getDataShipmentsByOrder($order,$orderInPluggto){
         $response = array(
             array(
                 'external' 		   => $order['order_id'],
@@ -549,6 +580,10 @@ class ControllerApiPluggto extends Controller {
                 'shipping_method'  => $order['shipping_method']
             )
         );
+
+        if(isset($orderInPluggto->shipments[0]->id)){
+            $response[0]['id'] = $orderInPluggto->shipments[0]->id;
+        }
 
         return $response;
     }
