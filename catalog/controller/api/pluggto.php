@@ -71,6 +71,7 @@ class ControllerApiPluggto extends Controller {
             'action' => "import products from pluggto",
         );
 
+
         if (!empty($productsQueue))
         {
             foreach ($productsQueue as $queue_product)
@@ -618,14 +619,13 @@ class ControllerApiPluggto extends Controller {
         $data = array();
 
 
-
-
         if (empty($product['sku'])) {
             $this->model_pluggto_pluggto->createLog(print_r(array('message' => 'not exist sku', 'sku' => $product['sku']), 1), 'exportAllProductsToPluggTo');
             return 'Problem SKU' . $product['name'];
         }
 
-        //$responseRemove = $this->model_pluggto_pluggto->removeProduct($product['sku']);
+        $productInPluggto = $this->model_pluggto_pluggto->getProductBySKU($product['sku']);
+
 
         $data = array(
             'name'       => $product['name'],
@@ -646,14 +646,13 @@ class ControllerApiPluggto extends Controller {
                 'height' => (float) $product['height'],
                 'weight' => (float) $product['weight']
             ),
-            'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image']),
+            'photos'     => $this->getPhotosToSaveInOpenCart($product['product_id'], $product['image'],$productInPluggto),
             'link'       => 'https://' . $_SERVER['SERVER_NAME'] . '/index.php?route=product/product&product_id=' . $product['product_id'],
             'variations' => $this->getVariationsToSaveInOpenCart($product['product_id']),
             'attributes' => $this->getAtrributesToSaveInOpenCart($product['product_id']),
             'special_price' => isset($product['special']) ? $product['special'] : 0,
             'categories' => $this->getCategoriesToPluggTo($product['product_id'])
         );
-
 
 
         $response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
@@ -1019,26 +1018,53 @@ class ControllerApiPluggto extends Controller {
         return $response;
     }
 
-    public function getPhotosToSaveInOpenCart($product_id, $image_main)
+    public function getPhotosToSaveInOpenCart($product_id, $image_main,$productInPluggto)
     {
         $images = $this->model_catalog_product->getProductImages($product_id);
 
         $response = array();
 
+        $urlInStore = [];
+
         if (isset($image_main) && !empty($image_main)) {
-            $response[] = array(
+
+            $urlInStore[ 'https://' . str_replace('www.', '', $_SERVER['SERVER_NAME']) . '/image/' . $image_main] = true;
+             $response[] = array(
                 'url' => 'https://' . str_replace('www.', '', $_SERVER['SERVER_NAME']) . '/image/' . $image_main,
                 'title' => 'Imagem principal do produto',
-                'order' => 1,
+                'order' => 0,
             );
         }
 
         foreach ($images as $i => $image) {
+
+            $urlInStore['https://' . str_replace('www.', '', $_SERVER['SERVER_NAME']) . '/image/' . $image['image']] = 1;
+
             $response[] = array(
                 'url' => 'https://' . str_replace('www.', '', $_SERVER['SERVER_NAME']) . '/image/' . $image['image'],
-                'title' => 'Imagem principal do produto',
-                'order' => $image['sort_order'],
+                'title' => '',
+                'order' => $image['sort_order'] + 1,
             );
+        }
+
+        if(isset($productInPluggto->Product->photos) && !empty($productInPluggto->Product->photos)){
+
+            foreach($productInPluggto->Product->photos as $onePhoto) {
+
+                if (isset($onePhoto->external) && !empty($onePhoto->external)) {
+                    $thisPhoto = $onePhoto->external;
+                } else {
+                    $thisPhoto = $onePhoto->url;
+                }
+
+                if(!isset($urlInStore[$thisPhoto])){
+
+                    $response[] = array(
+                        'url'   => $thisPhoto,
+                        'remove' => true
+                    );
+                }
+            }
         }
 
         return $response;
