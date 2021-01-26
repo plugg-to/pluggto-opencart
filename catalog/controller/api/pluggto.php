@@ -74,24 +74,30 @@ class ControllerApiPluggto extends Controller {
 
         if (!empty($productsQueue))
         {
-            foreach ($productsQueue as $queue_product)
-            {
-                //$product = $this->model_catalog_product->getProduct($item['product_id']);
-                $product = $this->model_pluggto_pluggto->getProductStore($queue_product['product_id']);
+            foreach ($productsQueue as $productToProcess) {
 
-                if(empty($product)){
-                    $this->model_pluggto_pluggto->processedQueueProduct($queue_product['product_id'], "opencart");
+
+                try {
+                    $product = $this->model_catalog_product->getProduct($productToProcess['product_id']);
+
+                    if($product){
+                        $return = $this->exportAllProductsToPluggTo($product);
+                        $response[$product['product_id']]['status']  = $return;
+                        $response[$product['product_id']]['message'] = $return !== null ? "Product '{$productToProcess['product_id']}' imported successfully" : "Produts Could not be imported";
+                    } else {
+                        $response[$product['product_id']]['status']  = 'NOT FOUND';
+                        $response[$product['product_id']]['message'] =   "Product ". $productToProcess['product_id'] . " could not be imported";
+                    }
+
+                } catch (Exception $e) {
                     continue;
                 }
 
-                $return = $this->exportAllProductsToPluggTo($product);
-
-                $response[$product['product_id']]['status']  = $return;
-                $response[$product['product_id']]['message'] = $return !== null ? "Product '{$product['product_id']}' imported successfully" : "Produts Could not be imported";
-
-                $this->model_pluggto_pluggto->processedQueueProduct($product['product_id'], "opencart");
+                $this->model_pluggto_pluggto->processedQueueProduct($productToProcess['product_id'], "opencart");
             }
         }
+
+
 
         $productsQueue = $this->model_pluggto_pluggto->getQueuesProducts('pluggto');
 
