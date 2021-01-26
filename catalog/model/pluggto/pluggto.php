@@ -1521,4 +1521,34 @@ class ModelPluggtoPluggto extends Model{
     return $product_data;
   }
 
+    public function saveExportationQueue(){
+        $this->load->model('catalog/product');
+
+        $products = $this->model_catalog_product->getProducts();
+
+        $this->insertAllIDsOpenCart($products);
+    }
+
+    // salva na fila para envio
+    public function insertAllIDsOpenCart($products){
+
+        foreach ($products as $product) {
+
+            if(empty($product['sku'])){
+                continue;
+            }
+
+            $query = 'Select * from ' . DB_PREFIX . 'pluggto_products_queue where product_id = "'.$product['product_id'].'" and process = 0' ;
+
+            $result = $this->db->query($query);
+
+            if($result->num_rows == 0){
+                $sql = 'INSERT INTO ' . DB_PREFIX . 'pluggto_products_queue (product_id,product_sku,product_id_pluggto,process,response) VALUES ("'. $product['product_id'] . '", "'.$product['sku'].'",0,0,0)';
+                $this->db->query($sql);
+            }
+        }
+    }
+
+
+
 }
