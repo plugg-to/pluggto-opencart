@@ -69,7 +69,8 @@ try {
               `id` int(11) NOT NULL,
               `order_id_opencart` varchar(50) NOT NULL,
               `order_id_pluggto` varchar(50) NOT NULL,
-              `active` tinyint(4) NOT NULL
+              `active` tinyint(4) NOT NULL,
+              UNIQUE KEY `uk_pluggto` (`order_id_pluggto`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
       $this->db->query($sql);

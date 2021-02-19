@@ -257,6 +257,8 @@ class ControllerApiPluggto extends Controller {
                         ))
                 );
 
+
+
                 if (empty($customer_id)) {
                     $customer_id = $this->model_account_customer->addCustomer($customer);
                 }
@@ -338,7 +340,7 @@ class ControllerApiPluggto extends Controller {
                     'products'		 	 => $this->getProductsToSaveOpenCart($order),
                     'language_id'		 => 2,
                     'custom_field'		 => array(
-                        1 => (!empty($order->Order->payer_cpf) ? $order->Order->payer_cpf : (!empty($order->Order->payer_tax_id) ? $order->Order->payer_tax_id: (!empty($order->Order->receiver_cpf)? $order->Order->receiver_cpf : ""  )) ),
+                        $cpf_custom_field => (!empty($order->Order->payer_cpf) ? $order->Order->payer_cpf : (!empty($order->Order->payer_tax_id) ? $order->Order->payer_tax_id: (!empty($order->Order->receiver_cpf)? $order->Order->receiver_cpf : ""  )) ),
                     ),
                     'shipping_custom_field' => array(
                         7 => (isset($order->Order->receiver_address_number) ? $order->Order->receiver_address_number : ""),
@@ -350,30 +352,37 @@ class ControllerApiPluggto extends Controller {
                     )
                 );
 
-
-
-
-
+                
                 $existOrderID = $this->model_pluggto_pluggto->orderExistInPluggTo($id_pluggto);
 
-                $response_id  = $existOrderID;
+                if ($existOrderID) {
+                    // $response_id = $this->model_checkout_order->editOrder($existOrderID, $data);
+                    $this->model_checkout_order->addOrderHistory($existOrderID, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 
-
-                if ($response_id) {
-                    $this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
                 } else {
+
                     $response_id = $this->model_checkout_order->addOrder($data);
+
                     if ($response_id <= 0)
                     {
                         $this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => false, 'message' => 'Pedido nao foi criado')));
                         continue;
                     }
 
-                    $this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
-
                     $this->model_checkout_order->addOrderHistory($response_id, $this->model_pluggto_pluggto->getStatusSaleByHistory($order->Order->status));
 
+                    try{
+
+                        $this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
+
+                        // caso ocorra uma exception aqui, provavelmente ordem já existe, necessário excluir a criada para evitar duplicacao
+                    } catch (Exception $e){
+
+                        $this->model_pluggto_pluggto->deleteOrder($response_id);
+                    }
+
                 }
+
 
                 $this->model_pluggto_pluggto->updateStatusNotification($id_pluggto, json_encode(array('success' => true, 'message' => 'OK')));
             } catch (Exception $e) {
@@ -1318,6 +1327,12 @@ class ControllerApiPluggto extends Controller {
     {
         $this->load->model('pluggto/pluggto');
         $this->model_pluggto_pluggto->saveExportationQueue();
+    }
+
+    public function fixDuplicate()
+    {
+        $this->load->model('pluggto/pluggto');
+        $this->model_pluggto_pluggto->lockDuplicate();
     }
 
 }

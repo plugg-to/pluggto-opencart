@@ -1549,6 +1549,44 @@ class ModelPluggtoPluggto extends Model{
         }
     }
 
+    public function deleteOrder($order_id) {
+
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "order` WHERE order_id = '" . (int)$order_id . "'");
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "order_product` WHERE order_id = '" . (int)$order_id . "'");
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "order_option` WHERE order_id = '" . (int)$order_id . "'");
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "order_voucher` WHERE order_id = '" . (int)$order_id . "'");
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "order_total` WHERE order_id = '" . (int)$order_id . "'");
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "order_history` WHERE order_id = '" . (int)$order_id . "'");
+        $this->db->query("DELETE `or`, ort FROM `" . DB_PREFIX . "order_recurring` `or`, `" . DB_PREFIX . "order_recurring_transaction` `ort` WHERE order_id = '" . (int)$order_id . "' AND ort.order_recurring_id = `or`.order_recurring_id");
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "affiliate_transaction` WHERE order_id = '" . (int)$order_id . "'");
+
+        // Delete voucher data as well
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "voucher` WHERE order_id = '" . (int)$order_id . "'");
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "voucher_history` WHERE order_id = '" . (int)$order_id . "'");
+    }
+
+
+    public function lockDuplicate (){
+
+
+        try{
+            $sql = "DELETE n1 FROM `" . DB_PREFIX . "order_relation_pluggto_and_opencart"."` n1, `" . DB_PREFIX . "order_relation_pluggto_and_opencart"."` n2 WHERE n1.order_id_opencart > n2.order_id_opencart AND n1.order_id_pluggto = n2.order_id_pluggto AND n1.order_id_pluggto IS NOT NULL AND n2.order_id_pluggto IS NOT NULL";
+            $this->db->query($sql);
+
+            $sql = "CREATE UNIQUE INDEX order_id_pluggto_uk ON ". DB_PREFIX." order_relation_pluggto_and_opencart (order_id_pluggto)";
+            $query = $this->db->query($sql);
+
+
+            echo('<pre>');
+            var_dump($query);
+
+        } catch(Exception $e){
+            var_dump($e->getMessage());
+        }
+
+        die;
+
+    }
 
 
 }
