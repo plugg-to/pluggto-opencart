@@ -89,6 +89,7 @@ try {
               `id` int(11) NOT NULL,
                 `product_id` int(11) NOT NULL,
                 `product_id_pluggto` varchar(255) NOT NULL,
+                `product_sku` varchar(255) NOT NULL,
                 `process` int(11) NOT NULL,
                 `response` text NOT NULL
               ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -337,7 +338,7 @@ try {
   }
 
   public function sendToPluggTo($product, $sku) {
-    $url = "http://api.plugg.to/skus/" . $sku;
+    $url = "https://api.plugg.to/skus/" . trim($sku);
     
     $method = "put";
     

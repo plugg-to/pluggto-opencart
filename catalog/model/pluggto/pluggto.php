@@ -182,68 +182,65 @@ class ModelPluggtoPluggto extends Model{
     );
   }
 
-  public function getStatusSaleByHistory($status) {
-    if (empty($status)) {
-      return 1;//status correspondente a pendente
+    public function getStatusSaleByHistory($status) {
+
+
+        if (empty($status)) {
+            return 1;//status correspondente a pendente
+        }
+
+        $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . $status . '"';
+        $response_field = $this->db->query($sql);
+
+        // busca por de para
+        if (!empty($response_field->row)) {
+            $sql = 'SELECT * FROM ' . DB_PREFIX . 'order_status WHERE name = "' . $response_field->row['field_pluggto'] . '"';
+            $response_status = $this->db->query($sql);
+
+            if (!empty($response_status->row)){
+                return $response_status->row['order_status_id'];
+            }
+
+        }
+
+        // campos padroes
+        switch ($status) {
+            case 'pending':
+                return 1;
+                break;
+            case 'paid':
+                return 5;
+                break;
+            case 'approved':
+            case 'waiting_invoice':
+                return 2;
+                break;
+            case 'invoice_error':
+            case 'invoiced':
+            case 'picking';
+                return 2;
+                break;
+            case 'shipping_informed':
+            case 'shipped':
+                return 3;
+                break;
+            case 'shipping_error':
+                return 3;
+                break;
+            case 'delivered':
+                return 24;
+                break;
+            case 'canceled':
+                return 11	;
+                break;
+            case 'under_review':
+                return 13;
+                break;
+            default:
+                return 1;
+                break;
+        }
     }
-
-    //field_pluggto == opencart
-    //field_opencart == pluggto
-    $sql = 'SELECT * FROM ' . DB_PREFIX . 'pluggto_linkage_fields WHERE field_opencart = "' . $status . '"';
-    $response_field = $this->db->query($sql);
-
-    if (!empty($response_field->row)) {
-      $sql = 'SELECT * FROM ' . DB_PREFIX . 'order_status WHERE name = "' . $response_field->row['field_pluggto'] . '"';
-      $response_status = $this->db->query($sql);
-
-      if (empty($response_status->row))
-        return -1;
-
-      return $response_status->row['order_status_id'];
-    }
-
-    switch ($status) {
-      case 'pending':
-        return 1;
-      break; 
-      case 'paid': 
-        return 5;
-      break;
-      case 'approved': 
-        return 2;
-      break;
-      case 'waiting_invoice': 
-        return 2;
-      break;
-      case 'invoiced': 
-        return 2;
-      break;
-      case 'invoice_error': 
-        return 8;
-      break;
-      case 'shipping_informed': 
-        return 5;
-      break;
-      case 'shipped': 
-        return 5;
-      break;
-      case 'shipping_error': 
-        return 10;
-      break;
-      case 'delivered': 
-        return 5;
-      break;  
-      case 'canceled': 
-        return 9;
-      break;
-      case 'under_review':
-        return 13;
-      break;
-      default:
-        return 1;
-      break;
-    }
-  }
 
   public function getIDItemBySKU($sku){
     $sql = 'SELECT product_id FROM ' . DB_PREFIX . 'product WHERE sku = "' . $sku . '"';
@@ -502,9 +499,9 @@ class ModelPluggtoPluggto extends Model{
 
   public function getQueuesProducts($origin='opencart'){
         if ($origin != "opencart"){
-          $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id_pluggto <> '' limit 100";
+          $query = "SELECT id, product_id, product_id_pluggto, process FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id_pluggto <> '' limit 100";
         } else {
-          $query = "SELECT id, product_id, product_id_pluggto FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id <> '' limit 100";
+          $query = "SELECT id, product_id, product_id_pluggto, process FROM ".DB_PREFIX."pluggto_products_queue WHERE process = 0 AND product_id <> '' limit 100";
         }
 
         $result = $this->db->query($query);
@@ -554,7 +551,7 @@ class ModelPluggtoPluggto extends Model{
       return $this->addProduct($data);
     }
 
-    $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$sku->row['product_id'] . "'");
+   // $this->db->query("DELETE FROM " . DB_PREFIX . "product_special WHERE product_id = '" . (int)$sku->row['product_id'] . "'");
 
     return $this->editProduct($sku->row['product_id'], $data);
   }
@@ -1098,6 +1095,24 @@ class ModelPluggtoPluggto extends Model{
       return $data;
   }
 
+  public function sendOpenCartIdToPluggto($idPluggto,$idOpencart){
+
+      $url = "https://api.plugg.to/orders/" . trim($idPluggto);
+
+      $method = "put";
+
+      $accesstoken = $this->getAccesstoken();
+
+      $url = $url . "?access_token=" . $accesstoken;
+
+      $body = ['external'=>$idOpencart];
+
+      $data = $this->sendRequest($method, $url, $body);
+
+      return $data;
+
+  }
+
   public function sendToPluggTo($product, $sku) {
     $url = "http://api.plugg.to/skus/" . trim($sku);
     
@@ -1538,13 +1553,29 @@ class ModelPluggtoPluggto extends Model{
                 continue;
             }
 
+            // ALTER TABLE table
+            //ADD [COLUMN] column_name column_definition [FIRST|AFTER existing_column];
+      //      $query = 'ALTER TABLE ' . DB_PREFIX . 'pluggto_products_queue ADD COLUMN product_sku VARCHAR(255)';
+
+
+         //  $query = 'Select * from ' . DB_PREFIX . 'pluggto_products_queue' ;
+
             $query = 'Select * from ' . DB_PREFIX . 'pluggto_products_queue where product_id = "'.$product['product_id'].'" and process = 0' ;
 
             $result = $this->db->query($query);
 
+         //   echo("<pre>");
+           //     var_dump($result);
+             //     die;
+
+
             if($result->num_rows == 0){
                 $sql = 'INSERT INTO ' . DB_PREFIX . 'pluggto_products_queue (product_id,product_sku,product_id_pluggto,process,response) VALUES ("'. $product['product_id'] . '", "'.$product['sku'].'",0,0,0)';
-                $this->db->query($sql);
+               $varresult =  $this->db->query($sql);
+
+           //    echo("<pre>");
+       //       var_dump($varresult);
+         //      die;
             }
         }
     }

@@ -76,6 +76,8 @@ class ControllerApiPluggto extends Controller {
         {
             foreach ($productsQueue as $productToProcess) {
 
+                echo '<pre>';
+                var_dump($productToProcess['product_id']);
 
                 try {
                     $product = $this->model_catalog_product->getProduct($productToProcess['product_id']);
@@ -106,10 +108,15 @@ class ControllerApiPluggto extends Controller {
             foreach ($productsQueue as $product) {
                 try {
                     $product = $this->model_pluggto_pluggto->getProduct($product['product_id_pluggto']);
-                    $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
 
-                    $response[$product->Product->id]['status']  = $return;
-                    $response[$product->Product->id]['message'] = $return !== 'Problem SKU' ? "Product '$productId' imported successfully" : "Produts Could not be imported";
+                    if(!empty($product)){
+
+                        $return = $this->model_pluggto_pluggto->prepareToSaveInOpenCart($product);
+                        $response[$product->Product->id]['status']  = $return;
+                        $response[$product->Product->id]['message'] = $return !== 'Problem SKU' ? "Product ".$product['product_id_pluggto']." imported successfully" : "Produts Could not be imported";
+
+                    }
+
 
                     $this->model_pluggto_pluggto->processedQueueProduct($product->Product->id, "pluggto");
                 } catch (Exception $e) {
@@ -374,6 +381,8 @@ class ControllerApiPluggto extends Controller {
                     try{
 
                         $this->model_pluggto_pluggto->createRelationOrder($order->Order->id, $response_id);
+
+                        $this->model_pluggto_pluggto->sendOpenCartIdToPluggto($order->Order->id,$response_id);
 
                         // caso ocorra uma exception aqui, provavelmente ordem já existe, necessário excluir a criada para evitar duplicacao
                     } catch (Exception $e){
@@ -644,7 +653,7 @@ class ControllerApiPluggto extends Controller {
 
         $data = array(
             'name'       => $product['name'],
-            'sku'        => $product['sku'],
+            'sku'        => trim($product['sku']),
             'grant_type' => "authorization_code",
             'price'      => $product['price'],
             'quantity'   => $product['quantity'],
@@ -668,9 +677,10 @@ class ControllerApiPluggto extends Controller {
             'special_price' => isset($product['special']) ? $product['special'] : 0,
             'categories' => $this->getCategoriesToPluggTo($product['product_id'])
         );
-
+        
 
         $response = $this->model_pluggto_pluggto->sendToPluggTo($data, $product['sku']);
+
 
         $this->model_pluggto_pluggto->createLog(print_r($response, 1), 'exportAllProductsToPluggTo');
 

@@ -533,6 +533,24 @@
                     </div>
                   </div>
                   <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para pedidos em separação:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[picking]" class="form-control">
+                        <option value="">Não disponivel</option>
+                        <?php foreach ($status_opencart as $status): ?>
+                        <option
+                                value="<?php echo $status['name']; ?>"
+                        <?php if(@$default_fields['picking'] == $status['name']): ?>
+                        selected
+                        <?php endif; ?>
+                        >
+                        <?php echo $status['name']; ?>
+                        </option>
+                        <?php endforeach; ?>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Cancelados:</label>
                     <div class="col-sm-10">
                       <select name="fields[canceled]" class="form-control">
