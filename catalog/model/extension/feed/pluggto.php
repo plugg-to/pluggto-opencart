@@ -269,7 +269,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function createOrder($params) {
-    $url = "http://api.plugg.to/orders";
+    $url = "https://api.plugg.to/orders";
     $method = "post";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
@@ -279,7 +279,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function editOrder($params, $id) {
-    $url = "http://api.plugg.to/orders/" . $id;
+    $url = "https://api.plugg.to/orders/" . $id;
     $method = "put";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
@@ -288,7 +288,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function getOrdersPluggTo() {
-    $url = "http://api.plugg.to/orders";
+    $url = "https://api.plugg.to/orders";
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $url = $url."?access_token=".$accesstoken;
@@ -297,7 +297,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function getOrderPluggTo($id) {
-    $url = "http://api.plugg.to/orders";
+    $url = "https://api.plugg.to/orders";
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $url = $url."/" . $id . "?access_token=".$accesstoken;
@@ -318,7 +318,7 @@ class ModelExtensionFeedPluggto extends Model{
     if (empty($credential)) {
      return false;
     }else {
-      $url = "http://api.plugg.to/oauth/token";
+      $url = "https://api.plugg.to/oauth/token";
       $params = array("grant_type"=>"password", "client_id" => $credential["client_id"], "client_secret" => $credential["client_secret"], "username" => $credential["api_user"], "password" => $credential["api_secret"]);
 
       $data = $this->sendRequest("post", $url, $params);
@@ -403,7 +403,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function removeProduct($sku){
-      $url = "http://api.plugg.to/skus/".$sku;
+      $url = "https://api.plugg.to/skus/".$sku;
       $method = "delete";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -429,7 +429,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
  
   public function getProduct($product_id){
-      $url = "http://api.plugg.to/products/".$product_id;
+      $url = "https://api.plugg.to/products/".$product_id;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -438,7 +438,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function getProductBySKU($sku) {
-      $url = "http://api.plugg.to/skus/" . $sku;
+      $url = "https://api.plugg.to/skus/" . $sku;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -447,7 +447,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function getOrder($orderId){
-      $url = "http://api.plugg.to/orders/" . $orderId;
+      $url = "https://api.plugg.to/orders/" . $orderId;
       $method = "get";
       $accesstoken = $this->getAccesstoken();
       $params = array("access_token" => $accesstoken);
@@ -775,7 +775,7 @@ class ModelExtensionFeedPluggto extends Model{
 
   public function updateStockPluggTo($product, $id) 
   {
-      $url = "http://api.plugg.to/products/" . $id . "/stock";
+      $url = "https://api.plugg.to/products/" . $id . "/stock";
       $method = "put";
       $accesstoken = $this->getAccesstoken();
       $url = $url . "?access_token=" . $accesstoken;
@@ -785,7 +785,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function updateTo($product, $id) {
-      $url = "http://api.plugg.to/products/".$id;
+      $url = "https://api.plugg.to/products/".$id;
       
       $method = "put";
       
@@ -802,7 +802,7 @@ class ModelExtensionFeedPluggto extends Model{
 
   public function sendToPluggTo($product, $sku) {
 	  
-    $url = "http://api.plugg.to/skus/" . trim($sku);
+    $url = "https://api.plugg.to/skus/" . trim($sku);
     
     $method = "put";
     
@@ -833,7 +833,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function createTo($product) {
-      $url = "http://api.plugg.to/products";
+      $url = "https://api.plugg.to/products";
       $method = "post";
       $accesstoken = $this->getAccesstoken();
       $url = $url."?access_token=".$accesstoken;
@@ -843,7 +843,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function getProducts($page) {
-    $url = "http://api.plugg.to/products";
+    $url = "https://api.plugg.to/products";
     $method = "get";
     $accesstoken = $this->getAccesstoken();
     $params = array("access_token" => $accesstoken, "page" => $page);
@@ -1159,7 +1159,7 @@ class ModelExtensionFeedPluggto extends Model{
   }
 
   public function refreshStock($sku, $params) {
-    $url = "http://api.plugg.to/skus/" . $sku . "/stock";
+    $url = "https://api.plugg.to/skus/" . $sku . "/stock";
 
     $method = "put";
     
