@@ -1,0 +1,680 @@
+{{ header }}
+
+	{{ column_left }}
+
+<div id="content">
+    <div class="page-header" style="margin-top: 5px;">
+    <div class="alert alert-primary">
+      <b>{{ alerts }}</b>
+    </div>
+
+    <div class="container-fluid">
+        <div class="pull-right">
+          <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+            <i class="fa fa-reply"></i>
+          </a>
+        </div>
+        <h1>{{ heading_title }}</h1>
+
+        <ul class="breadcrumb">
+		{% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ breadcrumb.href|e }}">{{ breadcrumb.text|e }}</a></li>
+		{% endfor %}
+        </ul>
+
+      </div>
+    </div>
+
+    <div class="col-md-12 text-center" style="margin-bottom: 30px;">
+      <img src="http://plugg.to/wp-content/uploads/2015/10/PluggTo-Header-Logo-Verde.png" alt="" />
+    </div>
+    <div class="tab-pane fade in" id="A">
+      <div class="row" style="width: 99%;">
+        <form action="{{ action_basic_fields }}" method="post" enctype="multipart/form-data" id="form-banner" class="form-horizontal">
+          <div class="col-md-12" style="margin-left: 20px;">
+
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">
+                  <i class="fa fa-pencil"></i> Não enviar os seguintes campos
+                </h3>
+              </div>
+              
+              <div class="panel-body">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Nome</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_name]">
+                      <option value="1" 
+					  {% if default_fields.sync_name is defined and default_fields.sync_name is not empty %} 
+                       selected 
+					  {% endif %} 
+                      >Sim</option>
+                      <option value="0"
+                        {% if default_fields.sync_name is not defined or default_fields.sync_name is empty %}
+                       selected 
+					  {% endif %} 
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Descrição</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_description]">
+                      <option value="1"
+					  {% if default_fields.sync_description is defined and default_fields.sync_description is not empty %}
+                       selected 
+					  {% endif %}
+                      >Sim</option>
+                      <option value="0"
+                        {% if default_fields.sync_description is not defined or default_fields.sync_description is empty %}
+                       selected 
+					  {% endif %}
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Fotos</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_photos]">
+                      <option value="1" 
+					  {% if default_fields.sync_photos is defined and default_fields.sync_photos is not empty %}
+                       selected 
+					  {% endif %}
+                      >Sim</option>
+                      <option value="0"
+                        {% if default_fields.sync_photos is not defined or default_fields.sync_photos is empty %}
+                       selected 
+					  {% endif %}
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Categorias</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_categories]">
+                      <option value="1" 
+                        {% if default_fields.sync_categories is defined and default_fields.sync_categories is not empty %}
+                       selected 
+					  {% endif %}
+                      >Sim</option>
+                      <option value="0"
+					  {% if default_fields.sync_categories is not defined or default_fields.sync_categories is empty %}
+                       selected 
+					  {% endif %}
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Atributos</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_attributes]">
+                      <option value="1" 
+                       {% if default_fields.sync_attributes is defined and default_fields.sync_attributes is not empty %}
+                       selected 
+					  {% endif %}
+                      >Sim</option>
+                      <option value="0"
+                       {% if default_fields.sync_attributes is not defined or default_fields.sync_attributes is empty %}
+                       selected 
+					  {% endif %}
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Marca</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_brand]">
+                      <option value="1" 
+                        {% if default_fields.sync_brand is defined and default_fields.sync_brand is not empty %}
+                       selected 
+					  {% endif %}
+                      >Sim</option>
+                      <option value="0"
+                        {% if default_fields.sync_brand is not defined or default_fields.sync_brand is empty %}
+                       selected 
+					  {% endif %}
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Preço</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_price]">
+                      <option value="1" 
+                        {% if default_fields.sync_price is defined and default_fields.sync_price is not empty %}
+                       selected 
+					  {% endif %}
+                      >Sim</option>
+                      <option value="0"
+                        {% if default_fields.sync_price is not defined or default_fields.sync_price is empty %}
+                       selected 
+					  {% endif %}
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Preço Promocional</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_special_price]">
+                      <option value="1" 
+                        {% if default_fields.sync_special_price is defined and default_fields.sync_special_price is not empty %}
+                       selected 
+					  {% endif %}
+                      >Sim</option>
+                      <option value="0"
+                        {% if default_fields.sync_special_price is not defined or default_fields.sync_special_price is empty %}
+                       selected 
+					  {% endif %}
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Estoque</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_quantity]">
+                      <option value="1" 
+                        {% if default_fields.sync_quantity is defined and default_fields.sync_quantity is not empty %}
+                       selected 
+					  {% endif %}
+                      >Sim</option>
+                      <option value="0"
+                        {% if default_fields.sync_quantity is not defined or default_fields.sync_quantity is empty %}
+                       selected 
+					  {% endif %}
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Sicronizar Dimensões</label>
+                  <div class="col-sm-10">
+                    <select class="form-control" name="fields[sync_dimensions]">
+                      <option value="1" 
+                        {% if default_fields.sync_dimensions is defined and default_fields.sync_dimensions is not empty %}
+                       selected 
+					  {% endif %}
+                      >Sim</option>
+                      <option value="0"
+                         {% if default_fields.sync_dimensions is not defined or default_fields.sync_dimensions is empty %}
+                       selected 
+					  {% endif %}
+                      >Não</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">
+                  <i class="fa fa-pencil"></i> Atrelamento de Campos Customizaveis
+                </h3>
+              </div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Endereço "Informações Adicionais":</label>
+                  <div class="col-sm-10">
+                    <select name="fields[information_adds]" class="form-control">
+                      <option value="">Não disponivel</option>
+					  {% for key, value in custom_fields %}
+                        <option
+                        value="{{value.custom_field_id|e}}"
+							{% if default_fields.information_adds == value.custom_field_id|e %}
+                          selected
+						  {% endif %}
+                        >
+						{{ value.name|e }}
+                        </option>
+						{% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Endereço Complemento:</label>
+                  <div class="col-sm-10">
+                    <select name="fields[complement]" class="form-control">
+                      <option value="">Não disponivel</option>
+					  {% for key, value in custom_fields %}
+                        <option
+                        value="{{value.custom_field_id|e}}"
+							{% if default_fields.complement == value.custom_field_id|e %}
+                          selected
+						  {% endif %}
+                        >
+						{{ value.name|e }}
+                        </option>
+						{% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Cliente CPF:</label>
+                  <div class="col-sm-10">
+                    <select name="fields[cpf]" class="form-control">
+                      <option value="">Não disponivel</option>
+					  {% for key, value in custom_fields %}
+                        <option
+                        value="{{value.custom_field_id|e}}"
+							{% if default_fields.cpf == value.custom_field_id|e %}
+                          selected
+						  {% endif %}
+                        >
+						{{ value.name|e }}
+                        </option>
+						{% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-name">Endereço Nº:</label>
+                  <div class="col-sm-10">
+                    <select name="fields[number]" class="form-control">
+                      <option value="">Não disponivel</option>
+					  {% for key, value in custom_fields %}
+                        <option
+                        value="{{value.custom_field_id|e}}"
+							{% if default_fields.number == value.custom_field_id|e %}
+                          selected
+						  {% endif %}
+                        >
+						{{ value.name|e }}
+                        </option>
+						{% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">
+                  <i class="fa fa-pencil"></i> Atrelamento de Status de Pagamento
+                </h3>
+              </div>
+              <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Pendentes:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[pending]" class="form-control">
+                        <option value="">Não disponivel</option>
+                        {% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.pending == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Pagos:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[paid]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.paid == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Aprovados:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[approved]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.approved == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Aguardando Fatura:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[waiting_invoice]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.waiting_invoice == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Faturada:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[invoiced]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.invoiced == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Erro na Fatura:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[invoice_error]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.invoice_error == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Entrega Informada:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipping_informed]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.shipping_informed == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Entregue:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipped]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.shipped == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Erro na entrega:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipping_error]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.shipping_error == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Entregues:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[delivered]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.delivered == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos Cancelados:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[canceled]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.canceled == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Status para Pagamentos que precisam ser revisados:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[under_review]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for status in status_opencart %}
+                          <option
+                            value="{{status.name|e}}"
+								{% if default_fields.under_review == status.name|e %}
+                              selected
+							  {% endif %}
+                          >
+						  {{ status.name|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">
+                  <i class="fa fa-pencil"></i> Atrelamento de Metodos de Entrega
+                </h3>
+              </div>
+              <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Entrega padrão:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipping_default]" class="form-control">
+                        <option value="">Não disponivel</option>
+                        {% for key, value in types_shippings %}
+                          <option
+                          value="{{ key }}"
+							  {% if default_fields.shipping_default == key %}
+                            selected
+							{% endif %}
+                          >
+						  {{ value|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Entrega Expressa:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipping_express]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for key, value in types_shippings %}
+                          <option
+                          value="{{ key }}"
+							  {% if default_fields.shipping_express == key %}
+                            selected
+							{% endif %}
+                          >
+						  {{ value|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Entrega Economica:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipping_economic]" class="form-control">
+                        <option value="">Não disponivel</option>
+						{% for key, value in types_shippings %}
+                          <option
+                          value="{{ key }}"
+							  {% if default_fields.shipping_economic == key %}
+                            selected
+							{% endif %}
+                          >
+						  {{ value|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Entrega Agendada:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipping_scheduled]" class="form-control">
+                        <option value="">Não disponivel</option>
+                        {% for key, value in types_shippings %}
+                          <option
+                          value="{{ key }}"
+							  {% if default_fields.shipping_scheduled == key %}
+                            selected
+							{% endif %}
+                          >
+						  {{ value|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Retirar na loja:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipping_shop]" class="form-control">
+                        <option value="">Não disponivel</option>
+                        {% for key, value in types_shippings %}
+                          <option
+                          value="{{ key }}"
+							  {% if default_fields.shipping_shop == key %}
+                            selected
+							{% endif %}
+                          >
+						  {{ value|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Entrega Garantida:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipping_guaranteed]" class="form-control">
+                        <option value="">Não disponivel</option>
+                        {% for key, value in types_shippings %}
+                          <option
+                          value="{{ key }}"
+							  {% if default_fields.shipping_guaranteed == key %}
+                            selected
+							{% endif %}
+                          >
+						  {{ value|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-name">Entrega na hora:</label>
+                    <div class="col-sm-10">
+                      <select name="fields[shipping_hour]" class="form-control">
+                        <option value="">Não disponivel</option>
+                        {% for key, value in types_shippings %}
+                          <option
+                          value="{{ key }}"
+							  {% if default_fields.shipping_hour == key %}
+                            selected
+							{% endif %}
+                          >
+						  {{ value|e }}
+                          </option>
+						  {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="float: right; padding-right: 15px;">
+              <button type="submit" class="btn btn-success">Salvar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+ </div>
+</div>
